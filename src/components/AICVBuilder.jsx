@@ -1,28 +1,41 @@
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { 
+  FileText, Wand2, Plus, Trash2, Download, Printer, User, Briefcase, 
+  GraduationCap, Award, Mail, Phone, MapPin, Search, ChevronLeft, 
+  ShieldCheck, Home, Compass, MessageCircle, Bell, Dna, Sparkles,
+  Link2, Globe, Check, Eye, Edit3, CheckCircle2, AlertCircle, RefreshCw, Layers
+} from 'lucide-react';
 import useAppStore from '../store/useAppStore';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import {  FileText, Wand2, Plus, Trash2, Download, Printer, User, Briefcase, GraduationCap, Award, Mail, Phone, MapPin, Search, ChevronLeft, ShieldCheck, Home, Compass, MessageCircle, Bell, Dna } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
-import NavIcon from './shared/NavIcon';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import SafeAvatar from './shared/SafeAvatar';
+import { toast } from './shared/Toast';
 import { generateAIResponse } from '../lib/gemini';
 import { exportPDF } from '../lib/pdfExporter';
 import EuroPassExportModal from './global/EuroPassExportModal';
 
-export default function AICVBuilder({ currentUser, userRole, setView, setSelectedUserId, onUpdateProfile, previousView }) {
+export default function AICVBuilder({ currentUser, userRole, setView, setSelectedUserId, onUpdateProfile, previousView, messages, academicRole }) {
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
   const backTarget = previousView || (
     activePortalBranch && ['student', 'alumni', 'academic', 'company', 'admin'].includes(activePortalBranch) ? activePortalBranch :
     (userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
   );
-  const [showEuroPassModal, setShowEuroPassModal] = useState(false);
-  const messages = useAppStore(state => state.messages);
-  const setMessages = useAppStore(state => state.setMessages);
 
-  const [activeSection, setActiveSection] = useState('personal'); // personal, experience, education, skills, certificates, summary
+  const [showEuroPassModal, setShowEuroPassModal] = useState(false);
+  const [activeTab, setActiveTab] = useState('personal'); // 'personal' | 'summary' | 'experience' | 'education' | 'skills' | 'languages' | 'certificates'
+  const [mobileViewMode, setMobileViewMode] = useState('editor'); // 'editor' | 'preview'
+  const [selectedTemplate, setSelectedTemplate] = useState('modern'); // 'modern' | 'ats' | 'executive'
   const [photoError, setPhotoError] = useState(false);
-  
-  // Initialize from localStorage OR currentUser if available
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isEvolving, setIsEvolving] = useState(false);
+
+  // New Skill & Language state
+  const [newSkill, setNewSkill] = useState('');
+  const [newLang, setNewLang] = useState('');
+  const [newLangLevel, setNewLangLevel] = useState('B2 (Orta - İleri)');
+
+  // Initialize from localStorage OR currentUser
   const [cvData, setCvData] = useState(() => {
     try {
       const saved = localStorage.getItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`);
@@ -33,205 +46,171 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
     } catch (e) {
       console.warn("Failed to load CV draft", e);
     }
+
+    const defaultRole = userRole === 'alumni' || currentUser?.role === 'alumni' ? 'alumni' : 'student';
+    const defaultTitle = defaultRole === 'alumni'
+      ? (currentUser?.department ? `${currentUser.department} Mezunu` : 'İESÜ Mezunu')
+      : (currentUser?.department ? `${currentUser.department} Öğrencisi` : 'İESÜ Öğrencisi');
+
     return {
-      name: currentUser?.name || '',
-      photo: (currentUser?.avatar && currentUser.avatar !== '/iesu-logo.svg') ? currentUser.avatar : '/iesu-logo.svg',
-      title: currentUser?.title || (userRole === 'alumni' || currentUser?.role === 'alumni'
-        ? (currentUser?.department ? `${currentUser.department} Mezunu` : 'İESÜ Mezunu')
-        : (currentUser?.department ? `${currentUser.department} Öğrencisi` : 'İESÜ Öğrencisi')),
-      email: currentUser?.email || '',
-      phone: '',
-      location: 'İstanbul, Türkiye',
-      summary: '',
-      gpa: '',
-      thesis: '',
+      name: currentUser?.name || 'Caner Öztürk',
+      photo: currentUser?.avatar || '/iesu-logo.svg',
+      title: currentUser?.title || defaultTitle,
+      email: currentUser?.email || 'caner@esenyurt.edu.tr',
+      phone: currentUser?.phone || '+90 532 000 00 00',
+      location: currentUser?.location || currentUser?.city || 'İstanbul, Türkiye',
+      linkedin: currentUser?.linkedin || 'linkedin.com/in/canerozturk',
+      github: currentUser?.github || 'github.com/canerozturk',
+      website: '',
+      summary: currentUser?.bio || currentUser?.summary || 'İstanbul Esenyurt Üniversitesi bünyesinde edindiğim teorik ve uygulamalı yetkinliklerle; teknoloji, inovasyon ve problem çözme odaklı projelerde aktif değer üretmeyi hedefliyorum.',
+      gpa: currentUser?.gpa || '3.42',
+      thesis: currentUser?.thesis || '',
       academicProjects: '',
-      experience: [],
-      education: [],
-      skills: [],
-      languages: [],
-      certificates: []
+      experience: [
+        {
+          id: 1,
+          company: 'Teknoloji & Yazılım Çözümleri A.Ş.',
+          role: 'Stajyer Yazılım Geliştirici',
+          type: 'Zorunlu Staj',
+          date: 'Temmuz 2025 - Eylül 2025',
+          desc: 'Modern web uygulamalarında React ve Node.js entegrasyonu sağlandı. RESTful API servisleri geliştirildi ve test otomasyon süreçlerine katkı sunuldu.'
+        }
+      ],
+      education: [
+        {
+          id: 1,
+          institution: 'İstanbul Esenyurt Üniversitesi',
+          degree: `${currentUser?.faculty || 'Mühendislik ve Mimarlık Fakültesi'} - ${currentUser?.department || 'Bilgisayar Mühendisliği'}`,
+          date: '2022 - 2026',
+          gpa: '3.42 / 4.00',
+          desc: 'Yapay Zekâ ve Dağıtık Sistemler odaklı lisans eğitimi.'
+        }
+      ],
+      skills: currentUser?.skills?.length > 0 
+        ? currentUser.skills 
+        : ['JavaScript (ES6+)', 'React.js', 'Python', 'SQL & Veri Modelleme', 'Git & GitHub', 'Agile / Scrum Metodolojileri'],
+      languages: [
+        { id: 1, lang: 'Türkçe', level: 'Ana Dil' },
+        { id: 2, lang: 'İngilizce', level: 'B2 (Profesyonel Çalışma)' }
+      ],
+      certificates: (currentUser?.certificates || []).map((c, i) => ({
+        id: c.id || i + 1,
+        name: c.name || c.title || 'Sertifika',
+        issuer: c.issuer || 'İESÜ Sürekli Eğitim Merkezi',
+        date: c.date || '2025',
+        desc: ''
+      }))
     };
   });
 
-  // Automatically sync profile updates into CV Data
+  // Sync to localStorage
   useEffect(() => {
-    if (currentUser) {
-      setCvData(prev => {
-        const eduList = [];
-        if (currentUser.faculty || currentUser.department) {
-          eduList.push({
-            id: 'edu-profile-main',
-            institution: 'İstanbul Esenyurt Üniversitesi',
-            degree: `${currentUser.faculty || 'Fakülte'} - ${currentUser.department || 'Bölüm'}`,
-            date: currentUser.grade ? `2022 - 2026 (${currentUser.grade})` : '2022 - 2026',
-            desc: currentUser.thesis ? `Bitirme Projesi: ${currentUser.thesis}` : ''
-          });
-        }
-        if (currentUser.isDoubleMajor && (currentUser.capFaculty || currentUser.capDept)) {
-          eduList.push({
-            id: 'edu-profile-cap',
-            institution: 'İstanbul Esenyurt Üniversitesi (Çift Anadal / Yandal)',
-            degree: `${currentUser.capFaculty || 'ÇAP Fakültesi'} - ${currentUser.capDept || 'ÇAP Bölümü'}`,
-            date: currentUser.capGrade ? `ÇAP (${currentUser.capGrade})` : 'ÇAP Programı',
-            desc: currentUser.capThesis ? `ÇAP Projesi: ${currentUser.capThesis}` : ''
-          });
-        }
-        
-        const syncedEdu = eduList.length > 0 ? [...eduList, ...(prev.education || []).filter(e => e.id !== 'edu-profile-main' && e.id !== 'edu-profile-cap')] : prev.education;
-
-        const syncedExp = (currentUser.experiences || []).map(exp => ({
-          id: exp.id || Date.now() + Math.random(),
-          company: exp.company || exp.institution || 'Kurum',
-          role: exp.title || exp.role || 'Pozisyon',
-          date: exp.type || 'Staj',
-          desc: exp.desc || ''
-        }));
-
-        const syncedCerts = (currentUser.certificates || []).map(cert => ({
-          id: cert.id || Date.now() + Math.random(),
-          name: cert.name || cert.title || '',
-          issuer: cert.issuer || 'Sertifika Kurulu',
-          date: cert.date || 'Güncel',
-          desc: ''
-        }));
-
-        const syncedLangs = (currentUser.languages || []).map(lang => ({
-          id: lang.id || Date.now() + Math.random(),
-          lang: typeof lang === 'string' ? lang : (lang.name || lang.language),
-          level: lang.level || 'Orta'
-        }));
-
-        return {
-          ...prev,
-          name: currentUser.name || prev.name,
-          email: currentUser.email || prev.email,
-          phone: currentUser.phone || prev.phone,
-          location: currentUser.location || currentUser.city || prev.location,
-          summary: currentUser.bio || currentUser.summary || prev.summary,
-          photo: (currentUser.avatar && currentUser.avatar !== '/iesu-logo.svg') ? currentUser.avatar : prev.photo,
-          title: currentUser.department ? `${currentUser.department} Öğrencisi` : prev.title,
-          education: syncedEdu?.length > 0 ? syncedEdu : prev.education,
-          experience: syncedExp?.length > 0 ? syncedExp : prev.experience,
-          skills: currentUser.skills?.length > 0 ? Array.from(new Set([...currentUser.skills, ...(prev.skills || [])])) : prev.skills,
-          certificates: syncedCerts?.length > 0 ? syncedCerts : prev.certificates,
-          languages: syncedLangs?.length > 0 ? syncedLangs : prev.languages
-        };
-      });
-    }
-  }, [currentUser]);
-
-  useEffect(() => {
-    localStorage.setItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));
+    try {
+      localStorage.setItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));
+    } catch (_) {}
     setPhotoError(false);
   }, [cvData, currentUser?.id]);
 
   const isMounted = useRef(true);
   useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
+    return () => { isMounted.current = false; };
   }, []);
 
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [newSkill, setNewSkill] = useState('');
-  const [newLang, setNewLang] = useState('');
-  const [newLangLevel, setNewLangLevel] = useState('Orta');
+  // Calculate CV Health / Completeness Score
+  const cvScore = useMemo(() => {
+    let score = 20; // base
+    if (cvData.name && cvData.name.trim().length > 3) score += 10;
+    if (cvData.email && cvData.email.includes('@')) score += 10;
+    if (cvData.phone && cvData.phone.length > 7) score += 10;
+    if (cvData.summary && cvData.summary.trim().length > 40) score += 15;
+    if (cvData.education && cvData.education.length > 0) score += 15;
+    if (cvData.experience && cvData.experience.length > 0) score += 10;
+    if (cvData.skills && cvData.skills.length >= 3) score += 10;
+    return Math.min(100, score);
+  }, [cvData]);
 
-    // --- 🎯 AI ATS Optimizasyonu ---
-  const [isEvolving, setIsEvolving] = useState(false);
-  const evolveCVWithGeneticAlgorithms = useCallback(async () => {
-    setIsEvolving(true);
-    const department = cvData.title || currentUser?.department || 'Genel';
-    const currentSkills = (cvData.skills || []).join(', ') || 'Yok';
-    const prompt = `Öğrencinin alanı: ${department}. Mevcut yetkinlikleri: ${currentSkills}.
-Bu öğrencinin CV'sini ATS (Aday Takip Sistemi) filtrelerinden başarıyla geçirecek, sektör standardı en güncel 5 adet teknik ve metodolojik yetkinliği (skills) ve ATS uyumlu 2 cümlelik profesyonel bir kariyer özetini JSON formatında üret.
-JSON formatı: { "skills": ["Yetkinlik 1", "Yetkinlik 2", "Yetkinlik 3", "Yetkinlik 4", "Yetkinlik 5"], "summary": "ATS uyumlu özet metin..." }`;
+  // ─── AI HANDLERS ───
+  const handleAIGenerateSummary = useCallback(async (tone = 'professional') => {
+    setIsGenerating(true);
+    toast.info('ANKA AI kariyer özetinizi hazırlıyor...');
+
+    const prompt = `
+Sen İstanbul Esenyurt Üniversitesi (İESÜ) Kariyer Geliştirme Koordinatörlüğü asistanı ANKA'sın.
+Aday Bilgileri:
+- Ad: ${cvData.name}
+- Alan / Bölüm: ${cvData.title}
+- Eğitim: ${cvData.education.map(e => `${e.degree} (${e.institution})`).join(', ')}
+- Yetenekler: ${cvData.skills.join(', ')}
+- Deneyimler: ${cvData.experience.map(e => `${e.role} @ ${e.company}`).join(', ')}
+
+İstenen Ton: ${tone === 'impact' ? 'Sonuç ve başarı odaklı (Impact-driven)' : tone === 'ats' ? 'ATS anahtar kelime optimizasyonlu ve net' : 'Yeni mezun ve gelişim odaklı'}
+
+Lütfen adayın CV'sinde kullanılacak, profesyonel, yapay klişelerden uzak, birinci tekil şahıs ("Ben") veya üçüncü şahıs nesnel dilinde en fazla 3 cümlelik etkileyici bir kariyer özeti üret. Sadece saf metin ver.
+    `;
 
     try {
-      const response = await generateAIResponse(prompt, 'Sadece saf JSON formatında cevap ver. Ek metin yazma.');
+      const response = await generateAIResponse(prompt, "Sadece özet metnini ver. Ekstra açıklama yapma.");
+      if (response && typeof response === 'string' && !response.includes('ulaşılamıyor')) {
+        const cleanText = response.replace(/^["']|["']$/g, '').trim();
+        setCvData(prev => ({ ...prev, summary: cleanText }));
+        toast.success('Yapay zekâ destekli kariyer özeti başarıyla oluşturuldu!');
+      } else {
+        throw new Error('AI fallback');
+      }
+    } catch {
+      const fallbackSummary = `${cvData.title || 'Alanında'} edindiğim kurumsal ve akademik yetkinliklerle, dinamik çalışma ortamlarında analitik çözümler üreten ve sürekli gelişime açık profesyonel bir adayım.`;
+      setCvData(prev => ({ ...prev, summary: fallbackSummary }));
+      toast.success('Örnek kariyer özeti uygulandı!');
+    } finally {
+      if (isMounted.current) setIsGenerating(false);
+    }
+  }, [cvData.name, cvData.title, cvData.education, cvData.skills, cvData.experience]);
+
+  const evolveCVWithGeneticAlgorithms = useCallback(async () => {
+    setIsEvolving(true);
+    toast.info('ATS anahtar kelimeleri ve etki analizi yürütülüyor...');
+    const department = cvData.title || currentUser?.department || 'Genel';
+    const currentSkills = (cvData.skills || []).join(', ') || 'Yok';
+
+    const prompt = `Öğrencinin alanı: ${department}. Mevcut yetkinlikleri: ${currentSkills}.
+Bu öğrencinin CV'sini ATS (Aday Takip Sistemi) filtrelerinden başarıyla geçirecek, sektör standardı en güncel 5 adet teknik ve metodolojik yetkinliği JSON formatında üret.
+JSON formatı: { "skills": ["Yetkinlik 1", "Yetkinlik 2", "Yetkinlik 3", "Yetkinlik 4", "Yetkinlik 5"] }`;
+
+    try {
+      const response = await generateAIResponse(prompt, 'Sadece saf JSON formatında cevap ver.');
       let parsed = null;
       if (response) {
         try {
           const clean = response.replace(/^```json\s*/i, '').replace(/\s*```$/, '').trim();
           parsed = JSON.parse(clean);
-        } catch { /* parse fallback */ }
+        } catch (_) {}
       }
 
-      setCvData(prev => {
-        const newData = { ...prev };
-        const newSkills = Array.isArray(parsed?.skills) && parsed.skills.length > 0
-          ? parsed.skills
-          : ["Agile Metodolojileri", "Veri Analizi", "Proje Yönetimi", "Problem Çözme", "Çapraz Fonksiyonel İşbirliği"];
-        newData.skills = [...new Set([...(newData.skills || []), ...newSkills])];
-        if (parsed?.summary) {
-          newData.summary = parsed.summary;
-        } else if (!newData.summary || newData.summary.trim() === '') {
-          newData.summary = 'Sonuç odaklı, analitik düşünme yetkinliğine sahip ve takım çalışmasına yatkın kariyer hedefi doğrultusunda değer üretmeye odaklı aday.';
-        }
-        return newData;
-      });
-      if (window.toast?.success) {
-        window.toast.success('CV başarıyla ATS standartlarına optimize edildi! Yetkinlikler zenginleştirildi.', { duration: 4000 });
-      }
+      const recommendedSkills = Array.isArray(parsed?.skills) && parsed.skills.length > 0
+        ? parsed.skills
+        : ["Agile & Scrum", "Veri Analitiği", "REST API Mimarisi", "Çözüm Odaklı Problem Çözme", "CI/CD & DevOps"];
+
+      setCvData(prev => ({
+        ...prev,
+        skills: [...new Set([...(prev.skills || []), ...recommendedSkills])]
+      }));
+      toast.success('CV başarıyla ATS anahtar kelimeleriyle zenginleştirildi!');
     } catch {
       setCvData(prev => ({
         ...prev,
-        skills: [...new Set([...(prev.skills || []), "Agile Metodolojileri", "Veri Analizi", "Proje Yönetimi", "Problem Çözme", "Çapraz Fonksiyonel İşbirliği"])],
-        summary: prev.summary || 'Sonuç odaklı, analitik düşünme yetkinliğine sahip ve takım çalışmasına yatkın kariyer hedefi doğrultusunda değer üretmeye odaklı aday.'
+        skills: [...new Set([...(prev.skills || []), "Agile & Scrum", "Veri Analitiği", "Proje Yönetimi", "Problem Çözme"])]
       }));
-      if (window.toast?.success) {
-        window.toast.success('CV başarıyla ATS standartlarına optimize edildi!');
-      }
+      toast.success('ATS yetkinlikleri başarıyla eklendi!');
     } finally {
       if (isMounted.current) setIsEvolving(false);
     }
   }, [cvData.title, cvData.skills, currentUser?.department]);
 
-  // Simulate AI text generation
-  const handleAIGenerateSummary = useCallback(async () => {
-    setIsGenerating(true);
-    
-    // Build context prompt based on Agent 1 and Agent 10 research
-    const prompt = `
-      Sen İstanbul Esenyurt Üniversitesi (İESÜ) kariyer asistanı ANKA'sın. Öğrencinin akademik ve profesyonel verilerine dayanarak, staj/iş başvurularında İK uzmanlarını ve akademisyenleri etkileyecek, 2026 standartlarına uygun (max 3 cümle) profesyonel bir "Akademik/Kariyer Özeti" oluştur.
-      
-      KURALLAR:
-      1. Robotik, ChatGPT tarzı klişelerden KAÇIN ("I am writing to express", "Highly motivated professional", "Synergy", vb.).
-      2. Samimi, etki odaklı (Impact-driven) ve gerçekçi bir dil kullan.
-      3. Üçüncü şahıs yerine birinci tekil şahıs ("Ben") ağzından yaz.
-      
-      Eğitim: ${cvData.education.map(e => e.degree + ' @ ' + e.institution).join(', ')}
-      AGNO (Ortalama): ${cvData.gpa}
-      Bitirme Projesi/Tez: ${cvData.thesis}
-      Akademik Projeler: ${cvData.academicProjects}
-      Yetenekler: ${cvData.skills.join(', ')}
-      Deneyimler: ${cvData.experience.map(e => e.role + ' - ' + e.company).join(', ')}
-      
-      Lütfen doğrudan metni ver, ek açıklama yapma.
-    `;
-    
-    try {
-      const generated = await generateAIResponse(prompt, "Sadece istenen özeti dön. Ekstra giriş veya çıkış cümlesi kurma.");
-      if (typeof generated === 'string' && (generated.includes('ulaşılamıyor') || generated.includes('yapılandırılmadı'))) {
-        window.toast && window.toast.error(generated);
-        return;
-      }
-      if (isMounted.current && generated) {
-        setCvData(prev => ({ ...prev, summary: generated }));
-      }
-    } catch (error) {
-      console.error(error);
-      window.toast && window.toast.error("Özet oluşturulurken bir hata oluştu.");
-    } finally {
-      if (isMounted.current) setIsGenerating(false);
-    }
-  }, [cvData.education, cvData.skills, cvData.experience]);
-
   const handleSaveToProfile = useCallback(() => {
     try {
       localStorage.setItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));
-    } catch (e) { /* intentional */ }
+    } catch (_) {}
+
     if (onUpdateProfile) {
       onUpdateProfile(cvData);
     } else {
@@ -251,72 +230,76 @@ JSON formatı: { "skills": ["Yetkinlik 1", "Yetkinlik 2", "Yetkinlik 3", "Yetkin
         }
       }
     }
-    if (window.toast && window.toast.success) {
-      window.toast.success('CV başarıyla kaydedildi ve profilinizle eşitlendi!');
-    }
+    toast.success('Özgeçmişiniz başarıyla kaydedildi ve profilinizle eşitlendi!');
   }, [cvData, currentUser, userRole, onUpdateProfile]);
 
-  // --- EXPERIENCE CRUD ---
-  const handleAddExperience = useCallback(() => {
+  // ─── CRUD OPERATIONS ───
+  const handleAddExperience = () => {
     setCvData(prev => ({
       ...prev,
-      experience: [...prev.experience, { id: Date.now(), company: '', role: '', date: '', desc: '' }]
+      experience: [
+        ...prev.experience,
+        { id: Date.now(), company: '', role: '', type: 'Zorunlu Staj', date: '2025', desc: '' }
+      ]
     }));
-    setActiveSection('experience');
-  }, []);
+    setActiveTab('experience');
+  };
 
-  const updateExperience = useCallback((id, field, value) => {
+  const updateExperience = (id, field, value) => {
     setCvData(prev => ({
       ...prev,
-      experience: prev.experience?.map(exp => exp.id === id ? { ...exp, [field]: value } : exp)
+      experience: prev.experience.map(exp => exp.id === id ? { ...exp, [field]: value } : exp)
     }));
-  }, []);
+  };
 
-  const removeExperience = useCallback((id) => {
+  const removeExperience = (id) => {
     setCvData(prev => ({
       ...prev,
-      experience: prev.experience?.filter(exp => exp.id !== id)
+      experience: prev.experience.filter(exp => exp.id !== id)
     }));
-  }, []);
+    toast.info('Deneyim kaydı silindi.');
+  };
 
-  // --- EDUCATION CRUD ---
-  const handleAddEducation = useCallback(() => {
+  const handleAddEducation = () => {
     setCvData(prev => ({
       ...prev,
-      education: [...prev.education, { id: Date.now(), institution: '', degree: '', date: '', desc: '' }]
+      education: [
+        ...prev.education,
+        { id: Date.now(), institution: 'İstanbul Esenyurt Üniversitesi', degree: '', date: '2022 - 2026', gpa: '', desc: '' }
+      ]
     }));
-    setActiveSection('education');
-  }, []);
+    setActiveTab('education');
+  };
 
-  const updateEducation = useCallback((id, field, value) => {
+  const updateEducation = (id, field, value) => {
     setCvData(prev => ({
       ...prev,
-      education: prev.education?.map(edu => edu.id === id ? { ...edu, [field]: value } : edu)
+      education: prev.education.map(edu => edu.id === id ? { ...edu, [field]: value } : edu)
     }));
-  }, []);
+  };
 
-  const removeEducation = useCallback((id) => {
+  const removeEducation = (id) => {
     setCvData(prev => ({
       ...prev,
-      education: prev.education?.filter(edu => edu.id !== id)
+      education: prev.education.filter(edu => edu.id !== id)
     }));
-  }, []);
+    toast.info('Eğitim kaydı silindi.');
+  };
 
-  // --- SKILLS CRUD ---
-  const handleAddSkill = useCallback(() => {
+  const handleAddSkill = () => {
     const trimmed = newSkill.trim();
     if (trimmed && !cvData.skills.includes(trimmed)) {
       setCvData(prev => ({ ...prev, skills: [...prev.skills, trimmed] }));
       setNewSkill('');
+      toast.success(`'${trimmed}' yeteneği eklendi.`);
     }
-  }, [newSkill, cvData.skills]);
+  };
 
-  const handleRemoveSkill = useCallback((skillToRemove) => {
+  const handleRemoveSkill = (skillToRemove) => {
     setCvData(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skillToRemove) }));
-  }, []);
+  };
 
-  // --- LANGUAGES CRUD ---
-  const handleAddLanguage = useCallback(() => {
+  const handleAddLanguage = () => {
     const trimmed = newLang.trim();
     if (trimmed) {
       setCvData(prev => ({
@@ -324,271 +307,910 @@ JSON formatı: { "skills": ["Yetkinlik 1", "Yetkinlik 2", "Yetkinlik 3", "Yetkin
         languages: [...prev.languages, { id: Date.now(), lang: trimmed, level: newLangLevel }]
       }));
       setNewLang('');
-      setNewLangLevel('Orta');
+      setNewLangLevel('B2 (Orta - İleri)');
+      toast.success(`'${trimmed}' dili eklendi.`);
     }
-  }, [newLang, newLangLevel]);
+  };
 
-  const handleRemoveLanguage = useCallback((id) => {
+  const handleRemoveLanguage = (id) => {
+    setCvData(prev => ({ ...prev, languages: prev.languages.filter(l => l.id !== id) }));
+  };
+
+  const handleAddCertificate = () => {
     setCvData(prev => ({
       ...prev,
-      languages: prev.languages.filter(l => l.id !== id)
+      certificates: [
+        ...prev.certificates,
+        { id: Date.now(), name: '', issuer: '', date: '2025', desc: '' }
+      ]
     }));
-  }, []);
+    setActiveTab('certificates');
+  };
 
-  // --- CERTIFICATES CRUD ---
-  const handleAddCertificate = useCallback(() => {
+  const updateCertificate = (id, field, value) => {
     setCvData(prev => ({
       ...prev,
-      certificates: [...prev.certificates, { id: Date.now(), name: '', issuer: '', date: '', desc: '' }]
+      certificates: prev.certificates.map(cert => cert.id === id ? { ...cert, [field]: value } : cert)
     }));
-    setActiveSection('certificates');
-  }, []);
+  };
 
-  const updateCertificate = useCallback((id, field, value) => {
+  const removeCertificate = (id) => {
     setCvData(prev => ({
       ...prev,
-      certificates: prev.certificates?.map(cert => cert.id === id ? { ...cert, [field]: value } : cert)
+      certificates: prev.certificates.filter(cert => cert.id !== id)
     }));
-  }, []);
-
-  const removeCertificate = useCallback((id) => {
-    setCvData(prev => ({
-      ...prev,
-      certificates: prev.certificates?.filter(cert => cert.id !== id)
-    }));
-  }, []);
+    toast.info('Sertifika kaydı silindi.');
+  };
 
   return (
-    <div className="w-full bg-slate-50 min-h-screen pb-24">
-      {setView && (
-        <header className="h-16 bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-4 sm:px-8 flex items-center justify-between shadow-xs hide-on-print">
-          <div className="flex items-center gap-3.5 shrink-0">
-            <button
-              onClick={() => setView(backTarget)}
-              className="w-9 h-9 rounded-xl bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs group shrink-0"
-              title="Geri Dön"
-            >
-              <ChevronLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
-            </button>
-            <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(backTarget)}>
-              <Logo className="h-8 w-auto text-[#990000]" />
-              <div>
-                <h1 className="font-black text-slate-900 text-sm sm:text-base leading-tight">Özgeçmiş Hazırlayıcı</h1>
-                <p className="text-[10px] font-bold text-[#990000] uppercase tracking-wider">İESÜ Kariyer Geliştirme Koordinatörlüğü • AI CV Stüdyosu</p>
-              </div>
+    <div className="w-full bg-slate-50 min-h-screen pb-28 font-sans">
+      {/* ─── HEADER ─── */}
+      <header className="h-16 bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-4 sm:px-8 flex items-center justify-between shadow-xs hide-on-print">
+        <div className="flex items-center gap-3.5 shrink-0">
+          <button
+            onClick={() => setView && setView(backTarget)}
+            className="w-9 h-9 rounded-xl bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs group shrink-0"
+            title="Geri Dön"
+          >
+            <ChevronLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
+          </button>
+          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView && setView(backTarget)}>
+            <Logo className="h-8 w-auto text-[#990000]" />
+            <div className="hidden sm:block text-left">
+              <h1 className="font-black text-slate-900 text-sm sm:text-base leading-tight">Akıllı CV Stüdyosu</h1>
+              <p className="text-[10px] font-bold text-[#990000] uppercase tracking-wider">İESÜ Kariyer Geliştirme Koordinatörlüğü • ATS Uyumlu Özgeçmiş</p>
             </div>
           </div>
+        </div>
+
+        {/* CV Completeness Score Badge & Top Profile */}
+        <div className="flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full">
+            <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wide">CV Doluluk</span>
+            <div className="w-16 h-2 bg-emerald-200 rounded-full overflow-hidden">
+              <div className="h-full bg-emerald-600 rounded-full transition-all duration-500" style={{ width: `${cvScore}%` }} />
+            </div>
+            <span className="text-xs font-black text-emerald-700 font-mono">%{cvScore}</span>
+          </div>
+
           <TopProfileMenu currentUser={currentUser} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} />
-        </header>
-      )}
-      <main className="w-full hide-on-print">
-        <div className="w-full bg-slate-100/80 flex flex-col relative overflow-hidden py-8 px-4 sm:px-8">
-        
-        {/* Preview Actions */}
-        <div className="max-w-[210mm] mx-auto w-full flex flex-wrap items-center justify-between gap-2 mb-4 z-20">
-          <div className="flex flex-wrap items-center gap-2">
-            <button 
-              type="button"
-              onClick={handleAIGenerateSummary} 
-              disabled={isGenerating}
-              className="bg-purple-700 hover:bg-purple-800 text-white px-3.5 py-2.5 rounded-xl shadow-sm transition flex items-center gap-2 text-xs font-bold disabled:opacity-50 cursor-pointer"
-              title="Etkileyici ve profesyonel kariyer özeti oluştur"
+        </div>
+      </header>
+
+      {/* ─── ACTION TOOLBAR ─── */}
+      <div className="bg-white border-b border-slate-200 px-4 sm:px-8 py-3 sticky top-16 z-30 shadow-2xs hide-on-print">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+          {/* Left: Mobile View Switcher & Template Select */}
+          <div className="flex items-center gap-2">
+            {/* Mobile View Toggle */}
+            <div className="flex lg:hidden bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-xs font-bold">
+              <button
+                onClick={() => setMobileViewMode('editor')}
+                className={`px-3 py-1.5 rounded-lg transition ${mobileViewMode === 'editor' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600'}`}
+              >
+                <Edit3 size={13} className="inline mr-1" /> Düzenle
+              </button>
+              <button
+                onClick={() => setMobileViewMode('preview')}
+                className={`px-3 py-1.5 rounded-lg transition ${mobileViewMode === 'preview' ? 'bg-white text-[#990000] shadow-xs' : 'text-slate-600'}`}
+              >
+                <Eye size={13} className="inline mr-1" /> Önizleme
+              </button>
+            </div>
+
+            {/* Template Selector */}
+            <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-xl border border-slate-200 text-xs">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1.5 hidden sm:inline">Şablon:</span>
+              <button
+                onClick={() => setSelectedTemplate('modern')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition ${selectedTemplate === 'modern' ? 'bg-white text-[#990000] shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                Modern İESÜ
+              </button>
+              <button
+                onClick={() => setSelectedTemplate('ats')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition ${selectedTemplate === 'ats' ? 'bg-white text-indigo-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                ATS Minimal
+              </button>
+              <button
+                onClick={() => setSelectedTemplate('executive')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition ${selectedTemplate === 'executive' ? 'bg-white text-emerald-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                Mezun Zümrüt
+              </button>
+            </div>
+          </div>
+
+          {/* Right: Export & Save Buttons */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowEuroPassModal(true)}
+              className="px-3 py-2 rounded-xl text-xs font-bold bg-[#003399] hover:bg-[#002266] text-white shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+              title="EuroPass JSON-LD & Bologna Diploma Eki"
             >
-              <Wand2 size={15} className={isGenerating ? "animate-spin" : ""} />
-              <span>{isGenerating ? 'Hazırlanıyor...' : 'Otomatik Özet Oluştur'}</span>
+              <Award size={14} className="text-amber-300" />
+              <span className="hidden sm:inline">EuroPass İhracı</span>
             </button>
-            <button 
-              type="button"
-              onClick={evolveCVWithGeneticAlgorithms} 
-              disabled={isEvolving}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2.5 rounded-xl shadow-sm transition flex items-center gap-2 text-xs font-bold disabled:opacity-50 cursor-pointer"
-              title="ATS sistemleri için anahtar kelimeleri ve etkiyi optimize et"
+
+            <button
+              onClick={() => window.print()}
+              className="px-3 py-2 rounded-xl text-xs font-bold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+              title="Yazdır"
             >
-              <Dna size={15} className={isEvolving ? "animate-pulse" : ""} />
-              <span>{isEvolving ? 'ATS Optimize Ediliyor...' : 'ATS Formatını İyileştir'}</span>
+              <Printer size={14} />
+              <span className="hidden sm:inline">Yazdır</span>
             </button>
-            <button 
-              type="button"
-              onClick={handleSaveToProfile} 
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2.5 rounded-xl shadow-sm transition flex items-center gap-2 text-xs font-bold cursor-pointer"
-              title="CV'yi kaydet ve profil ile eşitle"
+
+            <button
+              onClick={() => exportPDF('cv-print-area', `${cvData.name || 'Ozgecmisim'}_CV.pdf`)}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-[#990000] hover:bg-red-800 text-white shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+              title="Yüksek Çözünürlüklü PDF İndir"
             >
-              <ShieldCheck size={15} />
+              <Download size={14} />
+              <span>PDF İndir</span>
+            </button>
+
+            <button
+              onClick={handleSaveToProfile}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+              title="Profil ile eşitle ve kaydet"
+            >
+              <ShieldCheck size={14} />
               <span>Kaydet & Eşitle</span>
             </button>
           </div>
-
-          <div className="flex items-center gap-2">
-            <button 
-              type="button"
-              onClick={() => setShowEuroPassModal(true)} 
-              className="bg-gradient-to-r from-[#003399] to-[#002266] hover:from-[#002b80] text-white px-3.5 py-2.5 rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer text-xs font-bold"
-              title="EuroPass JSON-LD & Bologna Diploma Eki"
-            >
-              <Award size={15} className="text-amber-300" />
-              <span>EuroPass İhracı</span>
-            </button>
-            <button onClick={() => window.print()} className="bg-white text-gray-700 hover:text-red-600 px-4 py-2.5 rounded-xl shadow-sm hover:shadow-md border border-gray-200 transition flex items-center gap-2 cursor-pointer" title="Yazdır">
-              <Printer size={16} /> <span className="text-xs font-bold">Yazdır</span>
-            </button>
-            <button onClick={() => exportPDF('cv-print-area', 'Ozgecmisim.pdf')} className="bg-[#990000] text-white hover:bg-red-800 px-4 py-2.5 rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer" title="PDF İndir">
-              <Download size={16} /> <span className="text-xs font-bold">PDF İndir</span>
-            </button>
-          </div>
         </div>
+      </div>
 
-        {/* The CV Document (A4 Ratio Centered Paper) */}
-        <div className="w-full flex justify-center items-center overflow-x-auto pb-8">
-          <div id="cv-print-area" className="bg-white w-[210mm] min-h-[297mm] shadow-2xl p-10 sm:p-12 relative text-gray-800 rounded-sm border border-gray-200 mx-auto">
+      {/* ─── MAIN DUAL PANEL WORKSPACE ─── */}
+      <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* ══════════ LEFT COLUMN: INTERACTIVE CV EDITOR ══════════ */}
+          <div className={`lg:col-span-5 space-y-6 ${mobileViewMode === 'preview' ? 'hidden lg:block' : 'block'}`}>
             
-            {/* CV Header */}
-            <header className="border-b-2 border-gray-800 pb-6 mb-6 flex justify-between items-start">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 tracking-tight uppercase">{(cvData || {})?.name || 'Ad Soyad'}</h1>
-                <p className="text-sm text-gray-600 font-medium mt-1">{(cvData || {})?.title || 'Unvan'}</p>
-                
-                <div className="flex flex-wrap gap-4 mt-4 text-xs text-gray-600 font-medium">
-                  {(cvData || {})?.email && <span className="flex items-center gap-1.5"><Mail size={12}/> {(cvData || {})?.email}</span>}
-                  {(cvData || {})?.phone && <span className="flex items-center gap-1.5"><Phone size={12}/> {(cvData || {})?.phone}</span>}
-                  {(cvData || {})?.location && <span className="flex items-center gap-1.5"><MapPin size={12}/> {(cvData || {})?.location}</span>}
+            {/* Editor Tab Navigation */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-1.5 shadow-xs flex items-center gap-1 overflow-x-auto">
+              {[
+                { id: 'personal', label: 'Kişisel', icon: <User size={13} /> },
+                { id: 'summary', label: 'Özet (AI)', icon: <Sparkles size={13} /> },
+                { id: 'experience', label: 'Deneyim', icon: <Briefcase size={13} /> },
+                { id: 'education', label: 'Eğitim', icon: <GraduationCap size={13} /> },
+                { id: 'skills', label: 'Yetenekler', icon: <Dna size={13} /> },
+                { id: 'languages', label: 'Diller', icon: <Globe size={13} /> },
+                { id: 'certificates', label: 'Sertifikalar', icon: <Award size={13} /> }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer ${
+                    activeTab === tab.id
+                      ? 'bg-red-50 text-[#990000] border border-red-200 shadow-2xs'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  }`}
+                >
+                  {tab.icon} {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* TAB CONTENT: 1. Kişisel & İletişim */}
+            {activeTab === 'personal' && (
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4 animate-fade-in text-left">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <h3 className="font-black text-slate-900 text-sm flex items-center gap-2">
+                    <User size={16} className="text-[#990000]" /> Kişisel & İletişim Bilgileri
+                  </h3>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Adım 1 / 7</span>
                 </div>
-              </div>
-              
-              {/* Photo Area */}
-              <div className="w-24 h-32 bg-white border-2 border-gray-200 rounded overflow-hidden flex items-center justify-center shrink-0 shadow-sm p-1">
-                <img 
-                  src={((cvData || {})?.photo && !photoError) ? (cvData || {})?.photo : '/iesu-logo.svg'} 
-                  alt={cvData?.name || 'Profil fotoğrafı'}
-                  className="w-full h-full object-contain" 
-                  onError={() => setPhotoError(true)}
-                />
-              </div>
-            </header>
 
-            {/* CV Summary */}
-            {(cvData || {})?.summary && (
-              <section className="mb-6">
-                <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-3 flex items-center gap-2">
-                  <span className="w-6 border-t-2 border-gray-400"></span> Özet
-                </h2>
-                <p className="text-sm text-gray-700 leading-relaxed text-justify">{(cvData || {})?.summary}</p>
-              </section>
-            )}
-
-            {/* CV Experience */}
-            {(cvData || {})?.experience.length > 0 && (
-              <section className="mb-6">
-                <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                  <span className="w-6 border-t-2 border-gray-400"></span> Deneyim
-                </h2>
-                <div className="space-y-4">
-                  {(cvData || {})?.experience?.map(exp => (
-                    <div key={exp.id}>
-                      <div className="flex justify-between items-baseline mb-1">
-                        <h3 className="font-bold text-gray-900 text-sm">{exp.role || 'Pozisyon'}</h3>
-                        <span className="text-xs text-gray-500 font-medium">{exp.date}</span>
-                      </div>
-                      <p className="text-sm text-gray-600 font-medium mb-1">{exp.company || 'Şirket'}</p>
-                      {exp.desc && <p className="text-xs text-gray-500 italic">{exp.desc}</p>}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* CV Education */}
-            {(cvData || {})?.education.length > 0 && (
-              <section className="mb-6">
-                <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                  <span className="w-6 border-t-2 border-gray-400"></span> Eğitim
-                </h2>
-                <div className="space-y-4">
-                  {(cvData || {})?.education?.map(edu => (
-                    <div key={edu.id}>
-                      <div className="flex justify-between items-baseline mb-1">
-                        <h3 className="font-bold text-gray-900 text-sm">{edu.institution || 'Kurum Adı'}</h3>
-                        <span className="text-xs text-gray-500 font-medium">{edu.date}</span>
-                      </div>
-                      <p className="text-sm text-gray-600 font-medium mb-1">{edu.degree || 'Bölüm'}</p>
-                      {edu.desc && <p className="text-xs text-gray-500 italic">{edu.desc}</p>}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* CV Certificates */}
-            {(cvData || {})?.certificates.length > 0 && (
-              <section className="mb-6">
-                <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                  <span className="w-6 border-t-2 border-gray-400"></span> Sertifikalar
-                </h2>
-                <div className="space-y-4">
-                  {(cvData || {})?.certificates?.map(cert => (
-                    <div key={cert.id}>
-                      <div className="flex justify-between items-baseline mb-1">
-                        <h3 className="font-bold text-gray-900 text-sm">{cert.name || 'Sertifika Adı'}</h3>
-                        <span className="text-xs text-gray-500 font-medium">{cert.date}</span>
-                      </div>
-                      <p className="text-sm text-gray-600 font-medium mb-1">{cert.issuer || 'Veren Kurum'}</p>
-                      {cert.desc && <p className="text-xs text-gray-500 italic">{cert.desc}</p>}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* CV Skills & Languages */}
-            {(cvData.skills.length > 0 || cvData.languages.length > 0) && (
-              <section className="grid grid-cols-2 gap-8">
-                {cvData.skills.length > 0 && (
+                <div className="space-y-3">
                   <div>
-                    <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-3 flex items-center gap-2">
-                      <span className="w-6 border-t-2 border-gray-400"></span> Yetenekler
-                    </h2>
-                    <div className="flex flex-wrap gap-2">
-                      {(cvData || {})?.skills?.map((skill, i) => (
-                        <span key={i} className="text-xs font-medium text-gray-700 bg-gray-100 px-2 py-1 rounded">
-                          {skill}
-                        </span>
-                      ))}
+                    <label className="text-[11px] font-bold text-slate-600 block mb-1 uppercase tracking-wide">Ad Soyad *</label>
+                    <input
+                      type="text"
+                      value={cvData.name}
+                      onChange={e => setCvData({ ...cvData, name: e.target.value })}
+                      placeholder="Adınız ve Soyadınız"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-600 block mb-1 uppercase tracking-wide">Profesyonel Unvan / Pozisyon *</label>
+                    <input
+                      type="text"
+                      value={cvData.title}
+                      onChange={e => setCvData({ ...cvData, title: e.target.value })}
+                      placeholder="Örn: Bilgisayar Mühendisliği Mezunu | Frontend Developer"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-600 block mb-1 uppercase tracking-wide">E-posta Adresi *</label>
+                      <input
+                        type="email"
+                        value={cvData.email}
+                        onChange={e => setCvData({ ...cvData, email: e.target.value })}
+                        placeholder="ad@esenyurt.edu.tr"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-600 block mb-1 uppercase tracking-wide">Telefon Numarası *</label>
+                      <input
+                        type="tel"
+                        value={cvData.phone}
+                        onChange={e => setCvData({ ...cvData, phone: e.target.value })}
+                        placeholder="+90 5xx xxx xx xx"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
+                      />
                     </div>
                   </div>
-                )}
-                {cvData.languages.length > 0 && (
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-600 block mb-1 uppercase tracking-wide">Şehir / Konum</label>
+                      <input
+                        type="text"
+                        value={cvData.location}
+                        onChange={e => setCvData({ ...cvData, location: e.target.value })}
+                        placeholder="İstanbul, Türkiye"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-600 block mb-1 uppercase tracking-wide">LinkedIn Profili</label>
+                      <input
+                        type="text"
+                        value={cvData.linkedin}
+                        onChange={e => setCvData({ ...cvData, linkedin: e.target.value })}
+                        placeholder="linkedin.com/in/profiliniz"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
+                      />
+                    </div>
+                  </div>
+
                   <div>
-                    <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-3 flex items-center gap-2">
-                      <span className="w-6 border-t-2 border-gray-400"></span> Diller
+                    <label className="text-[11px] font-bold text-slate-600 block mb-1 uppercase tracking-wide">GitHub / Portfolyo Web Sitesi</label>
+                    <input
+                      type="text"
+                      value={cvData.github}
+                      onChange={e => setCvData({ ...cvData, github: e.target.value })}
+                      placeholder="github.com/kullaniciadi veya portfolyo adresi"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB CONTENT: 2. Özet & Yapay Zeka */}
+            {activeTab === 'summary' && (
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4 animate-fade-in text-left">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <h3 className="font-black text-slate-900 text-sm flex items-center gap-2">
+                    <Sparkles size={16} className="text-purple-600" /> Profesyonel Kariyer Özeti
+                  </h3>
+                  <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
+                    ANKA AI Destekli
+                  </span>
+                </div>
+
+                {/* AI Prompt Buttons */}
+                <div className="p-3 bg-purple-50/60 border border-purple-100 rounded-xl space-y-2">
+                  <p className="text-[11px] font-bold text-purple-900">
+                    ✨ Tek Tıkla Yapay Zekâ Kariyer Özeti Üret:
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAIGenerateSummary('professional')}
+                      disabled={isGenerating}
+                      className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-white text-purple-800 hover:bg-purple-100 border border-purple-200 transition cursor-pointer shadow-2xs flex items-center gap-1"
+                    >
+                      <Sparkles size={12} className={isGenerating ? 'animate-spin' : ''} />
+                      Profesyonel & Net
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleAIGenerateSummary('impact')}
+                      disabled={isGenerating}
+                      className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-white text-emerald-800 hover:bg-emerald-100 border border-emerald-200 transition cursor-pointer shadow-2xs flex items-center gap-1"
+                    >
+                      <Award size={12} />
+                      Etki & Sonuç Odaklı
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleAIGenerateSummary('ats')}
+                      disabled={isGenerating}
+                      className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-800 hover:bg-indigo-100 border border-indigo-200 transition cursor-pointer shadow-2xs flex items-center gap-1"
+                    >
+                      <Dna size={12} />
+                      ATS Filtresi Uyumlu
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-bold text-slate-600 block mb-1 uppercase tracking-wide">
+                    Özet Metniniz (İstediğiniz gibi düzenleyebilirsiniz):
+                  </label>
+                  <textarea
+                    rows={5}
+                    value={cvData.summary}
+                    onChange={e => setCvData({ ...cvData, summary: e.target.value })}
+                    placeholder="Kendinizi, kariyer hedeflerinizi ve güçlü yetkinliklerinizi özetleyen profesyonel metin..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none leading-relaxed"
+                  />
+                  <p className="text-[11px] text-slate-400 mt-1">İpucu: 2-3 cümlelik net ve somut özetler İK inceleme oranını %40 artırır.</p>
+                </div>
+              </div>
+            )}
+
+            {/* TAB CONTENT: 3. Deneyim & Staj */}
+            {activeTab === 'experience' && (
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4 animate-fade-in text-left">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <h3 className="font-black text-slate-900 text-sm flex items-center gap-2">
+                    <Briefcase size={16} className="text-[#990000]" /> İş & Staj Deneyimleri
+                  </h3>
+                  <button
+                    onClick={handleAddExperience}
+                    className="px-3 py-1.5 rounded-xl bg-red-50 text-[#990000] hover:bg-red-100 text-xs font-bold border border-red-200 transition cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={13} /> Yeni Deneyim Ekle
+                  </button>
+                </div>
+
+                {cvData.experience.length === 0 ? (
+                  <div className="text-center py-8 text-slate-400 text-xs">
+                    Henüz iş veya staj deneyimi eklenmedi. "Yeni Deneyim Ekle" butonuna tıklayın.
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {cvData.experience.map((exp, index) => (
+                      <div key={exp.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 relative group hover:border-slate-300 transition space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Deneyim #{index + 1}</span>
+                          <button
+                            onClick={() => removeExperience(exp.id)}
+                            className="p-1 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer"
+                            title="Sil"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                          <input
+                            type="text"
+                            value={exp.role}
+                            onChange={e => updateExperience(exp.id, 'role', e.target.value)}
+                            placeholder="Pozisyon (Örn: Yazılım Stajyeri)"
+                            className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:border-[#990000] outline-none"
+                          />
+                          <input
+                            type="text"
+                            value={exp.company}
+                            onChange={e => updateExperience(exp.id, 'company', e.target.value)}
+                            placeholder="Kurum / Şirket Adı"
+                            className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:border-[#990000] outline-none"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                          <input
+                            type="text"
+                            value={exp.date}
+                            onChange={e => updateExperience(exp.id, 'date', e.target.value)}
+                            placeholder="Tarih (Örn: Temmuz 2025 - Eylül 2025)"
+                            className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:border-[#990000] outline-none"
+                          />
+                          <select
+                            value={exp.type}
+                            onChange={e => updateExperience(exp.id, 'type', e.target.value)}
+                            className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:border-[#990000] outline-none"
+                          >
+                            <option value="Zorunlu Staj">Zorunlu Staj</option>
+                            <option value="Gönüllü Staj">Gönüllü Staj</option>
+                            <option value="Tam Zamanlı">Tam Zamanlı</option>
+                            <option value="Yarı Zamanlı (Part-Time)">Yarı Zamanlı (Part-Time)</option>
+                            <option value="Proje Bazlı / Serbest">Proje Bazlı / Serbest</option>
+                          </select>
+                        </div>
+
+                        <textarea
+                          rows={2}
+                          value={exp.desc}
+                          onChange={e => updateExperience(exp.id, 'desc', e.target.value)}
+                          placeholder="Üstlendiğiniz temel görevler ve elde ettiğiniz başarılar..."
+                          className="w-full bg-white border border-slate-200 rounded-lg p-2.5 text-xs font-semibold focus:border-[#990000] outline-none leading-relaxed"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TAB CONTENT: 4. Eğitim */}
+            {activeTab === 'education' && (
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4 animate-fade-in text-left">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <h3 className="font-black text-slate-900 text-sm flex items-center gap-2">
+                    <GraduationCap size={16} className="text-[#990000]" /> Eğitim Bilgileri
+                  </h3>
+                  <button
+                    onClick={handleAddEducation}
+                    className="px-3 py-1.5 rounded-xl bg-red-50 text-[#990000] hover:bg-red-100 text-xs font-bold border border-red-200 transition cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={13} /> Yeni Eğitim Ekle
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  {cvData.education.map((edu, index) => (
+                    <div key={edu.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 relative group hover:border-slate-300 transition space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Eğitim #{index + 1}</span>
+                        {cvData.education.length > 1 && (
+                          <button
+                            onClick={() => removeEducation(edu.id)}
+                            className="p-1 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer"
+                            title="Sil"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <input
+                          type="text"
+                          value={edu.institution}
+                          onChange={e => updateEducation(edu.id, 'institution', e.target.value)}
+                          placeholder="Üniversite / Kurum Adı"
+                          className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:border-[#990000] outline-none"
+                        />
+                        <input
+                          type="text"
+                          value={edu.degree}
+                          onChange={e => updateEducation(edu.id, 'degree', e.target.value)}
+                          placeholder="Fakülte - Bölüm"
+                          className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:border-[#990000] outline-none"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <input
+                          type="text"
+                          value={edu.date}
+                          onChange={e => updateEducation(edu.id, 'date', e.target.value)}
+                          placeholder="Tarih (Örn: 2022 - 2026)"
+                          className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:border-[#990000] outline-none"
+                        />
+                        <input
+                          type="text"
+                          value={edu.gpa || ''}
+                          onChange={e => updateEducation(edu.id, 'gpa', e.target.value)}
+                          placeholder="AGNO / Ortalama (Örn: 3.42 / 4.00)"
+                          className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:border-[#990000] outline-none"
+                        />
+                      </div>
+
+                      <input
+                        type="text"
+                        value={edu.desc || ''}
+                        onChange={e => updateEducation(edu.id, 'desc', e.target.value)}
+                        placeholder="Bitirme Projesi / Tez veya Özel Akademik Başarı"
+                        className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:border-[#990000] outline-none"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* TAB CONTENT: 5. Yetenekler & ATS Optimizasyonu */}
+            {activeTab === 'skills' && (
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4 animate-fade-in text-left">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <h3 className="font-black text-slate-900 text-sm flex items-center gap-2">
+                    <Dna size={16} className="text-indigo-600" /> Yetkinlikler & Araçlar
+                  </h3>
+                  <button
+                    onClick={evolveCVWithGeneticAlgorithms}
+                    disabled={isEvolving}
+                    className="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-bold border border-indigo-200 transition cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Sparkles size={13} className={isEvolving ? 'animate-spin' : ''} />
+                    ATS Optimize Et
+                  </button>
+                </div>
+
+                {/* Add New Skill Input */}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newSkill}
+                    onChange={e => setNewSkill(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())}
+                    placeholder="Yetenek ekleyin (Örn: React, Python, SQL) ve Enter'a basın"
+                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold focus:bg-white focus:border-indigo-600 outline-none"
+                  />
+                  <button
+                    onClick={handleAddSkill}
+                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+                  >
+                    Ekle
+                  </button>
+                </div>
+
+                {/* Active Skills Badges */}
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {cvData.skills.map((skill, idx) => (
+                    <span
+                      key={idx}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-800 border border-slate-200 hover:border-red-300 transition"
+                    >
+                      {skill}
+                      <button
+                        onClick={() => handleRemoveSkill(skill)}
+                        className="text-slate-400 hover:text-red-600 cursor-pointer"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+
+                {/* Suggested Common Skills */}
+                <div className="pt-3 border-t border-slate-100">
+                  <p className="text-[11px] font-bold text-slate-400 mb-2 uppercase tracking-wider">Hızlı Öneri Yetenekler (Tıklayıp Ekleyin):</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {['Figma', 'Node.js', 'TypeScript', 'Docker', 'REST API', 'PostgreSQL', 'Problem Çözme', 'Proje Yönetimi', 'Veri Analizi'].filter(s => !cvData.skills.includes(s)).map((sug, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCvData(prev => ({ ...prev, skills: [...prev.skills, sug] }))}
+                        className="px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 text-slate-600 border border-slate-200 text-[11px] font-bold transition cursor-pointer"
+                      >
+                        + {sug}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB CONTENT: 6. Diller */}
+            {activeTab === 'languages' && (
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4 animate-fade-in text-left">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <h3 className="font-black text-slate-900 text-sm flex items-center gap-2">
+                    <Globe size={16} className="text-[#990000]" /> Yabancı Diller
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                  <input
+                    type="text"
+                    value={newLang}
+                    onChange={e => setNewLang(e.target.value)}
+                    placeholder="Dil adı (Örn: İngilizce, Almanca)"
+                    className="sm:col-span-6 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold focus:bg-white outline-none"
+                  />
+                  <select
+                    value={newLangLevel}
+                    onChange={e => setNewLangLevel(e.target.value)}
+                    className="sm:col-span-4 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold focus:bg-white outline-none"
+                  >
+                    <option value="Ana Dil">Ana Dil</option>
+                    <option value="C2 (Yetkin / İleri)">C2 (Yetkin / İleri)</option>
+                    <option value="C1 (İleri Düzey)">C1 (İleri Düzey)</option>
+                    <option value="B2 (Orta - İleri)">B2 (Orta - İleri)</option>
+                    <option value="B1 (Orta Düzey)">B1 (Orta Düzey)</option>
+                    <option value="A2 (Temel Düzey)">A2 (Temel Düzey)</option>
+                  </select>
+                  <button
+                    onClick={handleAddLanguage}
+                    className="sm:col-span-2 px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+                  >
+                    Ekle
+                  </button>
+                </div>
+
+                <div className="space-y-2 pt-2">
+                  {cvData.languages.map(lang => (
+                    <div key={lang.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+                      <div>
+                        <span className="text-xs font-black text-slate-900">{lang.lang}</span>
+                        <span className="text-[11px] text-slate-500 ml-2">({lang.level})</span>
+                      </div>
+                      <button
+                        onClick={() => handleRemoveLanguage(lang.id)}
+                        className="p-1 rounded-lg text-slate-400 hover:text-red-600 transition cursor-pointer"
+                        title="Sil"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* TAB CONTENT: 7. Sertifikalar */}
+            {activeTab === 'certificates' && (
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4 animate-fade-in text-left">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <h3 className="font-black text-slate-900 text-sm flex items-center gap-2">
+                    <Award size={16} className="text-[#990000]" /> Sertifikalar & Lisanslar
+                  </h3>
+                  <button
+                    onClick={handleAddCertificate}
+                    className="px-3 py-1.5 rounded-xl bg-red-50 text-[#990000] hover:bg-red-100 text-xs font-bold border border-red-200 transition cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={13} /> Sertifika Ekle
+                  </button>
+                </div>
+
+                {cvData.certificates.length === 0 ? (
+                  <div className="text-center py-8 text-slate-400 text-xs">
+                    Henüz sertifika eklenmedi. "Sertifika Ekle" butonuna tıklayın.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {cvData.certificates.map(cert => (
+                      <div key={cert.id} className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/60 relative space-y-2">
+                        <div className="flex items-center justify-between">
+                          <input
+                            type="text"
+                            value={cert.name}
+                            onChange={e => updateCertificate(cert.id, 'name', e.target.value)}
+                            placeholder="Sertifika Başlığı"
+                            className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:border-[#990000] outline-none"
+                          />
+                          <button
+                            onClick={() => removeCertificate(cert.id)}
+                            className="p-1.5 ml-2 text-slate-400 hover:text-red-600 transition cursor-pointer"
+                            title="Sil"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <input
+                            type="text"
+                            value={cert.issuer}
+                            onChange={e => updateCertificate(cert.id, 'issuer', e.target.value)}
+                            placeholder="Veren Kurum"
+                            className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1 text-xs font-semibold focus:border-[#990000] outline-none"
+                          />
+                          <input
+                            type="text"
+                            value={cert.date}
+                            onChange={e => updateCertificate(cert.id, 'date', e.target.value)}
+                            placeholder="Tarih (Örn: 2025)"
+                            className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1 text-xs font-semibold focus:border-[#990000] outline-none"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+          </div>
+
+          {/* ══════════ RIGHT COLUMN: LIVE A4 PREVIEW ══════════ */}
+          <div className={`lg:col-span-7 flex flex-col items-center ${mobileViewMode === 'editor' ? 'hidden lg:flex' : 'flex'}`}>
+            
+            <div className="w-full flex items-center justify-between text-xs text-slate-500 font-bold mb-3 px-2">
+              <span className="flex items-center gap-1.5">
+                <FileText size={14} className="text-[#990000]" /> A4 Canlı Önizleme ({selectedTemplate === 'modern' ? 'Modern İESÜ' : selectedTemplate === 'ats' ? 'ATS Standart' : 'Mezun Zümrüt'})
+              </span>
+              <span className="text-[11px] text-slate-400 font-mono">210mm × 297mm</span>
+            </div>
+
+            {/* The Actual A4 CV Document */}
+            <div className="w-full overflow-x-auto pb-8 flex justify-center">
+              <div 
+                id="cv-print-area" 
+                className={`bg-white w-[210mm] min-h-[297mm] shadow-2xl p-10 sm:p-12 relative text-slate-800 rounded-md border border-slate-200 text-left transition-all ${
+                  selectedTemplate === 'executive' ? 'border-t-8 border-t-emerald-800' : selectedTemplate === 'ats' ? 'border-t-4 border-t-slate-900' : 'border-t-8 border-t-[#990000]'
+                }`}
+              >
+                {/* ═══ CV HEADER ═══ */}
+                <header className="border-b-2 border-slate-800 pb-6 mb-6 flex justify-between items-start gap-4">
+                  <div className="flex-1">
+                    <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight uppercase leading-tight">
+                      {cvData.name || 'Ad Soyad'}
+                    </h1>
+                    <p className={`text-sm font-bold mt-1 ${selectedTemplate === 'executive' ? 'text-emerald-800' : selectedTemplate === 'ats' ? 'text-slate-700' : 'text-[#990000]'}`}>
+                      {cvData.title || 'Profesyonel Unvan'}
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-3 text-xs text-slate-600 font-medium">
+                      {cvData.email && (
+                        <span className="flex items-center gap-1"><Mail size={12} className="text-slate-400"/> {cvData.email}</span>
+                      )}
+                      {cvData.phone && (
+                        <span className="flex items-center gap-1"><Phone size={12} className="text-slate-400"/> {cvData.phone}</span>
+                      )}
+                      {cvData.location && (
+                        <span className="flex items-center gap-1"><MapPin size={12} className="text-slate-400"/> {cvData.location}</span>
+                      )}
+                      {cvData.linkedin && (
+                        <span className="flex items-center gap-1"><Link2 size={12} className="text-blue-600"/> {cvData.linkedin}</span>
+                      )}
+                      {cvData.github && (
+                        <span className="flex items-center gap-1"><Globe size={12} className="text-slate-500"/> {cvData.github}</span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Photo with fallback */}
+                  <div className="w-24 h-28 bg-white border border-slate-300 rounded-lg overflow-hidden flex items-center justify-center shrink-0 shadow-sm p-0.5">
+                    <SafeAvatar
+                      src={cvData.photo}
+                      name={cvData.name}
+                      size={96}
+                      className="w-full h-full rounded-md object-cover"
+                    />
+                  </div>
+                </header>
+
+                {/* ═══ SUMMARY ═══ */}
+                {cvData.summary && (
+                  <section className="mb-6">
+                    <h2 className={`text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2 ${
+                      selectedTemplate === 'executive' ? 'text-emerald-800' : selectedTemplate === 'ats' ? 'text-slate-900' : 'text-[#990000]'
+                    }`}>
+                      <span className={`w-5 border-t-2 ${selectedTemplate === 'executive' ? 'border-emerald-700' : selectedTemplate === 'ats' ? 'border-slate-800' : 'border-[#990000]'}`}></span> 
+                      Kariyer Özeti
                     </h2>
-                    <div className="space-y-2">
-                      {(cvData || {})?.languages?.map((lang) => (
-                        <div key={lang.id} className="flex justify-between items-center text-sm">
-                          <span className="font-medium text-gray-900">{lang.lang}</span>
-                          <span className="text-xs text-gray-500">{lang.level}</span>
+                    <p className="text-xs text-slate-700 leading-relaxed text-justify">
+                      {cvData.summary}
+                    </p>
+                  </section>
+                )}
+
+                {/* ═══ EXPERIENCE ═══ */}
+                {cvData.experience?.length > 0 && (
+                  <section className="mb-6">
+                    <h2 className={`text-xs font-black uppercase tracking-widest mb-3 flex items-center gap-2 ${
+                      selectedTemplate === 'executive' ? 'text-emerald-800' : selectedTemplate === 'ats' ? 'text-slate-900' : 'text-[#990000]'
+                    }`}>
+                      <span className={`w-5 border-t-2 ${selectedTemplate === 'executive' ? 'border-emerald-700' : selectedTemplate === 'ats' ? 'border-slate-800' : 'border-[#990000]'}`}></span> 
+                      İş & Staj Deneyimi
+                    </h2>
+                    <div className="space-y-3.5">
+                      {cvData.experience.map(exp => (
+                        <div key={exp.id} className="text-left">
+                          <div className="flex justify-between items-baseline mb-0.5">
+                            <h3 className="font-black text-slate-900 text-xs sm:text-sm">{exp.role || 'Pozisyon'}</h3>
+                            <span className="text-[11px] font-mono text-slate-500 font-bold">{exp.date}</span>
+                          </div>
+                          <p className="text-xs font-bold text-slate-600 mb-1">
+                            {exp.company || 'Kurum'} <span className="text-[10px] text-slate-400 font-normal">({exp.type})</span>
+                          </p>
+                          {exp.desc && <p className="text-xs text-slate-600 leading-relaxed">{exp.desc}</p>}
                         </div>
                       ))}
                     </div>
-                  </div>
+                  </section>
                 )}
-              </section>
-            )}
-            
+
+                {/* ═══ EDUCATION ═══ */}
+                {cvData.education?.length > 0 && (
+                  <section className="mb-6">
+                    <h2 className={`text-xs font-black uppercase tracking-widest mb-3 flex items-center gap-2 ${
+                      selectedTemplate === 'executive' ? 'text-emerald-800' : selectedTemplate === 'ats' ? 'text-slate-900' : 'text-[#990000]'
+                    }`}>
+                      <span className={`w-5 border-t-2 ${selectedTemplate === 'executive' ? 'border-emerald-700' : selectedTemplate === 'ats' ? 'border-slate-800' : 'border-[#990000]'}`}></span> 
+                      Eğitim
+                    </h2>
+                    <div className="space-y-3">
+                      {cvData.education.map(edu => (
+                        <div key={edu.id} className="text-left">
+                          <div className="flex justify-between items-baseline mb-0.5">
+                            <h3 className="font-black text-slate-900 text-xs sm:text-sm">{edu.institution || 'Üniversite'}</h3>
+                            <span className="text-[11px] font-mono text-slate-500 font-bold">{edu.date}</span>
+                          </div>
+                          <div className="flex justify-between items-baseline">
+                            <p className="text-xs font-bold text-slate-600">{edu.degree}</p>
+                            {edu.gpa && <span className="text-[11px] font-mono font-bold text-emerald-800">AGNO: {edu.gpa}</span>}
+                          </div>
+                          {edu.desc && <p className="text-xs text-slate-500 mt-0.5 italic">{edu.desc}</p>}
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )}
+
+                {/* ═══ SKILLS & LANGUAGES ═══ */}
+                {(cvData.skills?.length > 0 || cvData.languages?.length > 0) && (
+                  <section className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                    {cvData.skills?.length > 0 && (
+                      <div>
+                        <h2 className={`text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2 ${
+                          selectedTemplate === 'executive' ? 'text-emerald-800' : selectedTemplate === 'ats' ? 'text-slate-900' : 'text-[#990000]'
+                        }`}>
+                          <span className={`w-5 border-t-2 ${selectedTemplate === 'executive' ? 'border-emerald-700' : selectedTemplate === 'ats' ? 'border-slate-800' : 'border-[#990000]'}`}></span> 
+                          Yetkinlikler
+                        </h2>
+                        <div className="flex flex-wrap gap-1.5">
+                          {cvData.skills.map((skill, i) => (
+                            <span key={i} className="text-[11px] font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {cvData.languages?.length > 0 && (
+                      <div>
+                        <h2 className={`text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2 ${
+                          selectedTemplate === 'executive' ? 'text-emerald-800' : selectedTemplate === 'ats' ? 'text-slate-900' : 'text-[#990000]'
+                        }`}>
+                          <span className={`w-5 border-t-2 ${selectedTemplate === 'executive' ? 'border-emerald-700' : selectedTemplate === 'ats' ? 'border-slate-800' : 'border-[#990000]'}`}></span> 
+                          Yabancı Diller
+                        </h2>
+                        <div className="space-y-1 text-xs">
+                          {cvData.languages.map(lang => (
+                            <div key={lang.id} className="flex justify-between items-center py-0.5 border-b border-slate-100">
+                              <span className="font-bold text-slate-800">{lang.lang}</span>
+                              <span className="text-[11px] text-slate-500 font-mono">{lang.level}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </section>
+                )}
+
+                {/* ═══ CERTIFICATES ═══ */}
+                {cvData.certificates?.length > 0 && (
+                  <section className="mb-4">
+                    <h2 className={`text-xs font-black uppercase tracking-widest mb-2.5 flex items-center gap-2 ${
+                      selectedTemplate === 'executive' ? 'text-emerald-800' : selectedTemplate === 'ats' ? 'text-slate-900' : 'text-[#990000]'
+                    }`}>
+                      <span className={`w-5 border-t-2 ${selectedTemplate === 'executive' ? 'border-emerald-700' : selectedTemplate === 'ats' ? 'border-slate-800' : 'border-[#990000]'}`}></span> 
+                      Sertifikalar
+                    </h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                      {cvData.certificates.map(cert => (
+                        <div key={cert.id} className="p-2 rounded bg-slate-50 border border-slate-200 text-left">
+                          <p className="font-bold text-slate-900">{cert.name}</p>
+                          <p className="text-[10px] text-slate-500">{cert.issuer} • {cert.date}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )}
+
+                {/* Footer Brand Seal */}
+                <footer className="mt-8 pt-4 border-t border-slate-200 flex items-center justify-between text-[10px] text-slate-400">
+                  <span>İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü</span>
+                  <span className="font-mono">ATS Onaylı CV Formatı</span>
+                </footer>
+
+              </div>
+            </div>
+
           </div>
+
         </div>
-      </div>
-      <style>{`
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .hide-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}
-      </style>
       </main>
 
-      {/* Floating Bottom Dock */}
+      {/* ─── FLOATING BOTTOM DOCK ─── */}
       {setView && (
         <div className="hide-on-print">
           <SubPanelFloatingDock 
@@ -600,7 +1222,7 @@ JSON formatı: { "skills": ["Yetkinlik 1", "Yetkinlik 2", "Yetkinlik 3", "Yetkin
         </div>
       )}
 
-      {/* EuroPass & Bologna Diploma Supplement Export Modal */}
+      {/* ─── EUROPASS EXPORT MODAL ─── */}
       <EuroPassExportModal
         isOpen={showEuroPassModal}
         onClose={() => setShowEuroPassModal(false)}
@@ -618,36 +1240,6 @@ JSON formatı: { "skills": ["Yetkinlik 1", "Yetkinlik 2", "Yetkinlik 3", "Yetkin
             summary: e.desc
           }))
         }}
-      />
-    </div>
-  );
-}
-
-// Helpers
-function SectionBtn({ id, icon, label, active, set }) {
-  return (
-    <button 
-      onClick={() => set(id)}
-      className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-bold transition whitespace-nowrap cursor-pointer
-        ${active === id ? 'bg-white text-[#990000] shadow-xs' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
-    >
-      {icon} {label}
-    </button>
-  );
-}
-
-function Input({ label, value, onChange, placeholder, id }) {
-  const inputId = id || label.replace(/[\s/]+/g, '-').toLowerCase();
-  return (
-    <div>
-      <label htmlFor={inputId} className="text-[11px] font-bold text-gray-500 block mb-1 uppercase tracking-wide">{label}</label>
-      <input 
-        id={inputId}
-        type="text" 
-        value={value || ''} 
-        onChange={e => onChange(e.target.value)} 
-        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] transition hover:border-red-300"
-        placeholder={placeholder}
       />
     </div>
   );
