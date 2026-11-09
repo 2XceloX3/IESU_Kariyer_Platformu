@@ -9,7 +9,6 @@ import Logo from '../Logo';
 import TopProfileMenu from '../TopProfileMenu';
 import SubPanelFloatingDock from '../SubPanelFloatingDock';
 import SafeAvatar from '../shared/SafeAvatar';
-import LanguageSwitcher from '../shared/LanguageSwitcher';
 import { useTranslation } from '../../i18n';
 import useAppStore from '../../store/useAppStore';
 import AlumniCoffeeChatModal from './AlumniCoffeeChatModal';
@@ -146,7 +145,6 @@ export default function StudentApplicationRadar({
           </div>
 
           <div className="flex items-center gap-3">
-            <LanguageSwitcher variant="compact" />
             <TopProfileMenu
               currentUser={effectiveCurrentUser}
               userRole={userRole}

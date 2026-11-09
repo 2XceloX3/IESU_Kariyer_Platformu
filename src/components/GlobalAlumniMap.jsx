@@ -13,7 +13,6 @@ import SafeAvatar from './shared/SafeAvatar';
 import Logo from './Logo';
 import AlumniCoffeeChatModal from './student/AlumniCoffeeChatModal';
 import GlobalCareerCostCalculator from './global/GlobalCareerCostCalculator';
-import LanguageSwitcher from './shared/LanguageSwitcher';
 import { useTranslation } from '../i18n';
 import useAppStore from '../store/useAppStore';
 import { 
@@ -519,8 +518,6 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
             <Users size={14} className="text-cyan-400" /> 
             <span>{totalCount.toLocaleString()}+ {isEn ? 'Alumni Worldwide' : 'Mezun Dünya Çapında'}</span>
           </div>
-
-          <LanguageSwitcher variant="pill" />
 
           <TopProfileMenu 
             currentUser={currentUser} 
