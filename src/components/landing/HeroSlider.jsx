@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, ArrowRight, Sparkles } from 'lucide-react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { liveSliderData } from '../../utils/liveData';
-import useAppStore from '../../store/useAppStore';
 
-export default function HeroSlider({ onSelectSlide, setView }) {
-  const siteConfig = useAppStore(state => state.siteConfig);
+export default function HeroSlider({ onSelectSlide }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isCarouselPaused, setIsCarouselPaused] = useState(false);
   const heroSlides = liveSliderData;
@@ -99,38 +97,6 @@ export default function HeroSlider({ onSelectSlide, setView }) {
               className={`h-2.5 rounded-full transition-all duration-500 shadow-md cursor-pointer ${idx === currentSlide ? 'w-8 bg-[#990000]' : 'w-2.5 bg-white/70 hover:bg-white'}`}
             />
           ))}
-        </div>
-      </div>
-
-      {/* CMS Hero Banner Bar (Customized via Super Admin CMSSiteEditor - Placed cleanly below artwork so poster text is never obscured) */}
-      <div className="w-full bg-gradient-to-r from-[#071529] via-[#0c213d] to-[#071529] border-t border-white/10 px-4 sm:px-8 lg:px-12 py-4">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-white">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-red-200 text-[11px] font-black uppercase tracking-wider border border-white/15 shrink-0 w-max">
-              <Sparkles size={13} className="text-yellow-400" />
-              <span>{siteConfig?.logoSubText || 'İstanbul Esenyurt Üniversitesi'}</span>
-            </div>
-            <div>
-              <h2 className="text-base sm:text-lg font-black tracking-tight text-white leading-snug">
-                {siteConfig?.heroBannerTitle || 'Kariyerini Şekillendir'}
-              </h2>
-              <p className="text-xs text-slate-300 font-medium line-clamp-1">
-                {siteConfig?.heroBannerSub || 'İESÜ Kariyer Platformu ile fırsatları keşfet, ağını genişlet ve geleceğini inşa et.'}
-              </p>
-            </div>
-          </div>
-
-          <button
-            onClick={() => {
-              const target = siteConfig?.ctaButtonLink || 'jobs';
-              if (setView) setView(target);
-            }}
-            style={{ backgroundColor: siteConfig?.primaryColor || '#990000' }}
-            className="px-5 py-2.5 rounded-xl text-white font-black text-xs sm:text-sm shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center gap-2 group cursor-pointer shrink-0"
-          >
-            <span>{siteConfig?.ctaButtonText || 'Hemen Başla'}</span>
-            <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
-          </button>
         </div>
       </div>
     </section>
