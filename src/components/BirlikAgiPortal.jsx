@@ -279,16 +279,6 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            <button
-              onClick={() => {
-                const store = useAppStore.getState();
-                if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
-                setView('alumni');
-              }}
-              className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition cursor-pointer"
-            >
-              ← Mezun Akışına Dön
-            </button>
             <button onClick={() => setView('notifications')} className="p-2 rounded-full transition-all flex items-center justify-center hover:bg-emerald-50 text-[#059669]" title="Bildirimler">
               <div className="relative">
                 <Bell size={24} strokeWidth={2.5} className="fill-current text-[#059669]/10" />

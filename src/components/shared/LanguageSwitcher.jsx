@@ -88,8 +88,7 @@ export default function LanguageSwitcher({ variant = 'default', className = '' }
       >
         <Globe size={14} className="opacity-80" />
         <span className="font-mono uppercase">{language.toUpperCase()}</span>
-        <span className="text-[11px] opacity-85">{currentLangObj.flag}</span>
-      </button>
+        </button>
 
       {isOpen && (
         <div 
