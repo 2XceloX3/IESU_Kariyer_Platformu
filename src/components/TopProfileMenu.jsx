@@ -110,7 +110,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
 
     // 3) TÜM localStorage ve sessionStorage oturum anahtarlarını temizle (iesu_theme tercihini koru)
     const savedTheme = (() => { try { return localStorage.getItem('iesu_theme'); } catch { return null; } })();
-    const keysToRemove = [ 'iesu_mock_user', 'iesu_user', 'iesu_user_role_v1', 'iesu_remember_me', 'iesu_view_v1', 'iesu_posts', 'iesu_mentorships_v2', 'iesu_company_candidate_chats_v1', 'iesu_audit_log_v1', 'iesu_incubator_projects_v1', 'iesu_mentorship_requests_v1', 'iesu_messages_v2', 'iesu_applications_v1', 'iesu_notifications_v1', 'iesu_app_session_v1', 'iesu_active_portal_branch', 'iesu-career-shared-store', 'iesu-career-admin-store', 'iesu_staff_accounts_v1', 'iesu_academic_radar_v1', 'iesu_document_tracking_v1', 'iesu_candidate_pool_v1', 'iesu_admin_messages_v1', 'iesu_platform_messages_audit_v1' ]; keysToRemove.forEach(k => { try { localStorage.removeItem(k); } catch { /* intentional */ } }); Object.keys(localStorage).filter(k => (k.startsWith('iesu_') || k.startsWith('igu_')) && k !== 'iesu_theme').forEach(k => { try { localStorage.removeItem(k); } catch { /* intentional */ } });
+    const keysToRemove = [ 'iesu_admin_session', 'iesu_coordinator_token', 'iesu_mock_user', 'iesu_user', 'iesu_user_role_v1', 'iesu_remember_me', 'iesu_view_v1', 'iesu_posts', 'iesu_mentorships_v2', 'iesu_company_candidate_chats_v1', 'iesu_audit_log_v1', 'iesu_incubator_projects_v1', 'iesu_mentorship_requests_v1', 'iesu_messages_v2', 'iesu_applications_v1', 'iesu_notifications_v1', 'iesu_app_session_v1', 'iesu_active_portal_branch', 'iesu-career-shared-store', 'iesu-career-admin-store', 'iesu_staff_accounts_v1', 'iesu_academic_radar_v1', 'iesu_document_tracking_v1', 'iesu_candidate_pool_v1', 'iesu_admin_messages_v1', 'iesu_platform_messages_audit_v1' ]; keysToRemove.forEach(k => { try { localStorage.removeItem(k); } catch { /* intentional */ } }); Object.keys(localStorage).filter(k => (k.startsWith('iesu_') || k.startsWith('igu_')) && k !== 'iesu_theme').forEach(k => { try { localStorage.removeItem(k); } catch { /* intentional */ } });
     if (savedTheme) { try { localStorage.setItem('iesu_theme', savedTheme); } catch { /* intentional */ } }
 
     try { 
@@ -158,7 +158,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
     (userRole && ['student', 'alumni', 'academic', 'company', 'admin'].includes(userRole)) ? userRole :
     (activePortalBranch || effectiveCurrentUser?.role || 'student');
 
-  const isAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin' || academicRole === 'super_admin';
+  const isAdmin = effectiveCurrentUser?.role === 'admin';
 
   const branchUserName = effectiveCurrentUser?.name || (isAdmin ? 'KGM Yöneticisi' : 'Kullanıcı');
 
