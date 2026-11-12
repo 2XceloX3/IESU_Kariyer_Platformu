@@ -54,7 +54,7 @@ service cloud.firestore {
           isOwner(userId)
           && noPrivilegedUserFields()
           && !request.resource.data.diff(resource.data).affectedKeys()
-              .hasAny(['role', 'isAdmin', 'customClaims', 'claims'])
+              .hasAny(['role', 'isAdmin', 'customClaims', 'claims', 'permissions', 'isVerified', 'obsVerified']) 
         );
       allow delete: if isAdmin();
     }
@@ -281,7 +281,82 @@ service cloud.firestore {
       allow write: if isAdmin() || sliceKey in ['news', 'events', 'announcements', 'socialMedia', 'social_media', 'iesuScraperFeed'];
     }
 
-    match /{document=**} {
+  match /news/{newsId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /internships/{internshipId} {
+      allow read: if true;
+      allow create: if isAdmin() || isCompany() || isAcademic();
+      allow update, delete: if isAdmin() || isAcademic() || (isCompany() && resource.data.companyId == request.auth.uid);
+    }
+    match /internship_applications/{appId} {
+      allow read: if isAdmin() || isAcademic() || (isAuthenticated() && (resource.data.studentId == request.auth.uid || resource.data.applicantId == request.auth.uid || resource.data.companyId == request.auth.uid));
+      allow create: if isAuthenticated() && (request.resource.data.studentId == request.auth.uid || request.resource.data.applicantId == request.auth.uid);
+      allow update: if isAdmin() || isAcademic() || (isAuthenticated() && (resource.data.studentId == request.auth.uid || resource.data.companyId == request.auth.uid));
+      allow delete: if isAdmin();
+    }
+    match /notifications/{notificationId} {
+      allow read, update: if isAdmin() || (isAuthenticated() && resource.data.recipientId == request.auth.uid);
+      allow create: if isAuthenticated();
+      allow delete: if isAdmin() || (isAuthenticated() && resource.data.recipientId == request.auth.uid);
+    }
+    match /messages/{messageId} {
+      allow read: if isAdmin() || (isAuthenticated() && (resource.data.senderId == request.auth.uid || resource.data.receiverId == request.auth.uid));
+      allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+    match /audit_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+      allow update, delete: if false;
+    }
+    match /virtual_fairs/{fairId} {
+      allow read: if true;
+      allow write: if isAdmin() || isCompany();
+    }
+    match /fair_booths/{boothId} {
+      allow read: if true;
+      allow create, update: if isAdmin() || (isCompany() && request.resource.data.companyId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+    match /donations/{donationId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.donorId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.donorId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+    match /verifications/{verificationId} {
+      allow read: if isAdmin() || isAcademic() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin() || isAcademic();
+    }
+    match /accreditations/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || isAcademic();
+    }
+    match /protocols/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || isAcademic() || isCompany();
+    }
+    match /qs_rankings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin() || isAcademic();
+    }
+    match /company_profiles/{companyId} {
+      allow read: if true;
+      allow create, update: if isAdmin() || (isCompany() && isOwner(companyId));
+      allow delete: if isAdmin();
+    }
+    match /academic_records/{recordId} {
+      allow read: if isAdmin() || isAcademic() || (isAuthenticated() && resource.data.studentId == request.auth.uid);
+      allow create, update, delete: if isAdmin() || isAcademic();
+    }
+    match /alumni_events/{eventId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin() || hasRole('alumni');
+    }
+  
+match /{document=**} {
       allow read, write: if isAdmin();
     }
   }
