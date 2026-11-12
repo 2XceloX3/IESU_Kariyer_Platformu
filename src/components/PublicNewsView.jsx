@@ -185,7 +185,7 @@ export default function PublicNewsView({ setView, currentUser, userRole }) {
       {/* ─── DETAY MODALI (AÇIK TEMALI) ─── */}
       {selectedItem && (
         <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col animate-fade-in">
+          <div className="bg-white border border-slate-200 w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col animate-fade-in dark:bg-slate-900 dark:border-slate-800">
             <button 
               onClick={() => setSelectedItem(null)}
               className="absolute top-4 right-4 z-30 w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center transition"
@@ -194,7 +194,7 @@ export default function PublicNewsView({ setView, currentUser, userRole }) {
             </button>
 
             {(selectedItem.imageUrl || selectedItem.image) && (
-              <div className="w-full h-72 shrink-0 bg-slate-900 relative">
+              <div className="w-full h-72 shrink-0 bg-slate-900 relative overflow-hidden">
                 <SafeEventImage
                   src={selectedItem.imageUrl || selectedItem.image}
                   alt={selectedItem.title}
@@ -205,7 +205,7 @@ export default function PublicNewsView({ setView, currentUser, userRole }) {
               </div>
             )}
 
-            <div className="p-6 sm:p-8 overflow-y-auto space-y-4 text-slate-800">
+            <div className="p-6 sm:p-8 overflow-y-auto space-y-4 text-slate-800 relative z-10 flex-1 bg-white dark:bg-slate-900 dark:text-slate-100">
               <div className="flex items-center gap-2">
                 <span className="bg-[#990000] text-white font-black text-[10px] px-3 py-1 rounded-full uppercase">
                   {selectedItem.itemType}
