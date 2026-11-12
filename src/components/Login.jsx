@@ -301,7 +301,8 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       eDevletVerified: Boolean(profile?.eDevletVerified || profile?.obsVerified),
       obsVerified: Boolean(profile?.obsVerified),
     };
-    try {
+    try { localStorage.removeItem('iesu_admin_session'); sessionStorage.removeItem('iesu_admin_session'); localStorage.removeItem('iesu_coordinator_token'); sessionStorage.removeItem('iesu_coordinator_token');
+    
       if (rememberMe) {
         localStorage.setItem('iesu_remember_me', 'true');
         localStorage.setItem('iesu_mock_user', JSON.stringify(safe));
@@ -316,7 +317,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       const s = useAppStore.getState();
       s.setUserRole?.(safe.role);
       s.setCurrentUser?.(safe);
-      s.setActivePortalBranch?.(safe.role);
+      s.setActivePortalBranch?.(safe.role); if (safe.role === 'alumni') { s.setAlumni?.(prev => [safe, ...(Array.isArray(prev) ? prev.filter(u => u.id !== safe.id && u.email !== safe.email) : [])]); } else { s.setStudents?.(prev => [safe, ...(Array.isArray(prev) ? prev.filter(u => u.id !== safe.id && u.email !== safe.email) : [])]); } if (db && safe.id) { setDoc(doc(db, 'users', String(safe.id)), { ...safe, updated_at: new Date().toISOString() }, { merge: true }).catch(() => {}); }
     } catch { /* intentional */ }
     setUserRole(safe.role);
     if (setCurrentUser) setCurrentUser(safe);
@@ -324,10 +325,10 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
     setIsEdevletModalOpen(false);
   };
 
-  const handleGoogleCompanyRegister = async () => {
+  const handleGoogleCompanyRegister = async () => { localStorage.removeItem('iesu_admin_session'); sessionStorage.removeItem('iesu_admin_session');
     setError(null);
     setIsLoading(true);
-    try {
+    try { localStorage.removeItem('iesu_admin_session'); sessionStorage.removeItem('iesu_admin_session'); localStorage.removeItem('iesu_coordinator_token'); sessionStorage.removeItem('iesu_coordinator_token');
       if (!auth || !googleProvider) {
         const mockCompany = {
           id: 'CMP-' + Date.now(),
@@ -369,7 +370,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       if (db) {
         try {
           const userRef = doc(db, 'users', user.uid);
-          await setDoc(userRef, companyProfile, { merge: true });
+          await setDoc(userRef, companyProfile, { merge: true }); await setDoc(doc(db, 'company_profiles', user.uid), companyProfile, { merge: true });
         } catch (fsErr) {
           console.warn('Firestore Google firma kaydı:', fsErr?.message);
         }
