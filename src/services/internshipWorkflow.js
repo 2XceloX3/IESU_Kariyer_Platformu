@@ -1,3 +1,4 @@
+import { syncInternshipToAcademicApproval, notifyApplicantOnATSStatusChange } from './crossPortalBridge';
 /**
  * src/services/internshipWorkflow.js
  * İstanbul Esenyurt Üniversitesi (İESÜ) Resmî Staj, 3308 & 5510 Sayılı Kanun SGK İş Akışı ve Komisyon Motoru
@@ -835,3 +836,4 @@ export const SAMPLE_ENTERPRISE_INTERNSHIPS = [
     updatedAt: '2026-06-01T11:00:00.000Z',
   }
 ];
+export { syncInternshipToAcademicApproval, notifyApplicantOnATSStatusChange };
