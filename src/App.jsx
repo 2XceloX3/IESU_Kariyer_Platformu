@@ -114,6 +114,13 @@ export default function App() {
 
       const saved = savedSession || savedLocal;
       let p = saved ? JSON.parse(saved) : null;
+if (p && p.role !== 'admin') {
+        localStorage.removeItem('iesu_admin_session');
+        sessionStorage.removeItem('iesu_admin_session');
+        localStorage.removeItem('iesu_coordinator_token');
+        sessionStorage.removeItem('iesu_coordinator_token');
+}
+
       const isProd = typeof import.meta !== 'undefined' && Boolean(import.meta.env?.PROD);
       if (p && isProd && (p.role === 'admin' || p.role === 'super_admin' || p.isAdmin === true)) {
         p = { ...p, role: 'student', isAdmin: false, _pendingServerAuthVerify: true };
