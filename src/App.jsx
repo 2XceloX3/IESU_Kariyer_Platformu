@@ -114,7 +114,12 @@ export default function App() {
 
       const saved = savedSession || savedLocal;
       let p = saved ? JSON.parse(saved) : null;
-      if (p && !p.id) p.id = p.role === 'academic' ? 'ACAD-001' : p.role === 'student' ? 'STU-' + Date.now() : p.role === 'alumni' ? 'ALU-' + Date.now() : (p.role === 'employer' || p.sector) ? 'EMP-' + Date.now() : (p.role === 'admin' ? (p.uid || 'self') : 'self');
+      const isProd = typeof import.meta !== 'undefined' && Boolean(import.meta.env?.PROD);
+      if (p && isProd && (p.role === 'admin' || p.role === 'super_admin' || p.isAdmin === true)) {
+        p = { ...p, role: 'student', isAdmin: false, _pendingServerAuthVerify: true };
+      }
+      if (p && !p.id) p.id = p.role === 'academic'
+ ? 'ACAD-001' : p.role === 'student' ? 'STU-' + Date.now() : p.role === 'alumni' ? 'ALU-' + Date.now() : (p.role === 'employer' || p.sector) ? 'EMP-' + Date.now() : (p.role === 'admin' ? (p.uid || 'self') : 'self');
       return p;
     } catch { return null; }
   });
