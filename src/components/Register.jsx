@@ -336,6 +336,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
       } catch { /* intentional */ }
 
       // Tüm caselerde başarılı olursa Success (Adım 2) göster
+          localStorage.removeItem('iesu_admin_session'); sessionStorage.removeItem('iesu_admin_session');
       setStep(2);
 
     } catch (err) {
@@ -463,7 +464,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                       <div className="relative">
                         <label htmlFor="title" className="sr-only">Firmadaki Görev Tanımı / Unvan</label>
                         <User className="absolute left-4 top-3.5 text-gray-500" size={18} />
-                        <input id="title" type="text" name="title" value={formData.title} onChange={handleChange} placeholder="Firmadaki Görev Tanımı / Unvan" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
+                        <input id="title" type="text" name="title" value={formData.title} onChange={handleChange} placeholder="Görev / Unvan" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
 
                       {/* İletişim */}
@@ -475,12 +476,12 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                       <div className="relative">
                         <label htmlFor="phone" className="sr-only">Yetkili Telefon Numarası</label>
                         <Phone className="absolute left-4 top-3.5 text-gray-500" size={18} />
-                        <input id="phone" type="tel" pattern="[0-9]{10,11}" name="phone" value={formData.phone} onChange={handleChange} placeholder="Yetkili Telefon Numarası (05XX...)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
+                        <input id="phone" type="tel" pattern="[0-9]{10,11}" name="phone" value={formData.phone} onChange={handleChange} placeholder="05XX XXX XX XX " className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
                       <div className="relative">
                         <label htmlFor="emp_password" className="sr-only">Şifre Belirleyin</label>
                         <Lock className="absolute left-4 top-3.5 text-gray-500" size={18} />
-                        <input id="emp_password" type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Şifre Belirleyin (En az 6 karakter)" minLength={6} className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
+                        <input id="emp_password" type="password" name="password" value={formData.password} onChange={handleChange} placeholder="En az 6 karakter" minLength={6} className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
                       <div className="relative">
                         <label htmlFor="emp_passwordConfirm" className="sr-only">Şifre Tekrar</label>
