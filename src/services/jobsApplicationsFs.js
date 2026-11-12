@@ -1,3 +1,4 @@
+import { syncInternshipToAcademicApproval, notifyApplicantOnATSStatusChange } from './crossPortalBridge';
 import { auth, db } from '../utils/firebase';
 import {
   doc, setDoc, updateDoc, getDocs, collection, query, where, serverTimestamp,
@@ -83,3 +84,4 @@ export async function updateApplicationStatusFs(appId, status) {
     updatedAt: new Date().toISOString(),
   });
 }
+export { syncInternshipToAcademicApproval, notifyApplicantOnATSStatusChange };
