@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { User, Users, Building2, Lock, ArrowRight, ShieldCheck, GraduationCap } from 'lucide-react';
 import Logo from './Logo';
-import ThemeToggle from './shared/ThemeToggle';
+importimport { initiateEDevletOAuthLogin } from '../services/edevletGatewayService';
+ThemeToggle from './shared/ThemeToggle';
 import LanguageSwitcher from './shared/LanguageSwitcher';
 import { auth, db, googleProvider } from '../utils/firebase';
 import { signInWithEmailAndPassword, signInWithPopup, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence } from 'firebase/auth';
@@ -589,7 +590,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
                 className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-red-400 text-slate-800 dark:text-slate-100 py-3.5 px-5 rounded-2xl hover:bg-red-50/40 dark:hover:bg-slate-700/70 transition-all shadow-sm active:scale-[0.98] cursor-pointer group"
               >
                 <img src="/edevlet-vector.svg" alt="e-Devlet" className="h-4 w-auto object-contain" />
-                <span className="font-extrabold text-xs">e-Devlet ile Kimliğini Otomatik Bul & Giriş Yap</span>
+                <span className="font-extrabold text-xs">e-Devlet ilee Giriş Yap</span>
               </button>
             </>
           )}
@@ -638,18 +639,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         </p>
       </div>
 
-      {/* e-Devlet & YÖKSİS Otomatik Öğrenci Kimlik Keşif ve Doğrulama Merkezi (Öğrenci No İstemez) */}
-      {isEdevletModalOpen && (
-        <React.Suspense fallback={null}>
-          <EDevletStudentDiscoveryModal
-            isOpen={isEdevletModalOpen}
-            onClose={() => setIsEdevletModalOpen(false)}
-            initialRole={loginRole === 'alumni' ? 'alumni' : 'student'}
-            onSuccessLogin={handleEDevletSuccessLogin}
-          />
-        </React.Suspense>
-      )}
-    </div>
+      div>
   );
 }
 
