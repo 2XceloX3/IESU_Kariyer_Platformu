@@ -53,8 +53,16 @@ try {
 
 try { _auth = app ? getAuth(app) : null; } catch (e) { console.warn("[Firebase] Auth init failed:", e?.message); }
 try { _storage = app ? getStorage(app) : null; } catch (e) { console.warn("[Firebase] Storage init failed:", e?.message); }
-try { _googleProvider = new GoogleAuthProvider(); } catch (_) {}
+try {
+  _googleProvider = new GoogleAuthProvider();
+  _googleProvider.addScope("openid");
+  _googleProvider.addScope("profile");
+  _googleProvider.addScope("email");
+  _googleProvider.setCustomParameters({ prompt: "select_account" });
+} catch (_) {}
 
+export const oAuthClientId =
+  import.meta.env?.VITE_GOOGLE_CLIENT_ID || appletConfig?.oAuthClientId || "";
 export const analytics = null;
 export const db = _db;
 export const auth = _auth;

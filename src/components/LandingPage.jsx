@@ -561,6 +561,9 @@ export default function LandingPage({ setView, currentUser, userRole }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
             <div>
+              <span className="inline-block text-xs font-extrabold uppercase tracking-widest text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-3 py-1 rounded-full mb-3">
+                Güncel İçerikler
+              </span>
               <h2 className="text-2xl md:text-4xl font-black text-[#990000] dark:text-red-400 mb-2 tracking-tight">Etkinlikler ve Haberler</h2>
               <p className="text-gray-500 dark:text-slate-400 font-medium">Üniversitemizdeki son gelişmeleri, etkinlikleri ve duyuruları takip edin.</p>
             </div>

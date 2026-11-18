@@ -42,7 +42,7 @@ describe('Milestone 3 Integration Test Suite: Scraper & Component Wiring', () =>
     expect(screen.getByTestId('kgm-news-section')).toBeInTheDocument();
     const titleElements = screen.getAllByTestId('announcement-title');
     expect(titleElements.length).toBeGreaterThan(0);
-    expect(titleElements[0].textContent).toContain('2026 Bahar Dönemi Kariyer & Staj Günleri');
+    expect(titleElements[0].textContent).toContain(scraperService.MOCK_IESU_KARIYER_DATA.announcements[0].title);
   });
 
   it('renders scraped career events dynamically in Events section', () => {

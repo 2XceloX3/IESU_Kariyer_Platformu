@@ -139,7 +139,7 @@ export const initialClubs = [
         quota: 200,
         registeredCount: 92,
         status: 'Yaklaşan',
-        description: 'Büyük ölçekli bulut mimarileri ve savunma sanayiinde yazılım mühendisliği kariyeri üzerine canlı soru-cevap oturumu.',
+        description: 'Büyük ölçekli bulut mimarileri ve savunma sanayiinde teknoloji ve mühendislik kariyeri üzerine canlı soru-cevap oturumu.',
         speaker: 'Baykar Teknoloji & Havelsan Baş Mimarları',
         image: 'https://www.esenyurt.edu.tr/uploads/2026/07/z5st7op8uiqwp-gelecegi-sekillendiren-teknolojiyle-tanisin.jpg',
         imageUrl: 'https://www.esenyurt.edu.tr/uploads/2026/07/z5st7op8uiqwp-gelecegi-sekillendiren-teknolojiyle-tanisin.jpg',

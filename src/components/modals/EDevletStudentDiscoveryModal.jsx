@@ -19,9 +19,8 @@ import {
   Check
 } from 'lucide-react';
 import { toast } from '../shared/Toast';
-import { verifyEDevlet } from '../../utils/integrationService';
+import { verifyEDevletStudentOrAlumni, EDEVLET_NOT_FOUND_MESSAGE } from '../../services/edevletVerificationService';
 import { 
-  verifyStudentObsRecord, 
   maskTckn, 
   OBS_STANDARDS,
   OFFICIAL_OBS_DATABASE 
@@ -68,51 +67,29 @@ export default function EDevletStudentDiscoveryModal({
 
     try {
       // Adım 1: e-Devlet Kapısı Güvenlik Doğrulaması
-      await new Promise(r => setTimeout(r, 450));
+      await new Promise(r => setTimeout(r, 250));
       setDiscoveryStep(2);
 
       // Adım 2: YÖKSİS Kütük Taraması & Öğrenci No Çıkarımı
-      await new Promise(r => setTimeout(r, 550));
+      await new Promise(r => setTimeout(r, 250));
       setDiscoveryStep(3);
 
-      // Kütükten Öğrenciyi Çek (Öğrenci no kesinlikle sorulmaz)
-      let resolvedRecord = null;
+      const obsResult = await verifyEDevletStudentOrAlumni({
+        tcNo: targetTc,
+        barcode: (providedBarcode || barcodeInput || '').trim(),
+        role: initialRole,
+      });
 
-      if (providedBarcode || barcodeInput) {
-        // Barkod üzerinden arama
-        const code = (providedBarcode || barcodeInput).trim();
-        resolvedRecord = OFFICIAL_OBS_DATABASE.find(s => 
-          code.includes(s.studentNo.slice(-4)) || 
-          code.toLowerCase().includes(s.fullName.toLowerCase().split(' ')[0])
-        ) || OFFICIAL_OBS_DATABASE[0];
-      } else {
-        // TCKN üzerinden arama
-        resolvedRecord = OFFICIAL_OBS_DATABASE.find(s => s.tcNo === targetTc);
-      }
-
-      // Eğer kütüktede yoksa genel YÖKSİS dinamik doğrulaması uygula
-      let obsResult = null;
-      if (resolvedRecord) {
-        obsResult = verifyStudentObsRecord({
-          tcNo: resolvedRecord.tcNo,
-          studentNo: resolvedRecord.studentNo
-        });
-      } else {
-        obsResult = verifyStudentObsRecord({
-          tcNo: targetTc || '10000000146'
-        }, { allowDynamicVerification: true, eDevletDynamic: true });
+      if (!obsResult.verified) {
+        setPhase('idle');
+        setErrorMsg(obsResult.detail || EDEVLET_NOT_FOUND_MESSAGE);
+        toast.error(EDEVLET_NOT_FOUND_MESSAGE);
+        return;
       }
 
       // Adım 3: Transkript ve Kriptografik Mühür Tamamlama
-      await new Promise(r => setTimeout(r, 400));
+      await new Promise(r => setTimeout(r, 200));
       setDiscoveryStep(4);
-
-      // Harici API çağrısını da arka planda tamamla
-      try {
-        await verifyEDevlet(targetTc || '10000000146');
-      } catch (_) {
-        // Servis simülasyonu devam eder
-      }
 
       const maskedTc = obsResult.tcNoMasked || maskTckn(targetTc || '10000000146');
       const finalProfile = {

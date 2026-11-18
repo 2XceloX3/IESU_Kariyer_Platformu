@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, memo } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
 import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2, Copy, Share2, Building2, MapPin, Calendar, Sparkles, ChevronLeft, ChevronRight, Tag, Users, Ticket } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import useAppStore from '../store/useAppStore';
@@ -14,7 +13,12 @@ import { getTenantConfig } from '../config/tenantConfig';
 const EMPTY_ARRAY = [];
 
 const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessages, setSelectedUserId, setView }) {
-  const navigate = useNavigate();
+  const navigate = useCallback((path) => {
+    if (typeof window !== 'undefined' && window.history?.pushState) {
+      window.history.pushState({}, '', path);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    }
+  }, []);
   const storeCurrentUser = useAppStore(state => state.currentUser);
   const effectiveCurrentUser = currentUser || storeCurrentUser;
   const sendMessage = useAppStore(state => state.sendMessage);

@@ -3,7 +3,7 @@ import { SAMPLE_ENTERPRISE_INTERNSHIPS } from '../services/internshipWorkflow';
 
 export const generateStudents = () => {
   return [
-    { id: 'STU-001', studentId: '20240001', name: 'Alperen Yılmaz', department: 'Yazılım Mühendisliği', year: 3, gpa: 3.4, email: 'alperen@ogr.esenyurt.edu.tr', role: 'student', avatar: 'https://ui-avatars.com/api/?name=Alperen+Yılmaz&background=0A2342&color=fff', pronouns: 'o/onun', internshipStatus: 'Arıyor' },
+    { id: 'STU-001', studentId: '20240001', name: 'Alperen Yılmaz', department: 'Bilgisayar Mühendisliği', year: 3, gpa: 3.4, email: 'alperen@ogr.esenyurt.edu.tr', role: 'student', avatar: 'https://ui-avatars.com/api/?name=Alperen+Yılmaz&background=0A2342&color=fff', pronouns: 'o/onun', internshipStatus: 'Arıyor' },
     { id: 'STU-002', studentId: '20240002', name: 'Zeynep Kaya', department: 'Bilgisayar Mühendisliği', year: 4, gpa: 3.8, email: 'zeynep@ogr.esenyurt.edu.tr', role: 'student', avatar: 'https://ui-avatars.com/api/?name=Zeynep+Kaya&background=0A2342&color=fff', doubleMajor: 'Endüstri Mühendisliği', internshipStatus: 'Tamamlandı' },
     { id: 'STU-003', studentId: '20240003', name: 'Mert Can', department: 'İşletme', year: 2, gpa: 2.9, email: 'mert@ogr.esenyurt.edu.tr', role: 'student', avatar: 'https://ui-avatars.com/api/?name=Mert+Can&background=0A2342&color=fff', internshipStatus: 'İlgilenmiyor' },
     { id: 'STU-004', studentId: '20240004', name: 'Elif Demir', department: 'Mimarlık', year: 3, gpa: 3.1, email: 'elif@ogr.esenyurt.edu.tr', role: 'student', avatar: 'https://ui-avatars.com/api/?name=Elif+Demir&background=0A2342&color=fff', internshipStatus: 'Aktif Stajyer' },
@@ -13,7 +13,7 @@ export const generateStudents = () => {
 
 export const generateAlumni = () => {
   return [
-    { id: 'ALU-001', studentId: '20190001', name: 'Caner Öztürk', department: 'Yazılım Mühendisliği', gradYear: 2023, email: 'caner@mezun.esenyurt.edu.tr', role: 'alumni', avatar: 'https://ui-avatars.com/api/?name=Caner+Öztürk&background=EA580C&color=fff', company: 'Trendyol', title: 'Frontend Developer', city: 'İstanbul', country: 'Türkiye', showOnGlobalMap: true, coordinates: [28.9784, 41.0082] },
+    { id: 'ALU-001', studentId: '20190001', name: 'Caner Öztürk', department: 'Bilgisayar Mühendisliği', gradYear: 2023, email: 'caner@mezun.esenyurt.edu.tr', role: 'alumni', avatar: 'https://ui-avatars.com/api/?name=Caner+Öztürk&background=EA580C&color=fff', company: 'Trendyol', title: 'Frontend Developer', city: 'İstanbul', country: 'Türkiye', showOnGlobalMap: true, coordinates: [28.9784, 41.0082] },
     { id: 'ALU-002', studentId: '20180002', name: 'Seda Çelik', department: 'Endüstri Mühendisliği', gradYear: 2022, email: 'seda@mezun.esenyurt.edu.tr', role: 'alumni', avatar: 'https://ui-avatars.com/api/?name=Seda+Çelik&background=EA580C&color=fff', company: 'Delivery Hero', title: 'Üretim ve Operasyon Yöneticisi', city: 'Berlin', country: 'Almanya', showOnGlobalMap: true, coordinates: [13.4050, 52.5200] },
     { id: 'ALU-003', studentId: '20200003', name: 'Tolgahan Aslan', department: 'Uluslararası Ticaret', gradYear: 2024, email: 'tolga@mezun.esenyurt.edu.tr', role: 'alumni', avatar: 'https://ui-avatars.com/api/?name=Tolgahan+Aslan&background=EA580C&color=fff', company: 'Amazon UK', title: 'Operasyon & Finans Analisti', city: 'Londra', country: 'Birleşik Krallık', showOnGlobalMap: true, coordinates: [-0.1276, 51.5072] },
     { id: 'ALU-004', studentId: '20170004', name: 'Ayça Yurt', department: 'Psikoloji', gradYear: 2021, email: 'ayca@mezun.esenyurt.edu.tr', role: 'alumni', avatar: 'https://ui-avatars.com/api/?name=Ayça+Yurt&background=EA580C&color=fff', company: 'Kendi Kliniği', title: 'Klinik Psikolog', city: 'Amsterdam', country: 'Hollanda', showOnGlobalMap: true, coordinates: [4.9041, 52.3676] },
@@ -46,7 +46,7 @@ export const generateCompanies = () => {
 export const generateAcademicStaff = () => {
   return [
     { id: 'ACAD-001', name: 'Prof. Dr. Ahmet Yılmaz', email: 'ayilmaz@esenyurt.edu.tr', department: 'Bilgisayar Mühendisliği', role: 'academic', avatar: 'https://ui-avatars.com/api/?name=Ahmet+Yılmaz&background=0EA5E9&color=fff', title: 'Dekan' },
-    { id: 'ACAD-002', name: 'Doç. Dr. Zeynep Çelik', email: 'zcelik@esenyurt.edu.tr', department: 'Yazılım Mühendisliği', role: 'academic', avatar: 'https://ui-avatars.com/api/?name=Zeynep+Çelik&background=0EA5E9&color=fff', title: 'Bölüm Başkanı' },
+    { id: 'ACAD-002', name: 'Doç. Dr. Zeynep Çelik', email: 'zcelik@esenyurt.edu.tr', department: 'Bilgisayar Mühendisliği', role: 'academic', avatar: 'https://ui-avatars.com/api/?name=Zeynep+Çelik&background=0EA5E9&color=fff', title: 'Bölüm Başkanı' },
     { id: 'ACAD-003', name: 'Dr. Öğr. Üyesi Can Kaya', email: 'ckaya@esenyurt.edu.tr', department: 'İşletme', role: 'academic', avatar: 'https://ui-avatars.com/api/?name=Can+Kaya&background=0EA5E9&color=fff', title: 'Kariyer Danışmanı' }
   ];
 };
@@ -734,13 +734,13 @@ export const initialPosts = [
     id: 'POST-001',
     authorId: 'CMP-001',
     author: { id: 'CMP-001', name: 'Trendyol', avatar: 'https://ui-avatars.com/api/?name=Trendyol&background=F97316&color=fff', title: 'Teknoloji & Kampüs İK Ekibi', role: 'company' },
-    title: '💼 YENİ İLAN: Trendyol Yazılım Mühendisliği Stajyer Alımı 2026',
-    content: 'Yazılım Mühendisliği ve Bilgisayar Mühendisliği stajyer alımlarımız başlamıştır! Mikroservis mimarileri, bulut bilişim ve büyük veri projelerimizde yer almak isteyen tüm İESÜ öğrencilerini başvuruya bekliyoruz. 🚀 #trendyol #staj #kariyer',
+    title: '💼 YENİ İLAN: Trendyol Bilgisayar Mühendisliği Stajyer Alımı 2026',
+    content: 'Bilgisayar Mühendisliği ve Endüstri Mühendisliği stajyer alımlarımız başlamıştır! Mikroservis mimarileri, bulut bilişim ve büyük veri projelerimizde yer almak isteyen tüm İESÜ öğrencilerini başvuruya bekliyoruz. 🚀 #trendyol #staj #kariyer',
     image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1000&q=80',
     isJob: true,
     jobData: {
       id: 'JOB-002',
-      title: 'Yazılım Mühendisliği Kampüs Stajyer Programı',
+      title: 'Bilgisayar Mühendisliği Kampüs Stajyer Programı',
       company: 'Trendyol',
       companyId: 'CMP-001',
       location: 'İstanbul Maslak Kampüsü (Hibrit)',

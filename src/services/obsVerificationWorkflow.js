@@ -227,6 +227,25 @@ export const OFFICIAL_OBS_DATABASE = [
       { name: 'Yazılım Kulübü', role: 'Kurucu Başkan', year: '2023-2024', approved: true }
     ],
     semCertifications: []
+  },
+  {
+    studentNo: '202400001',
+    studentId: 'ALM-002',
+    tcNo: '50000000146',
+    fullName: 'Test Mezun',
+    department: 'Yazılım Mühendisliği',
+    faculty: 'Mühendislik ve Mimarlık Fakültesi',
+    grade: 'Mezun',
+    gano: 3.48,
+    completedEcts: 240,
+    totalEcts: 240,
+    status: 'Mezun',
+    graduationYear: 2024,
+    advisorName: 'Doç. Dr. Selin Kaya',
+    advisorTitle: 'Bölüm Kariyer Danışmanı',
+    enrollmentYear: 2020,
+    clubs: [],
+    semCertifications: []
   }
 ];
 
@@ -561,7 +580,14 @@ export function verifyStudentObsRecord(declaredData = {}, options = {}) {
       academicStatus: 'Aktif Öğrenci',
       advisorName: declaredData.advisorName || 'Doç. Dr. Selin Kaya',
       advisorTitle: 'Bölüm Kariyer Danışmanı',
-      discrepancy: { detected: false, resolution: 'e-Devlet YÖKSİS kütüğünden otomatik çekildi.' },
+      discrepancy: isEDevletAutoPull
+        ? { detected: false, resolution: 'e-Devlet YÖKSİS kütüğünden otomatik çekildi.' }
+        : {
+            detected: true,
+            declaredGano: safeGano,
+            officialGano: null,
+            resolution: 'Öğrenci numarası resmi OBS arşivinde doğrulanamadı; beyan edilen bilgiler Öğrenci İşleri Daire Başkanlığı incelemesine alındı.'
+          },
       semCertifications: declaredData.certifications || [],
       clubs: declaredData.clubs || [],
     };
@@ -570,7 +596,7 @@ export function verifyStudentObsRecord(declaredData = {}, options = {}) {
   return {
     verified: false,
     status: OBS_VERIFICATION_STATUS.REJECTED,
-    error: 'Öğrenci numarası veya kimlik OBS & YÖKSİS kayıtlarında bulunamadı.',
+    error: 'Kayıtlı öğrenci bilgisi bulunamadı. Öğrenci numarası veya kimlik OBS & YÖKSİS kayıtlarında bulunamadı.',
     reconciledRecord: null,
   };
 }

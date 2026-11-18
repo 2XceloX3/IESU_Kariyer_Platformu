@@ -13,7 +13,15 @@ service cloud.firestore {
     function isAdmin() {
       return isAuthenticated() && (
         request.auth.token.role == 'admin' ||
-        (request.auth.token.email in ['kariyer@iesu.edu.tr', 'celk386@gmail.com'] && request.auth.token.email_verified == true)
+        (request.auth.token.email in ['kariyer@iesu.edu.tr', 'celk386@gmail.com', 'celk385@gmail.com'] && request.auth.token.email_verified == true)
+      );
+    }
+
+    function hasRole(role) {
+      return isAuthenticated() && (
+        request.auth.token.role == role ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role)
       );
     }
 
@@ -177,43 +185,45 @@ service cloud.firestore {
 
     match /events/{eventId} {
       allow read: if true;
-      allow create, update: if isAuthenticated() || isValidScrapedFeedDoc();
-      allow delete: if isAdmin() || isScrapedResource();
+      allow create, update: if isAdmin() || isAcademic() || (isAuthenticated() && isValidScrapedFeedDoc());
+      allow delete: if isAdmin();
     }
 
     match /news/{newsId} {
       allow read: if true;
-      allow create, update: if isAuthenticated() || isValidScrapedFeedDoc();
-      allow delete: if isAdmin() || isScrapedResource();
+      allow create, update: if isAdmin() || isAcademic() || (isAuthenticated() && isValidScrapedFeedDoc());
+      allow delete: if isAdmin();
     }
 
     match /announcements/{annId} {
       allow read: if true;
-      allow create, update: if isAuthenticated() || isValidScrapedFeedDoc();
-      allow delete: if isAdmin() || isScrapedResource();
+      allow create, update: if isAdmin() || isAcademic() || (isAuthenticated() && isValidScrapedFeedDoc());
+      allow delete: if isAdmin();
     }
 
     match /social_media/{postId} {
       allow read: if true;
-      allow create, update: if isAuthenticated() || isValidScrapedFeedDoc();
-      allow delete: if isAdmin() || isScrapedResource();
+      allow create, update: if isAdmin() || (isAuthenticated() && isValidScrapedFeedDoc());
+      allow delete: if isAdmin();
     }
 
     match /iesuScraperFeed/{docId} {
       allow read: if true;
-      allow create, update: if request.resource.data.keys().hasAny(['news', 'events', 'announcements', 'socialMedia', 'lastUpdated', 'source']);
+      allow create, update: if isAdmin() || (isAuthenticated() && request.resource.data.keys().hasAny(['news', 'events', 'announcements', 'socialMedia', 'lastUpdated', 'source']));
       allow delete: if isAdmin();
     }
 
     match /notifications/{notifId} {
-      allow read, update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow read, update, delete: if isAdmin() || (isAuthenticated() && (resource.data.userId == request.auth.uid || resource.data.recipientId == request.auth.uid));
       allow create: if isAuthenticated()
-        && request.resource.data.keys().hasAll(['userId', 'title'])
-        && request.resource.data.userId is string;
+        && request.resource.data.keys().hasAny(['userId', 'recipientId'])
+        && request.resource.data.keys().hasAll(['title']);
     }
 
     match /audit_logs/{logId} {
-      allow read, write: if isAdmin();
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+      allow update, delete: if false;
     }
 
     match /internships/{internshipId} {
@@ -278,38 +288,20 @@ service cloud.firestore {
 
     match /platformData/{sliceKey} {
       allow read: if isAuthenticated() || sliceKey in ['news', 'events', 'announcements', 'socialMedia', 'social_media', 'iesuScraperFeed', 'institutionalStatsData'];
-      allow write: if isAdmin() || sliceKey in ['news', 'events', 'announcements', 'socialMedia', 'social_media', 'iesuScraperFeed'];
+      allow write: if isAdmin() || (isAuthenticated() && sliceKey in ['news', 'events', 'announcements', 'socialMedia', 'social_media', 'iesuScraperFeed']);
     }
 
-  match /news/{newsId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-    match /internships/{internshipId} {
-      allow read: if true;
-      allow create: if isAdmin() || isCompany() || isAcademic();
-      allow update, delete: if isAdmin() || isAcademic() || (isCompany() && resource.data.companyId == request.auth.uid);
-    }
     match /internship_applications/{appId} {
       allow read: if isAdmin() || isAcademic() || (isAuthenticated() && (resource.data.studentId == request.auth.uid || resource.data.applicantId == request.auth.uid || resource.data.companyId == request.auth.uid));
       allow create: if isAuthenticated() && (request.resource.data.studentId == request.auth.uid || request.resource.data.applicantId == request.auth.uid);
       allow update: if isAdmin() || isAcademic() || (isAuthenticated() && (resource.data.studentId == request.auth.uid || resource.data.companyId == request.auth.uid));
       allow delete: if isAdmin();
     }
-    match /notifications/{notificationId} {
-      allow read, update: if isAdmin() || (isAuthenticated() && resource.data.recipientId == request.auth.uid);
-      allow create: if isAuthenticated();
-      allow delete: if isAdmin() || (isAuthenticated() && resource.data.recipientId == request.auth.uid);
-    }
+
     match /messages/{messageId} {
       allow read: if isAdmin() || (isAuthenticated() && (resource.data.senderId == request.auth.uid || resource.data.receiverId == request.auth.uid));
       allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
       allow update, delete: if isAdmin();
-    }
-    match /audit_logs/{logId} {
-      allow read: if isAdmin();
-      allow create: if isAuthenticated();
-      allow update, delete: if false;
     }
     match /virtual_fairs/{fairId} {
       allow read: if true;

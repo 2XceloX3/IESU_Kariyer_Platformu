@@ -554,3 +554,124 @@ export const syncIesuInstagramHttp = onRequest(
   }
 );
 
+// 5. Resmi e-Devlet Kapısı (Türksat) OAuth 2.0 + YÖKSİS (Öğrenci / Mezun / Akademik) Callback Fonksiyonu
+export const edevletOAuthCallbackHttp = onRequest(
+  {
+    region: 'europe-west1',
+    cors: true
+  },
+  async (req, res) => {
+    try {
+      const { code, role = 'student', redirectUri } = req.body || {};
+      if (!code) {
+        res.status(400).json({ ok: false, error: 'Missing authorization code' });
+        return;
+      }
+
+      const clientId = process.env.VITE_EDEVLET_CLIENT_ID || process.env.EDEVLET_CLIENT_ID || '';
+      const clientSecret = process.env.EDEVLET_CLIENT_SECRET || process.env.VITE_EDEVLET_CLIENT_SECRET || '';
+      const tokenUrl =
+        process.env.VITE_EDEVLET_TOKEN_URL ||
+        'https://giris.turkiye.gov.tr/OAuth2AuthorizationServer/AccessTokenController';
+      const resourceUrl =
+        process.env.VITE_EDEVLET_RESOURCE_URL ||
+        'https://giris.turkiye.gov.tr/OAuth2AuthorizationServer/ResourceController';
+
+      if (!clientId || !clientSecret) {
+        res.status(503).json({
+          ok: false,
+          error: 'Resmi e-Devlet Kapısı OAuth2 istemci kimlik bilgileri (EDEVLET_CLIENT_ID / EDEVLET_CLIENT_SECRET) henüz sunucuya tanımlanmadı.'
+        });
+        return;
+      }
+
+      // Adım 1: Authorization Code -> Access Token değişimi
+      const tokenParams = new URLSearchParams({
+        grant_type: 'authorization_code',
+        client_id: clientId,
+        client_secret: clientSecret,
+        code,
+        redirect_uri: redirectUri || ''
+      });
+
+      const tokenRes = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: tokenParams.toString()
+      });
+
+      if (!tokenRes.ok) {
+        res.status(502).json({ ok: false, error: 'e-Devlet AccessTokenController yanıt vermedi.' });
+        return;
+      }
+
+      const tokenJson = await tokenRes.json();
+      const accessToken = tokenJson.access_token;
+
+      // Adım 2: Role göre YÖKSİS kapsamını (Öğrenci / Mezun / Akademik Personel) sorgula
+      const yoksisScope =
+        role === 'academic'
+          ? 'Yoksis-Akademik-Bilgileri'
+          : role === 'alumni'
+          ? 'Yoksis-Mezuniyet-Bilgileri'
+          : 'Yoksis-Ogrenim-Bilgileri';
+
+      const resourceRes = await fetch(resourceUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          clientId,
+          accessToken,
+          resourceId: '1',
+          kapsam: `Kimlik-Dogrulama Iletisim-Bilgileri ${yoksisScope}`
+        }).toString()
+      });
+
+      const resourceData = resourceRes.ok ? await resourceRes.json() : {};
+      const kullanici = resourceData.kullaniciBilgileri || resourceData;
+      const yoksis = resourceData.yoksisBilgileri || resourceData.ogrenimBilgileri || {};
+
+      const profilePayload = {
+        ok: true,
+        uid: `EDEVLET-${kullanici.kimlikNo || Date.now()}`,
+        tcNo: kullanici.kimlikNo || '',
+        firstName: kullanici.ad || '',
+        lastName: kullanici.soyad || '',
+        fullName: [kullanici.ad, kullanici.soyad].filter(Boolean).join(' '),
+        email: kullanici.eposta || '',
+        phone: kullanici.cepTelefonu || '',
+        faculty: yoksis.fakulteAdi || 'İstanbul Esenyurt Üniversitesi',
+        department: yoksis.programAdi || yoksis.bolumAdi || '',
+        studentNo: yoksis.ogrenciNo || '',
+        grade: yoksis.sinif || '',
+        gano: yoksis.gano || '',
+        graduationYear: yoksis.mezuniyetYili || '',
+        diplomaNo: yoksis.diplomaNo || '',
+        academicTitle: yoksis.akademikUnvan || yoksis.unvan || '',
+        educationStatus: yoksis.ogrenimDurumu || (role === 'alumni' ? 'Mezun' : role === 'academic' ? 'Akademik Personel' : 'Aktif Öğrenci'),
+        yoksisService: yoksisScope,
+        role
+      };
+
+      const db = getTargetDb();
+      await db.collection('users').doc(profilePayload.uid).set(
+        {
+          ...profilePayload,
+          eDevletVerified: true,
+          yoksisVerified: true,
+          updated_at: new Date().toISOString()
+        },
+        { merge: true }
+      );
+
+      res.status(200).json(profilePayload);
+    } catch (err) {
+      res.status(500).json({ ok: false, error: err?.message || 'e-Devlet OAuth callback failed' });
+    }
+  }
+);
+
+

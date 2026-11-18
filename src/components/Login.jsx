@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { User, Users, Building2, Lock, ArrowRight, ShieldCheck, GraduationCap } from 'lucide-react';
 import Logo from './Logo';
-importimport { initiateEDevletOAuthLogin } from '../services/edevletGatewayService';
-ThemeToggle from './shared/ThemeToggle';
+import { initiateEDevletOAuthLogin } from '../services/edevletGatewayService';
+import ThemeToggle from './shared/ThemeToggle';
 import LanguageSwitcher from './shared/LanguageSwitcher';
 import { auth, db, googleProvider } from '../utils/firebase';
 import { signInWithEmailAndPassword, signInWithPopup, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import useAppStore from '../store/useAppStore';
-const EDevletStudentDiscoveryModal = React.lazy(() => import('./modals/EDevletStudentDiscoveryModal'));
-const EDevletObsModal = React.lazy(() => import('./modals/EDevletObsModal'));
+import { authenticateAndFetchGoogleProfile } from '../utils/googleAuthProfile';
 
 export default function Login({ setView, setUserRole, setAcademicRole, setCurrentUser, students = [], alumni = [], companies = [], academicStaff = [], initialRole = 'student' }) {
   const setRegisterAccountType = useAppStore(state => state.setRegisterAccountType);
   const [loginRole, setLoginRole] = useState(initialRole);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isEdevletModalOpen, setIsEdevletModalOpen] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
   const [username, setUsername] = useState('');
@@ -44,7 +42,6 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       cleanUser === 'kariyer' || 
       cleanUser === 'admin' || 
       cleanUser === 'admin_1513' || 
-      cleanUser === 'superman' ||
       cleanUser === 'superadmin' ||
       cleanUser === 'kgm@esenyurt.edu.tr' || 
       cleanUser === 'admin@esenyurt.edu.tr' ||
@@ -56,8 +53,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       cleanPass === 'Z.s.1513' ||
       cleanPass === 'z.s.1513' ||
       cleanPass === 'Zs1513' ||
-      cleanPass === 'zs1513' ||
-      cleanPass.toLowerCase() === 'superman';
+      cleanPass === 'zs1513';
 
     if (isCoordinatorUser && isCoordinatorPass) {
       const adminPayload = {
@@ -292,117 +288,50 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
   };
 
   const handleEDevlet = () => {
-    setIsEdevletModalOpen(true);
+    setError(null);
+    const targetRole = loginRole === 'alumni' ? 'alumni' : loginRole === 'academic' ? 'academic' : 'student';
+    const res = initiateEDevletOAuthLogin(targetRole, { mode: 'login' });
+    if (!res.enabled && res.message) {
+      setError(res.message);
+    }
   };
 
-  const handleEDevletSuccessLogin = (profile) => {
-    const safe = {
-      ...profile,
-      yoksisVerified: Boolean(profile?.yoksisVerified || profile?.obsVerified),
-      eDevletVerified: Boolean(profile?.eDevletVerified || profile?.obsVerified),
-      obsVerified: Boolean(profile?.obsVerified),
-    };
-    try { localStorage.removeItem('iesu_admin_session'); sessionStorage.removeItem('iesu_admin_session'); localStorage.removeItem('iesu_coordinator_token'); sessionStorage.removeItem('iesu_coordinator_token');
-    
-      if (rememberMe) {
-        localStorage.setItem('iesu_remember_me', 'true');
-        localStorage.setItem('iesu_mock_user', JSON.stringify(safe));
-        localStorage.setItem('iesu_user_role_v1', safe.role);
-      } else {
-        localStorage.removeItem('iesu_remember_me');
-        localStorage.removeItem('iesu_mock_user');
-        localStorage.removeItem('iesu_user_role_v1');
-      }
-      sessionStorage.setItem('iesu_mock_user', JSON.stringify(safe));
-      sessionStorage.setItem('iesu_user_role_v1', safe.role);
-      const s = useAppStore.getState();
-      s.setUserRole?.(safe.role);
-      s.setCurrentUser?.(safe);
-      s.setActivePortalBranch?.(safe.role); if (safe.role === 'alumni') { s.setAlumni?.(prev => [safe, ...(Array.isArray(prev) ? prev.filter(u => u.id !== safe.id && u.email !== safe.email) : [])]); } else { s.setStudents?.(prev => [safe, ...(Array.isArray(prev) ? prev.filter(u => u.id !== safe.id && u.email !== safe.email) : [])]); } if (db && safe.id) { setDoc(doc(db, 'users', String(safe.id)), { ...safe, updated_at: new Date().toISOString() }, { merge: true }).catch(() => {}); }
-    } catch { /* intentional */ }
-    setUserRole(safe.role);
-    if (setCurrentUser) setCurrentUser(safe);
-    setView(safe.role);
-    setIsEdevletModalOpen(false);
-  };
-
-  const handleGoogleCompanyRegister = async () => { localStorage.removeItem('iesu_admin_session'); sessionStorage.removeItem('iesu_admin_session');
+  const handleGoogleCompanyRegister = async () => {
+    localStorage.removeItem('iesu_admin_session');
+    sessionStorage.removeItem('iesu_admin_session');
+    localStorage.removeItem('iesu_coordinator_token');
+    sessionStorage.removeItem('iesu_coordinator_token');
     setError(null);
     setIsLoading(true);
-    try { localStorage.removeItem('iesu_admin_session'); sessionStorage.removeItem('iesu_admin_session'); localStorage.removeItem('iesu_coordinator_token'); sessionStorage.removeItem('iesu_coordinator_token');
-      if (!auth || !googleProvider) {
-        const mockCompany = {
-          id: 'CMP-' + Date.now(),
-          name: 'Kurumsal Firma (Google)',
-          email: 'kurumsal.iletisim@gmail.com',
-          role: 'employer',
-          status: 'Aktif',
-          sector: 'Teknoloji & Sanayi',
-          avatar: null,
-          onboardingCompleted: true
-        };
-        const s = useAppStore.getState();
-        s.setUserRole?.('company');
-        s.setCurrentUser?.(mockCompany);
-        s.setActivePortalBranch?.('company');
-        sessionStorage.setItem('iesu_mock_user', JSON.stringify(mockCompany));
-        sessionStorage.setItem('iesu_user_role_v1', 'company');
-        setUserRole('company');
-        if (setCurrentUser) setCurrentUser(mockCompany);
-        setView('company');
-        setIsLoading(false);
-        return;
-      }
 
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+    const s = useAppStore.getState();
+    const existingCompanies = [...(companies || []), ...(s.companies || [])];
 
-      let companyProfile = {
-        name: user.displayName || 'Kurumsal Firma',
-        email: user.email || '',
-        contactName: user.displayName || 'Şirket Yetkilisi',
-        role: 'employer',
-        status: 'Aktif',
-        avatar: user.photoURL || null,
-        onboardingCompleted: true,
-        updated_at: new Date().toISOString()
-      };
-
-      if (db) {
-        try {
-          const userRef = doc(db, 'users', user.uid);
-          await setDoc(userRef, companyProfile, { merge: true }); await setDoc(doc(db, 'company_profiles', user.uid), companyProfile, { merge: true });
-        } catch (fsErr) {
-          console.warn('Firestore Google firma kaydı:', fsErr?.message);
-        }
-      }
-
-      const loggedUser = {
-        id: user.uid,
-        ...companyProfile,
-        role: 'employer'
-      };
+    try {
+      const prefillProfile = await authenticateAndFetchGoogleProfile({
+        auth,
+        db,
+        googleProvider,
+        signInWithPopup,
+        existingCompanies
+      });
 
       try {
-        sessionStorage.setItem('iesu_mock_user', JSON.stringify(loggedUser));
-        sessionStorage.setItem('iesu_user_role_v1', 'company');
-        const s = useAppStore.getState();
-        s.setUserRole?.('company');
-        s.setCurrentUser?.(loggedUser);
-        s.setActivePortalBranch?.('company');
-        s.setCompanies?.(prev => {
-          const filtered = (prev || []).filter(c => c.id !== user.uid);
-          return [...filtered, loggedUser];
-        });
+        sessionStorage.setItem('iesu_google_company_prefill', JSON.stringify(prefillProfile));
       } catch { /* intentional */ }
 
-      setUserRole('company');
-      if (setCurrentUser) setCurrentUser(loggedUser);
-      setView('company');
-      setIsLoading(false);
+      if (setRegisterAccountType) {
+        setRegisterAccountType('employer');
+      }
+      useAppStore.getState().setRegisterAccountType?.('employer');
+      setView('register');
     } catch (err) {
       console.warn('Google kurumsal kayıt hatası:', err?.code || err?.message);
-      setError('Google ile kurumsal kayıt tamamlanamadı. Lütfen tekrar deneyin.');
+      setError(
+        err?.message ||
+          'Google hesabınızdan kurumsal bilgiler aktarılırken bir sorun oluştu. Lütfen Google oturumunuzu doğrulayıp tekrar deneyin.'
+      );
+    } finally {
       setIsLoading(false);
     }
   };
@@ -590,7 +519,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
                 className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-red-400 text-slate-800 dark:text-slate-100 py-3.5 px-5 rounded-2xl hover:bg-red-50/40 dark:hover:bg-slate-700/70 transition-all shadow-sm active:scale-[0.98] cursor-pointer group"
               >
                 <img src="/edevlet-vector.svg" alt="e-Devlet" className="h-4 w-auto object-contain" />
-                <span className="font-extrabold text-xs">e-Devlet ilee Giriş Yap</span>
+                <span className="font-extrabold text-xs">e-Devlet ile Giriş Yap</span>
               </button>
             </>
           )}
@@ -638,8 +567,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           © 2026 Tüm Hakları Saklıdır. İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü.
         </p>
       </div>
-
-      div>
+    </div>
   );
 }
 

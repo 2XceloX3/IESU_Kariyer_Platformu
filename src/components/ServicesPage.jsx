@@ -8,15 +8,13 @@ import MainHeader from './MainHeader';
 import SubPanelFooter from './SubPanelFooter';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
-import { useNavigate } from 'react-router-dom';
 export default function ServicesPage({ setView, currentUser, userRole, setSelectedUserId }) {
   const [activeCategory, setActiveCategory] = useState('Tümü');
   const [selectedServicePreview, setSelectedServicePreview] = useState(null);
-  const navigate = useNavigate();
   
   const handleServiceClick = (targetView) => {
       if (typeof setView === 'function') { setView(currentUser ? targetView : 'login'); } else { window.location.assign(currentUser ? '/' + targetView : '/login'); }
-  };  };
+  };
 
   // Resmî esenyurt.edu.tr Hizmet Kataloğu
   const OFFICIAL_SERVICES = [
@@ -283,8 +281,14 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
 
       {/* Detay Popup Modal */}
       {selectedServicePreview && (
-        
-          <div className="bg-white border border-slate-200 w-full max-w-xl rounded-3xl p-6 md:p-8 shadow-2xl text-slate-800 relative animate-in fade-in zoom-in-95 duration-200">
+        <div
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setSelectedServicePreview(null)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white border border-slate-200 w-full max-w-xl rounded-3xl p-6 md:p-8 shadow-2xl text-slate-800 relative animate-in fade-in zoom-in-95 duration-200"
+          >
             <button 
               onClick={() => setSelectedServicePreview(null)}
               className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition"

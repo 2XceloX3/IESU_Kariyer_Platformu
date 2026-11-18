@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { X, ShieldCheck, Lock, AlertCircle, CheckCircle2, GraduationCap, Award, Hash, Clock } from 'lucide-react';
+import { X, ShieldCheck, Lock, AlertCircle, CheckCircle2, GraduationCap, Award, Hash } from 'lucide-react';
 import { toast } from '../shared/Toast';
-import { verifyEDevlet } from '../../utils/integrationService';
+import { verifyEDevletStudentOrAlumni, EDEVLET_NOT_FOUND_MESSAGE } from '../../services/edevletVerificationService';
 import { 
-  verifyStudentObsRecord, 
   maskTckn, 
   OBS_STANDARDS,
-  getObsVerificationBadge 
 } from '../../services/obsVerificationWorkflow';
 
 /**
@@ -30,10 +28,6 @@ export default function EDevletObsModal({
 
   if (!isOpen) return null;
 
-  const edevletClientId = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_EDEVLET_CLIENT_ID : '';
-  const edevletGatewayUrl = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_EDEVLET_GATEWAY_URL : '';
-  const isOfficialGatewayConfigured = Boolean(edevletClientId && edevletGatewayUrl);
-
   const handleVerify = async (e, directTc = null) => {
     if (e && typeof e.preventDefault === 'function') e.preventDefault();
     setError('');
@@ -43,31 +37,24 @@ export default function EDevletObsModal({
     const isStudentNo = /^\d{9,12}$/.test(cleanInput);
 
     if (!isTc && !isStudentNo) {
-      setError('Lütfen 11 haneli T.C. Kimlik Numaranızı giriniz veya e-Devlet ile doğrudan bağlanın.');
+      setError('Lütfen 11 haneli T.C. Kimlik Numaranızı veya öğrenci numaranızı giriniz.');
       return;
     }
 
     setPhase('verifying');
 
     try {
-      // 1. e-Devlet Lisanslı Ağ Geçidi üzerinden YÖKSİS & OBS Bilgilerini Doğrudan Çek (Öğrenci No sorulmaz)
-      const obsResult = verifyStudentObsRecord({
+      // e-Devlet & YÖKSİS Anlık Öğrenci/Mezun Doğrulama Entegrasyon Servisi Katmanı
+      const obsResult = await verifyEDevletStudentOrAlumni({
         tcNo: isTc ? cleanInput : '',
-        studentNo: isStudentNo ? cleanInput : '', // Öğrenci no girilmemişse kütükten çekilir
-      }, { allowDynamicVerification: true, eDevletDynamic: true });
+        studentNo: isStudentNo ? cleanInput : '',
+        role,
+      });
 
-      // 2. Canlı e-Devlet Servis Kontrolü
-      let apiVerified = false;
-      try {
-        apiVerified = await verifyEDevlet(cleanInput);
-      } catch (_) {
-        apiVerified = false;
-      }
-
-      if (!obsResult.verified && !apiVerified) {
+      if (!obsResult.verified) {
         setPhase('form');
-        setError('e-Devlet doğrulaması başarısız. Resmî YÖKSİS kütüğünde öğrenci kaydı bulunamadı.');
-        toast.error('e-Devlet YÖKSİS doğrulaması tamamlanamadı.');
+        setError(obsResult.detail || EDEVLET_NOT_FOUND_MESSAGE);
+        toast.error(EDEVLET_NOT_FOUND_MESSAGE);
         return;
       }
 
@@ -124,8 +111,6 @@ export default function EDevletObsModal({
     if (onVerifiedData) onVerifiedData(verifiedProfile);
     onClose();
   };
-
-  const badgeInfo = verifiedProfile ? getObsVerificationBadge(verifiedProfile) : null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">

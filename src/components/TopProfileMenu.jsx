@@ -158,7 +158,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
     (userRole && ['student', 'alumni', 'academic', 'company', 'admin'].includes(userRole)) ? userRole :
     (activePortalBranch || effectiveCurrentUser?.role || 'student');
 
-  const isAdmin = effectiveCurrentUser?.role === 'admin';
+  const isAdmin = effectiveCurrentUser?.role === 'admin' || userRole === 'admin' || Boolean(effectiveCurrentUser?.isSuperAdmin);
 
   const branchUserName = effectiveCurrentUser?.name || (isAdmin ? 'KGM Yöneticisi' : 'Kullanıcı');
 

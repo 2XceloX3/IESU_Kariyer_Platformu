@@ -20,7 +20,25 @@ import {
 import { liveEventData, liveAnnouncementData, liveNewsData } from '../utils/liveData';
 import { innerPagesData } from '../utils/innerPagesData';
 import { OFFICIAL_IESU_INSTAGRAM_POSTS } from '../services/instagramService';
-import { deduplicateFeedItems, normalizeTitleForDedup } from '../services/scraper';
+import * as scraperService from '../services/scraper';
+
+function deduplicateFeedItems(existingItems = [], incomingItems = [], maxItems = 50) {
+  try {
+    if (typeof scraperService.deduplicateFeedItems === 'function') {
+      return scraperService.deduplicateFeedItems(existingItems, incomingItems, maxItems);
+    }
+  } catch (_) {}
+  return [...(Array.isArray(incomingItems) ? incomingItems : []), ...(Array.isArray(existingItems) ? existingItems : [])].slice(0, maxItems);
+}
+
+function normalizeTitleForDedup(str = '') {
+  try {
+    if (typeof scraperService.normalizeTitleForDedup === 'function') {
+      return scraperService.normalizeTitleForDedup(str);
+    }
+  } catch (_) {}
+  return String(str || '').trim().toLowerCase();
+}
 
 const initialStories = [
   {

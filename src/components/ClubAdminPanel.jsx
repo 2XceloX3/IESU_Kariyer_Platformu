@@ -622,7 +622,7 @@ export default function ClubAdminPanel({
               }`}
             >
               <Building2 size={16}/> 
-              SKS Mekan Talepleri
+              SKS Mekan & Etkinlik Talepleri
               {(selectedClub.budgetRequests?.length > 0) && (
                 <span className="bg-slate-800 text-white text-[10px] px-2 py-0.5 rounded-full ml-1 font-bold">
                   {selectedClub.budgetRequests.length}

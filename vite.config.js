@@ -158,6 +158,126 @@ function iesuRssScraperPlugin() {
     );
   };
 
+  const handleEDevletCallbackRequest = async (req, res) => {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store');
+
+    let rawBody = '';
+    for await (const chunk of req) {
+      rawBody += chunk;
+    }
+
+    let body = {};
+    try {
+      body = rawBody ? JSON.parse(rawBody) : {};
+    } catch {
+      body = {};
+    }
+
+    const { code, role = 'student', redirectUri = '' } = body;
+    if (!code) {
+      res.statusCode = 400;
+      res.end(JSON.stringify({ ok: false, error: 'Missing authorization code' }));
+      return;
+    }
+
+    const clientId = process.env.VITE_EDEVLET_CLIENT_ID || process.env.EDEVLET_CLIENT_ID || '';
+    const clientSecret = process.env.EDEVLET_CLIENT_SECRET || process.env.VITE_EDEVLET_CLIENT_SECRET || '';
+    const tokenUrl =
+      process.env.VITE_EDEVLET_TOKEN_URL ||
+      'https://giris.turkiye.gov.tr/OAuth2AuthorizationServer/AccessTokenController';
+    const resourceUrl =
+      process.env.VITE_EDEVLET_RESOURCE_URL ||
+      'https://giris.turkiye.gov.tr/OAuth2AuthorizationServer/ResourceController';
+
+    if (!clientId || !clientSecret) {
+      res.statusCode = 503;
+      res.end(
+        JSON.stringify({
+          ok: false,
+          error:
+            'Resmi e-Devlet Kapısı OAuth2 istemci kimlik bilgileri (VITE_EDEVLET_CLIENT_ID / EDEVLET_CLIENT_SECRET) henüz tanımlanmadı.'
+        })
+      );
+      return;
+    }
+
+    try {
+      const tokenRes = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_id: clientId,
+          client_secret: clientSecret,
+          code,
+          redirect_uri: redirectUri
+        }).toString()
+      });
+
+      if (!tokenRes.ok) {
+        res.statusCode = 502;
+        res.end(JSON.stringify({ ok: false, error: 'e-Devlet AccessTokenController yanıt vermedi.' }));
+        return;
+      }
+
+      const tokenJson = await tokenRes.json();
+      const accessToken = tokenJson.access_token;
+      const yoksisScope =
+        role === 'academic'
+          ? 'Yoksis-Akademik-Bilgileri'
+          : role === 'alumni'
+          ? 'Yoksis-Mezuniyet-Bilgileri'
+          : 'Yoksis-Ogrenim-Bilgileri';
+
+      const resourceRes = await fetch(resourceUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          clientId,
+          accessToken,
+          resourceId: '1',
+          kapsam: `Kimlik-Dogrulama Iletisim-Bilgileri ${yoksisScope}`
+        }).toString()
+      });
+
+      const resourceData = resourceRes.ok ? await resourceRes.json() : {};
+      const kullanici = resourceData.kullaniciBilgileri || resourceData;
+      const yoksis = resourceData.yoksisBilgileri || resourceData.ogrenimBilgileri || {};
+
+      res.statusCode = 200;
+      res.end(
+        JSON.stringify({
+          ok: true,
+          uid: `EDEVLET-${kullanici.kimlikNo || Date.now()}`,
+          tcNo: kullanici.kimlikNo || '',
+          fullName: [kullanici.ad, kullanici.soyad].filter(Boolean).join(' '),
+          email: kullanici.eposta || '',
+          phone: kullanici.cepTelefonu || '',
+          faculty: yoksis.fakulteAdi || 'İstanbul Esenyurt Üniversitesi',
+          department: yoksis.programAdi || yoksis.bolumAdi || '',
+          studentNo: yoksis.ogrenciNo || '',
+          grade: yoksis.sinif || '',
+          gano: yoksis.gano || '',
+          graduationYear: yoksis.mezuniyetYili || '',
+          diplomaNo: yoksis.diplomaNo || '',
+          academicTitle: yoksis.akademikUnvan || yoksis.unvan || '',
+          educationStatus:
+            yoksis.ogrenimDurumu ||
+            (role === 'alumni' ? 'Mezun' : role === 'academic' ? 'Akademik Personel' : 'Aktif Öğrenci'),
+          yoksisService: yoksisScope,
+          role
+        })
+      );
+    } catch (err) {
+      res.statusCode = 500;
+      res.end(JSON.stringify({ ok: false, error: err?.message || 'e-Devlet OAuth2 hatası' }));
+    }
+  };
+
   return {
     name: 'iesu-rss-scraper-middleware',
     configureServer(server) {
@@ -168,6 +288,9 @@ function iesuRssScraperPlugin() {
       server.middlewares.use('/api/iesu-instagram-feed', (req, res) => {
         handleInstagramFeedRequest(req, res);
       });
+      server.middlewares.use('/api/auth/edevlet/callback', (req, res) => {
+        handleEDevletCallbackRequest(req, res);
+      });
     },
     configurePreviewServer(server) {
       startBackgroundWorker();
@@ -177,6 +300,9 @@ function iesuRssScraperPlugin() {
       server.middlewares.use('/api/iesu-instagram-feed', (req, res) => {
         handleInstagramFeedRequest(req, res);
       });
+      server.middlewares.use('/api/auth/edevlet/callback', (req, res) => {
+        handleEDevletCallbackRequest(req, res);
+      });
     }
   };
 }
@@ -185,7 +311,8 @@ function iesuRssScraperPlugin() {
 export default defineConfig({
   server: {
     port: 3000,
-    host: true,
+    host: '0.0.0.0',
+    allowedHosts: true,
     hmr: {
       overlay: false
     },

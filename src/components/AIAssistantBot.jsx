@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Sparkles, X, MessageSquare, Send, ArrowRight, BookOpen, BrainCircuit, ShieldCheck, Activity, ThumbsUp, ThumbsDown, Brain, BarChart3, ExternalLink, Mic, Volume2, VolumeX } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import { AIEngine, SelfLearningMemory } from '../data/AIEngine';
@@ -10,7 +9,17 @@ const EMPTY_ARRAY = [];
 const EMPTY_OBJECT = {};
 
 export default function AIAssistantBot({ currentUser }) {
-  const navigate = useNavigate();
+  const storeSetView = useAppStore(state => state.setView);
+  const navigate = (path) => {
+    const cleanView = String(path || '').replace(/^\/+/, '');
+    if (cleanView && typeof storeSetView === 'function') {
+      storeSetView(cleanView);
+    }
+    if (typeof window !== 'undefined' && window.history?.pushState) {
+      window.history.pushState({}, '', path);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    }
+  };
   const [isOpen, setIsOpen] = useState(false);
   const swarmMetrics = useAppStore(state => state.swarmMetrics);
   const incrementSwarmData = useAppStore(state => state.incrementSwarmData);

@@ -1276,8 +1276,8 @@ export default function UserProfile({
                 <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
                   <span className="text-gray-500 font-bold">Sürücü Belgesi:</span>
                   <span className="font-black text-emerald-700">
-                    {(user?.drivingLicenseClasses || currentUser?.drivingLicenseClasses || []).length
-                      ? (user?.drivingLicenseClasses || currentUser?.drivingLicenseClasses).join(', ')
+                    {Array.isArray(user?.drivingLicenseClasses || currentUser?.drivingLicenseClasses) && (user?.drivingLicenseClasses || currentUser?.drivingLicenseClasses).length > 0
+                      ? (user?.drivingLicenseClasses || currentUser?.drivingLicenseClasses || []).join(', ')
                       : 'Belirtilmedi'}
                   </span>
                 </div>

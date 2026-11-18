@@ -112,6 +112,26 @@ describe('Adım 4: Doğrulanmış OBS Entegrasyon Katmanı, QR Kodlu KGB Belgesi
       expect(payload.tcKimlikMasked).toBe('100*****146'); // KVKK Maskelemesi
       expect(onClose).toHaveBeenCalled();
     });
+
+    it('shows "Kayıtlı öğrenci bilgisi bulunamadı" when student/alumni data does not match in EDevletObsModal', async () => {
+      render(
+        <EDevletObsModal
+          isOpen={true}
+          onClose={vi.fn()}
+          mode="verify"
+        />
+      );
+
+      const input = screen.getByPlaceholderText(/Örn: 2023010482 veya 10000000146/i);
+      fireEvent.change(input, { target: { value: '99999999999' } });
+
+      const submitBtn = screen.getByRole('button', { name: /OBS & YÖKSİS ile Doğrula/i });
+      fireEvent.click(submitBtn);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Kayıtlı öğrenci bilgisi bulunamadı/i)).toBeInTheDocument();
+      });
+    });
   });
 
   /* -------------------------------------------------------------------------- */

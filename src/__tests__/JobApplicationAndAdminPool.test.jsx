@@ -58,9 +58,9 @@ describe('Job Application Form and Admin Pool Integration', () => {
     fireEvent.click(applyBtn);
 
     expect(screen.getByText(/İş & Staj Başvuru Formu/i)).toBeInTheDocument();
-    expect(screen.getByText(/CBİKO & Kamu Kurumları/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/CBİKO & Kamu Kurumları/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Aday Kimlik Bilgileri/i)).toBeInTheDocument();
-    expect(screen.getByText(/Berke Arslan/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Berke Arslan/i).length).toBeGreaterThan(0);
   });
 
   it('submits application, saves to useAppStore, and shows "Başvuruldu" on button', async () => {

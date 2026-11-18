@@ -7,6 +7,7 @@ import useAppStore from './store/useAppStore';
 import { ToastContainer, toast } from './components/shared/Toast';
 import NotificationEngine from './components/NotificationEngine';
 import ErrorBoundary from './components/ErrorBoundary';
+import { handleEDevletOAuthCallback } from './services/edevletGatewayService';
 
 const LandingPage = lazy(() => import('./components/LandingPage')), Login = lazy(() => import('./components/Login')), Register = lazy(() => import('./components/Register')), ForgotPassword = lazy(() => import('./components/ForgotPassword'));
 const PublicNewsView = lazy(() => import('./components/PublicNewsView')), AdminFeed = lazy(() => import('./components/AdminFeed')), AdminDashboard = lazy(() => import('./components/AdminDashboard')), StudentHive = lazy(() => import('./hives/student/StudentHive'));
@@ -262,6 +263,30 @@ if (p && p.role !== 'admin') {
   }, [pathView, setActivePortalBranch, isAdmin, effectiveRole, activePortalBranch]);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const isCallbackPath = location.pathname.includes('/auth/edevlet/callback') || pathView === 'callback';
+    const params = new URLSearchParams(location.search || window.location.search || '');
+    const code = params.get('code');
+    const state = params.get('state');
+
+    if (isCallbackPath && code) {
+      handleEDevletOAuthCallback(code, state)
+        .then((userProfile) => {
+          const targetRole = userProfile?.role || 'student';
+          setCurrentUser(userProfile);
+          setUserRole(targetRole);
+          setActivePortalBranch?.(targetRole);
+          toast?.success?.(`Hoş geldiniz ${userProfile.name}, e-Devlet & YÖKSİS bilgileriniz otomatik aktarıldı.`);
+          navigate('/' + targetRole, { replace: true });
+        })
+        .catch((err) => {
+          toast?.error?.(err?.message || 'e-Devlet Kapısı doğrulaması tamamlanamadı.');
+          navigate('/login', { replace: true });
+        });
+    }
+  }, [location.pathname, location.search, pathView, navigate, setUserRole, setActivePortalBranch]);
+
+  useEffect(() => {
     let isInitialBoot = true;
     if (!auth) {
       // Firebase Auth başlatılamadı (gizli mod / init hatası): session/storage tabanlı oturumu koru
@@ -431,7 +456,7 @@ if (p && p.role !== 'admin') {
           (pathView === 'contact' || pathView === 'contact_us') ? <ContactPage setView={setView} currentUser={null} userRole={null} />
           : (pathView === 'about_us') ? <AboutUsPage setView={setView} currentUser={null} userRole={null} />
           : (pathView === 'services') ? <ServicesPage setView={setView} currentUser={null} userRole={null} />
-          : (pathView === 'events_list' || pathView === 'etkinlikler' || pathView === 'events' || pathView === 'etkinliklerimiz') ? <EventsPage setView={setView} currentUser={null} userRole={null} />
+          : (pathView === 'events_list' || pathView === 'etkinliklerimiz') ? <EventsPage setView={setView} currentUser={null} userRole={null} />
           : (pathView === 'register') ? <Register setView={setView} setCurrentUser={setCurrentUser} setStudents={store.setStudents} setAlumni={store.setAlumni} setAcademicStaff={store.setAcademicStaff} setCompanies={store.setCompanies} setUserRole={setUserRole} />
           : (pathView === 'forgot_password') ? <ForgotPassword setView={setView} />
           : (pathView === 'jobs') ? <JobsAndInternships setView={setView} currentUser={null} userRole={null} />

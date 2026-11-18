@@ -73,6 +73,7 @@ export default function LanguageSwitcher({ variant = 'default', className = '' }
     <div className="relative inline-block" ref={dropdownRef}>
       <button
         type="button"
+        role="combobox"
         onClick={() => setIsOpen(v => !v)}
         onDoubleClick={toggleLanguage}
         aria-label={`Dil Değiştir: ${currentLangObj.nativeName}`}
