@@ -121,7 +121,7 @@ export default function SubPanelFooter({ setView, theme = 'red' }) {
       />
 
       {/* 🌊 TOP ORGANIC SVG WAVE DIVIDER TRANSITION */}
-      <div className="w-full overflow-hidden leading-none bg-[#F8FAFC]">
+      <div className="w-full overflow-hidden leading-none bg-[#F8FAFC] dark:bg-slate-950">
         <svg 
           className={`relative block w-full h-12 sm:h-16 ${waveBgClass}`} 
           viewBox="0 0 1440 120" 
@@ -279,7 +279,7 @@ export default function SubPanelFooter({ setView, theme = 'red' }) {
 
         {/* Bottom Copyright & Legal Links */}
         <div className="max-w-[1250px] mx-auto pt-6 border-t border-white/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-semibold text-white/90 relative z-10">
-          <p>2026 © İstanbul Esenyurt Üniversitesi Bilgi İşlem Daire Başkanlığı tarafından hazırlanmıştır.</p>
+          <p>2026 © İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanmıştır.</p>
           <div className="flex items-center gap-4 text-white">
             <button onClick={() => handleNavigate('gizlilik')} className="hover:underline transition cursor-pointer">Gizlilik Politikası</button>
             <button onClick={() => handleNavigate('kullanim')} className="hover:underline transition cursor-pointer">Kullanım Koşulları</button>

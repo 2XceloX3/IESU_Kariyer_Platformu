@@ -40,20 +40,20 @@ const initialStaffList = [
   {
     id: 'STAFF-1',
     name: 'Kariyer Geliştirme Koordinatörlüğü',
-    title: 'Kariyer Geliştirme Ofis Sorumlusu',
-    phone: '444 9 123 / 1322',
-    email: 'zsahin@esenyurt.edu.tr',
-    photo: 'https://www.esenyurt.edu.tr/uploads/staffs/405.jpg',
-    yokLink: 'https://www.esenyurt.edu.tr/kadro/kariyer-gelistirme-ofisi-kadro-1'
+    title: 'Kariyer Geliştirme Koordinatörü',
+    phone: '444 9 123 / 1102',
+    email: 'kariyer@esenyurt.edu.tr',
+    photo: '/iesu-logo.svg',
+    yokLink: 'https://www.esenyurt.edu.tr'
   },
   {
     id: 'STAFF-2',
-    name: 'Kariyer Geliştirme Koordinatörlüğü',
-    title: 'Kariyer Geliştirme Ofisi Sorumlusu',
+    name: 'Kariyer Geliştirme Merkezi',
+    title: 'Kariyer & Staj Operasyon Uzmanı',
     phone: '444 9 123 / 1322',
-    email: 'myagiz@esenyurt.edu.tr',
-    photo: 'https://www.esenyurt.edu.tr/uploads/staffs/278.jpg',
-    yokLink: 'http://akademik.yok.gov.tr/AkademikArama/AkademisyenGorevOgrenimBilgileri?islem=direct&authorId=CAC066B35D650BC1'
+    email: 'staj@esenyurt.edu.tr',
+    photo: '/iesu-logo.svg',
+    yokLink: 'https://www.esenyurt.edu.tr'
   }
 ];
 

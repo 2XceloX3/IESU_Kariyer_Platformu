@@ -8,6 +8,8 @@ import {
   Check, AlertCircle, FileCheck, Info
 } from 'lucide-react';
 import { IESU_FACULTIES, IESU_MYO, IESU_YUKSEKOKUL } from '../../utils/universityData';
+
+const ALL_IESU_UNITS = [...IESU_FACULTIES, ...IESU_YUKSEKOKUL, ...IESU_MYO];
 import useAppStore from '../../store/useAppStore';
 import { useAdminStore } from '../../brain/useAdminStore';
 import Logo from '../Logo';
@@ -818,7 +820,7 @@ export default function StudentProfileUpdate({
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Fakülte / Yüksekokul</label>
+                      <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Fakülte / Yüksekokul / MYO</label>
                       <select
                         value={formData.faculty}
                         onChange={(e) => {
@@ -827,8 +829,8 @@ export default function StudentProfileUpdate({
                         }}
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
                       >
-                        <option value="">Fakülte / Yüksekokul seçiniz...</option>
-                        {IESU_FACULTIES.map(f => (
+                        <option value="">Fakülte / Yüksekokul / MYO seçiniz...</option>
+                        {ALL_IESU_UNITS.map(f => (
                           <option key={f.name} value={f.name}>{f.name}</option>
                         ))}
                       </select>
@@ -841,8 +843,8 @@ export default function StudentProfileUpdate({
                         onChange={(e) => handleChange('department', e.target.value)}
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
                       >
-                        <option value="">Bölüm Seçiniz...</option>
-                        {((IESU_FACULTIES.find(f => f.name === formData.faculty)?.departments) || ['Bilgisayar Mühendisliği', 'Yazılım Mühendisliği', 'İşletme']).map(d => (
+                        <option value="">Bölüm / Program Seçiniz...</option>
+                        {((ALL_IESU_UNITS.find(f => f.name === formData.faculty)?.departments) || ALL_IESU_UNITS.flatMap(u => u.departments)).map(d => (
                           <option key={d} value={d}>{d}</option>
                         ))}
                       </select>
@@ -930,8 +932,8 @@ export default function StudentProfileUpdate({
                             onChange={(e) => handleChange('capFaculty', e.target.value)}
                             className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 outline-none"
                           >
-                            <option value="">Fakülte Seçiniz...</option>
-                            {IESU_FACULTIES.map(f => (
+                            <option value="">Fakülte / MYO Seçiniz...</option>
+                            {ALL_IESU_UNITS.map(f => (
                               <option key={f.name} value={f.name}>{f.name}</option>
                             ))}
                           </select>
@@ -2212,51 +2214,6 @@ export default function StudentProfileUpdate({
                 </div>
               )}
 
-              {/* TAB 9: CLUBS & ACTIVITIES */}
-              {activeTab === 'clubs' && (
-                <div className="space-y-6 animate-fade-in">
-                  <div className="border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
-                      <Layers className="text-[#990000]" size={22} />
-                      Kulüp & Öğrenci Toplulukları
-                    </h3>
-                    <p className="text-sm text-slate-600 font-medium">Üniversitemiz bünyesinde aktif üye veya yönetiminde olduğunuz kulüpler.</p>
-                  </div>
-
-                  <div className="space-y-3">
-                    {(Array.isArray(formData.clubs) ? formData.clubs : []).map(club => (
-                      <div key={club} className="flex items-center justify-between p-4 bg-red-50/40 border border-red-100 rounded-2xl">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-[#990000] text-white flex items-center justify-center font-bold">
-                            {club.charAt(0)}
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-sm text-gray-900">{club}</h4>
-                            <span className="text-xs text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded-md">Aktif Üye</span>
-                          </div>
-                        </div>
-                        <button 
-                          onClick={() => setView('club_portal')} 
-                          className="px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer"
-                        >
-                          Kulüp Sayfasına Git
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center">
-                    <p className="text-xs text-slate-600 mb-2">Başka bir kulübe katılmak veya yeni bir kulüp başvurusu yapmak ister misiniz?</p>
-                    <button
-                      onClick={() => setView('club_portal')}
-                      className="px-5 py-2 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl transition shadow-xs cursor-pointer"
-                    >
-                      Öğrenci Kulüpleri Portalına Git
-                    </button>
-                  </div>
-                </div>
-              )}
-
               {/* TAB 10: CV FILE & DIGITAL PORTFOLIO LINKS */}
               {activeTab === 'cv_links' && (
                 <div className="space-y-6 animate-fade-in">
@@ -2439,11 +2396,11 @@ export default function StudentProfileUpdate({
                   type="button"
                   disabled={isCvUploading || isAvatarUploading}
                   onClick={() => {
-                    navigateWithSave('student');
+                    setView('student');
                   }}
                   className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 disabled:opacity-50 text-slate-700 font-bold text-sm rounded-xl transition cursor-pointer disabled:cursor-wait"
                 >
-                  İptal & Geri Dön
+                  Kaydetmeden Çık
                 </button>
 
                 <button

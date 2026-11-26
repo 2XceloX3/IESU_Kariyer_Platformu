@@ -113,7 +113,7 @@ export default function CMSNews({ news = [], setNews, _posts, setPosts, currentU
         <div className="flex justify-between items-end mb-4">
           <div>
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">Haber Yönetimi</h2>
-            <p className="text-sm font-medium text-gray-500 mt-1">Sistemdeki resmi haberları ve ilanları yönetin.</p>
+            <p className="text-sm font-medium text-gray-500 mt-1">Sistemdeki resmi haberleri ve ilanları yönetin.</p>
           </div>
           <button onClick={handleAddNew} className="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm transition-all hover:shadow-md">
             <Plus size={18} /> Yeni Haber Ekle
@@ -143,7 +143,6 @@ export default function CMSNews({ news = [], setNews, _posts, setPosts, currentU
             <option value="yayında">Yayında</option>
             <option value="taslak">Taslak</option>
           </select>
-          <button aria-label="İşlem Butonu" className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
         </div>
       </div>
 
@@ -215,7 +214,7 @@ export default function CMSNews({ news = [], setNews, _posts, setPosts, currentU
     <div className="flex-1">
       <div className="flex-1 bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
         <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-          <h3 className="text-lg font-black text-gray-900">{currentId ? 'Haberyu Düzenle' : 'Yeni Haber'}</h3>
+          <h3 className="text-lg font-black text-gray-900">{currentId ? 'Haberi Düzenle' : 'Yeni Haber'}</h3>
           <button type="button" onClick={() => setIsEditing(false)} className="text-sm font-bold text-gray-500 hover:text-gray-900 transition">İptal</button>
         </div>
 

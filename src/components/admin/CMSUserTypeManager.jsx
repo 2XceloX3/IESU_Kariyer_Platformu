@@ -979,9 +979,13 @@ export default function CMSUserTypeManager() {
               </div>
             </div>
             
-            <div className="p-4 border-t border-slate-100 bg-slate-50 rounded-b-2xl flex justify-center">
-              <button className="text-sm font-medium text-[#990000] hover:text-red-800 transition-colors">
-                Tüm dökümü görüntüle
+            <div className="p-4 border-t border-slate-100 bg-slate-50 rounded-b-2xl flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsAuditModalOpen(false)}
+                className="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-sm font-semibold text-slate-700 transition-colors"
+              >
+                Kapat
               </button>
             </div>
           </div>
@@ -1129,7 +1133,7 @@ export default function CMSUserTypeManager() {
                   type="submit"
                   className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-black transition shadow-md cursor-pointer"
                 >
-                  <Save size={15} /> Şifreyi Güncelle & Admne Bildir
+                  <Save size={15} /> Şifreyi Güncelle
                 </button>
               </div>
             </form>

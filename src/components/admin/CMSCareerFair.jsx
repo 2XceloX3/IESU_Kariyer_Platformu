@@ -397,7 +397,7 @@ const CMSCareerFair = () => {
           <div className="space-y-3 max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-amber-300 text-xs font-semibold tracking-wide border border-white/10">
               <Sparkles size={14} className="animate-pulse text-amber-300" />
-              <span>Geleneksel Kariyer Günleri Google Stitch Yükseltmesi</span>
+              <span>Geleneksel Kariyer Günleri Yönetim Merkezi</span>
             </div>
             <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight">
               {eventDetails?.title || careerFairEvent?.title || 'İESÜ Kariyer Zirvesi & Fuarı CMS'}

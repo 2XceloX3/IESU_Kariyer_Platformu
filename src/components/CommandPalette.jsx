@@ -142,9 +142,9 @@ export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser
               return { icon: <Briefcase size={18} className="text-emerald-500" />, action: () => setView('jobs') };
             case 'fakulte':
             case 'myo':
-              return { icon: <GraduationCap size={18} className="text-indigo-500" />, action: () => setView('organization') };
+              return { icon: <GraduationCap size={18} className="text-indigo-500" />, action: () => setView('about_us') };
             case 'sem':
-              return { icon: <BookOpen size={18} className="text-teal-500" />, action: () => setView(isStudent ? 'sem' : 'services') };
+              return { icon: <BookOpen size={18} className="text-teal-500" />, action: () => setView('services') };
             default:
               return { icon: <Sparkles size={18} className="text-[#990000]" />, action: () => setView('explore') };
           }
@@ -296,7 +296,7 @@ export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser
                 <Search size={22} />
               </div>
               <p className="font-bold text-gray-800 text-sm">"{query}" için sonuç bulunamadı</p>
-              <p className="text-xs text-gray-400 max-w-xs mx-auto">Farklı anahtar kelimelerle arama yapabilir veya Fakülte, İlan ya da Yemekhane yazmayı deneyebilirsiniz.</p>
+              <p className="text-xs text-gray-400 max-w-xs mx-auto">Farklı anahtar kelimelerle arama yapabilir veya Staj, İlan, CV ya da Etkinlik yazmayı deneyebilirsiniz.</p>
             </div>
           )}
         </div>

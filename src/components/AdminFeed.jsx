@@ -84,40 +84,22 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
       setActiveTabState(adminActiveTab);
     }
   }, [adminActiveTab, initialTab]);
-  const [branchFilter, setBranchFilter] = useState('all'); // 'all' | 'alumni' | 'company'
-  const [searchQuery, setSearchQuery] = useState('');
-  const [demandSubTab, setDemandSubTab] = useState('company'); // 'company'
+  const [branchFilter, setBranchFilter] = useState('all'); // 'all' | 'student' | 'alumni' | 'company'
+  const [searchQuery] = useState('');
 
   // Pending items for quick admin moderation
-  const pendingJobs = (jobs || []).filter(j => j.status === 'Onay Bekliyor' || j.status === 'Pending');
+  const pendingJobs = (jobs || []).filter(j => ['Beklemede', 'Onay Bekliyor', 'Pending'].includes(j?.status));
   const pendingFairApps = (careerFairApplications || []).filter(a => a.status === 'Beklemede' || !a.status);
 
-  // Counseling requests state
-  const [counselingRequests, setCounselingRequests] = useState(() => {
-    try {
-      const saved = localStorage.getItem('iesu_mentorship_requests_v1');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch(e) { /* intentional */ }
-    return [
-      { id: 'req_acad_1', studentName: 'Alperen Yılmaz', department: 'Yazılım Mühendisliği', academicianName: 'Prof. Dr. Ahmet Yılmaz', subject: 'Bitirme Projesi & Staj Denkleştirme', date: 'Bugün 14:00', status: 'Beklemede' },
-      { id: 'req_acad_2', studentName: 'Ayşe Demir', department: 'Görsel İletişim Tasarımı', academicianName: 'Doç. Dr. Zeynep Çelik', subject: 'Portfolyo İncelemesi & Akademik Danışmanlık', date: 'Yarın 11:30', status: 'Beklemede' }
-    ];
-  });
-
-  const pendingCounselingList = (counselingRequests || []).filter(r => r.status === 'Beklemede' || !r.status);
-
-  // Guarantee Admin/Staff branch isolation (only set branch, never auto-relogin)
+  // Guarantee Admin branch isolation (only set branch, never auto-relogin)
   useEffect(() => {
     const store = useAppStore.getState();
-    if (store.setActivePortalBranch) store.setActivePortalBranch(isStaffPortal ? 'staff' : 'admin');
-  }, [isStaffPortal]);
+    if (store.setActivePortalBranch) store.setActivePortalBranch('admin');
+  }, []);
 
   const handleApproveJob = (jobId) => {
     if (setJobs) {
-      setJobs(prev => (prev || []).map(j => j.id === jobId ? { ...j, status: 'Aktif' } : j));
+      setJobs(prev => (prev || []).map(j => j.id === jobId ? { ...j, status: 'Yayında' } : j));
     }
     window.toast?.success?.("✅ İlan onaylandı ve tüm üniversite portallarında yayına alındı.");
   };
@@ -127,24 +109,6 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
       setJobs(prev => (prev || []).map(j => j.id === jobId ? { ...j, status: 'Reddedildi' } : j));
     }
     window.toast?.info?.("İlan reddedildi.");
-  };
-
-  const handleApproveCounseling = (reqId) => {
-    const updated = counselingRequests.map(r => r.id === reqId ? { ...r, status: 'Onaylandı' } : r);
-    setCounselingRequests(updated);
-    try {
-      localStorage.setItem('iesu_mentorship_requests_v1', JSON.stringify(updated));
-    } catch(e) { /* intentional */ }
-    window.toast?.success?.("✅ Akademik randevu / danışmanlık talebi onaylandı.");
-  };
-
-  const handleRejectCounseling = (reqId) => {
-    const updated = counselingRequests.map(r => r.id === reqId ? { ...r, status: 'Reddedildi' } : r);
-    setCounselingRequests(updated);
-    try {
-      localStorage.setItem('iesu_mentorship_requests_v1', JSON.stringify(updated));
-    } catch(e) { /* intentional */ }
-    window.toast?.info?.("Danışmanlık talebi iptal edildi.");
   };
 
   const handleApproveFairApp = (appId) => {
@@ -305,7 +269,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
               {/* Ecosystem Quick Links */}
               <div className="pt-3 space-y-1 text-left">
                 <button
-                  onClick={() => setView('yonetim_konsolu')}
+                  onClick={() => setView('operasyon')}
                   className="w-full flex items-center justify-between p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-amber-50 hover:text-amber-800 transition cursor-pointer"
                 >
                   <span className="flex items-center gap-2">
@@ -314,7 +278,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                   <ChevronRight size={14} className="text-slate-400" />
                 </button>
                 <button
-                  onClick={() => setView('company_ats')}
+                  onClick={() => setView('basvuru_havuzu')}
                   className="w-full flex items-center justify-between p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-800 transition cursor-pointer"
                 >
                   <span className="flex items-center gap-2">
@@ -573,60 +537,8 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                   </button>
                 </div>
 
-                {/* Sub-Tab: Firma İlan & Sponsorluk */}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setDemandSubTab('company')}
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer bg-blue-900 text-white shadow-md shadow-blue-950/30"
-                  >
-                    <Building2 size={15} />
-                    <span>Firma İlan & Sponsorluk ({pendingJobs.length + pendingFairApps.length})</span>
-                  </button>
-                </div>
-
-                {/* CONTENT: Academic Demands */}
-                {demandSubTab === 'academic' && (
-                  <div className="space-y-2">
-                    {pendingCounselingList.length === 0 ? (
-                      <div className="bg-white/80 p-4 rounded-2xl border border-purple-100 text-center">
-                        <p className="text-xs text-slate-500 font-bold">Onay bekleyen akademik danışmanlık veya randevu talebi bulunmuyor.</p>
-                      </div>
-                    ) : (
-                      pendingCounselingList.slice(0, 3).map(req => (
-                        <div key={req.id} className="bg-white p-3.5 rounded-2xl border border-purple-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs hover:border-purple-300 transition">
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2 mb-0.5">
-                              <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-purple-50 text-purple-700 border border-purple-200">
-                                {req.department || 'Fakülte'}
-                              </span>
-                              <span className="text-[11px] font-bold text-slate-400">• {req.date || 'Tarih belirtilmedi'}</span>
-                            </div>
-                            <p className="text-xs font-black text-slate-900 truncate">{req.studentName} → {req.academicianName || 'Danışman'}</p>
-                            <p className="text-[11px] text-slate-600 font-medium truncate">{req.subject || 'Akademik Görüşme'}</p>
-                          </div>
-                          <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                            <button 
-                              onClick={() => handleRejectCounseling(req.id)}
-                              className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs rounded-xl transition cursor-pointer"
-                            >
-                              Reddet
-                            </button>
-                            <button 
-                              onClick={() => handleApproveCounseling(req.id)}
-                              className="px-3.5 py-1.5 bg-purple-700 hover:bg-purple-800 text-white font-black text-xs rounded-xl transition shadow-xs cursor-pointer flex items-center gap-1"
-                            >
-                              <Check size={14} /> Onayla
-                            </button>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                )}
-
                 {/* CONTENT: Company Demands */}
-                {demandSubTab === 'company' && (
-                  <div className="space-y-2">
+                <div className="space-y-2">
                     {pendingJobs.length === 0 && pendingFairApps.length === 0 ? (
                       <div className="bg-white/80 p-4 rounded-2xl border border-blue-100 text-center">
                         <p className="text-xs text-slate-500 font-bold">Onay bekleyen firma ilanı veya etkinlik talebi bulunmuyor.</p>
@@ -695,7 +607,6 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                       </>
                     )}
                   </div>
-                )}
 
               </div>
 
@@ -709,16 +620,13 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                     if (branchFilter === 'all') return true;
                     
                     if (branchFilter === 'student') {
-                      return item.author?.role === 'student' || item.type === 'student_post' || item.type === 'club_event' || item.feedType === 'club_event' || item.feedType === 'club_post' || item.isClubPost || Boolean(item.clubId) || item.authorRole === 'student';
+                      return item.author?.role === 'student' || item.type === 'student_post' || item.authorRole === 'student';
                     }
                     if (branchFilter === 'alumni') {
                       return item.author?.role === 'alumni' || item.authorRole === 'alumni' || item.category === 'Mezun' || item.source === 'alumni' || item.type === 'alumni_post';
                     }
                     if (branchFilter === 'company') {
                       return item.isJob || item.isCareerOpportunity || item.feedType === 'job' || item.feedType === 'career_opp' || item.type === 'job' || item.type === 'internship' || item.author?.role === 'company' || item.author?.role === 'employer' || Boolean(item.companyName);
-                    }
-                    if (branchFilter === 'academic') {
-                      return item.author?.role === 'academic' || item.author?.role === 'academic_staff' || item.type === 'academic_announcement' || item.category === 'Akademik' || item.source === 'academic' || item.isGeneralEvent || item.feedType === 'event';
                     }
                     return true;
                   });
@@ -733,8 +641,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                       all: 'Üniversite genelinde',
                       student: 'Öğrenci portalında',
                       alumni: 'Mezun portalında',
-                      company: 'Firma & ATS portalında',
-                      academic: 'Akademik kadro portalında'
+                      company: 'Firma & ATS portalında'
                     };
                     return (
                       <div className="p-10 text-center bg-white rounded-3xl border border-slate-200/80 shadow-xs flex flex-col items-center justify-center min-h-[280px]">

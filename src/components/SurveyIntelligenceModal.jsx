@@ -291,7 +291,7 @@ export default function SurveyIntelligenceModal({ isOpen, onClose }) {
           {/* Footer */}
           <div className="p-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
             <span className="text-[11px] text-gray-500 font-medium">
-              İstanbul Esenyurt Üniversitesi — Survey Intelligence Agent v2.0 (Google Stitch Verified)
+              İstanbul Esenyurt Üniversitesi — Kariyer Geliştirme Koordinatörlüğü Anket Değerlendirme Sistemi
             </span>
             <button 
               onClick={onClose}

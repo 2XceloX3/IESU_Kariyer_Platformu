@@ -48,56 +48,67 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
     }
 
     const isInstitutional = currentUser?.role === 'admin' || currentUser?.role === 'staff';
+    const isStudentRole = userRole === 'student' || currentUser?.role === 'student';
     const defaultTitle = isInstitutional
       ? (currentUser?.staffTitle || 'Kariyer Geliştirme Koordinatörlüğü')
-      : (currentUser?.department ? `${currentUser.department} Mezunu` : 'İESÜ Mezunu');
+      : isStudentRole
+        ? (currentUser?.department ? `${currentUser.department} Öğrencisi` : 'İESÜ Öğrencisi')
+        : (currentUser?.department ? `${currentUser.department} Mezunu` : 'İESÜ Mezunu');
+
+    const userExperiences = Array.isArray(currentUser?.experiences) && currentUser.experiences.length > 0
+      ? currentUser.experiences.map((exp, i) => ({
+          id: exp.id || i + 1,
+          company: exp.company || '',
+          role: exp.role || exp.title || '',
+          type: exp.type || 'Staj / Deneyim',
+          date: exp.date || exp.period || '',
+          desc: exp.desc || exp.description || ''
+        }))
+      : [];
 
     return {
-      name: currentUser?.name || 'Ad Soyad',
-      photo: currentUser?.avatar || '/iesu-logo.svg',
+      name: currentUser?.name || '',
+      photo: currentUser?.avatar || '',
       title: currentUser?.title || defaultTitle,
       email: currentUser?.email || '',
       phone: currentUser?.phone || '',
       location: currentUser?.location || currentUser?.city || 'İstanbul, Türkiye',
       linkedin: currentUser?.linkedin || '',
       github: currentUser?.github || '',
-      website: '',
-      summary: currentUser?.bio || currentUser?.summary || 'İstanbul Esenyurt Üniversitesi bünyesinde edindiğim teorik ve uygulamalı yetkinliklerle; teknoloji, inovasyon ve problem çözme odaklı projelerde aktif değer üretmeyi hedefliyorum.',
-      gpa: currentUser?.gpa || '3.42',
+      website: currentUser?.website || '',
+      summary: currentUser?.bio || currentUser?.summary || '',
+      gpa: currentUser?.gpa ?? currentUser?.agno ?? '',
       thesis: currentUser?.thesis || '',
       academicProjects: '',
-      experience: [
-        {
-          id: 1,
-          company: 'Teknoloji & Yazılım Çözümleri A.Ş.',
-          role: 'Stajyer Yazılım Geliştirici',
-          type: 'Zorunlu Staj',
-          date: 'Temmuz 2025 - Eylül 2025',
-          desc: 'Modern web uygulamalarında React ve Node.js entegrasyonu sağlandı. RESTful API servisleri geliştirildi ve test otomasyon süreçlerine katkı sunuldu.'
-        }
-      ],
+      experience: userExperiences,
       education: [
         {
           id: 1,
           institution: 'İstanbul Esenyurt Üniversitesi',
-          degree: `${currentUser?.faculty || 'Mühendislik ve Mimarlık Fakültesi'} - ${currentUser?.department || 'Bilgisayar Mühendisliği'}`,
-          date: '2022 - 2026',
-          gpa: '3.42 / 4.00',
-          desc: 'Yapay Zekâ ve Dağıtık Sistemler odaklı lisans eğitimi.'
+          degree: currentUser?.department
+            ? `${currentUser?.faculty ? `${currentUser.faculty} - ` : ''}${currentUser.department}`
+            : (currentUser?.faculty || 'Bölüm / Program Bilginizi Girin'),
+          date: currentUser?.graduationYear
+            ? `${Number(currentUser.graduationYear) - 4} - ${currentUser.graduationYear}`
+            : (currentUser?.graduationExpectedYear ? `Devam Ediyor (Tahmini ${currentUser.graduationExpectedYear})` : 'Devam Ediyor'),
+          gpa: currentUser?.gpa ? `${currentUser.gpa} / 4.00` : '',
+          desc: ''
         }
       ],
-      skills: currentUser?.skills?.length > 0 
-        ? currentUser.skills 
-        : ['JavaScript (ES6+)', 'React.js', 'Python', 'SQL & Veri Modelleme', 'Git & GitHub', 'Agile / Scrum Metodolojileri'],
-      languages: [
-        { id: 1, lang: 'Türkçe', level: 'Ana Dil' },
-        { id: 2, lang: 'İngilizce', level: 'B2 (Profesyonel Çalışma)' }
-      ],
+      skills: Array.isArray(currentUser?.skills) && currentUser.skills.length > 0
+        ? currentUser.skills
+        : [],
+      languages: Array.isArray(currentUser?.languages) && currentUser.languages.length > 0
+        ? currentUser.languages.map((l, i) => typeof l === 'string' ? { id: i + 1, lang: l, level: 'B2' } : { id: l.id || i + 1, lang: l.lang || l.name || 'Dil', level: l.level || 'B2' })
+        : [
+            { id: 1, lang: 'Türkçe', level: 'Ana Dil' },
+            { id: 2, lang: 'İngilizce', level: 'B1 / B2' }
+          ],
       certificates: (currentUser?.certificates || []).map((c, i) => ({
         id: c.id || i + 1,
         name: c.name || c.title || 'Sertifika',
-        issuer: c.issuer || 'İESÜ Sürekli Eğitim Merkezi',
-        date: c.date || '2025',
+        issuer: c.issuer || 'İESÜ Kariyer Geliştirme Merkezi',
+        date: c.date || new Date().getFullYear().toString(),
         desc: ''
       }))
     };
@@ -443,7 +454,15 @@ JSON formatı: { "skills": ["Yetkinlik 1", "Yetkinlik 2", "Yetkinlik 3", "Yetkin
             </button>
 
             <button
-              onClick={() => exportPDF('cv-print-area', `${cvData.name || 'Ozgecmisim'}_CV.pdf`)}
+              onClick={() => {
+                const fileName = `${cvData.name || 'Ozgecmisim'}_CV.pdf`;
+                if (mobileViewMode === 'editor' && typeof window !== 'undefined' && window.innerWidth < 1024) {
+                  setMobileViewMode('preview');
+                  setTimeout(() => exportPDF('cv-print-area', fileName), 180);
+                } else {
+                  exportPDF('cv-print-area', fileName);
+                }
+              }}
               className="px-3.5 py-2 rounded-xl text-xs font-bold bg-[#990000] hover:bg-red-800 text-white shadow-xs transition flex items-center gap-1.5 cursor-pointer"
               title="Yüksek Çözünürlüklü PDF İndir"
             >

@@ -158,7 +158,7 @@ export const initiateEDevletOAuthLogin = (role = 'student', options = {}) => {
     role: normalizedRole,
     authorizationUrl,
     message:
-      'e-Devlet Kapısı (Türksat & YÖKSİS) doğrudan entegrasyon altyapısı hazırdır. Kurumsal API anahtarları (VITE_EDEVLET_CLIENT_ID ve EDEVLET_CLIENT_SECRET) tanımlandığında tek tıkla giris.turkiye.gov.tr üzerinden otomatik veri aktarımı devreye girecektir.',
+      'e-Devlet Kapısı ile hızlı giriş bağlantısı yakında aktif edilecektir. Şu an öğrenci/mezun e-posta adresiniz ve şifrenizle güvenle giriş yapabilir veya hesabınızı aktifleştirebilirsiniz.',
   };
 };
 

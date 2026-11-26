@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { ArrowLeft, Building2, Mail, Phone, MapPin, User, FileText, CheckCircle2, AlertCircle, GraduationCap, KeyRound, Lock, Briefcase, ShieldCheck, ArrowRight, Upload } from 'lucide-react';
+import { ArrowLeft, Building2, Mail, Phone, MapPin, User, FileText, CheckCircle2, AlertCircle, GraduationCap, KeyRound, Lock, Briefcase, ShieldCheck, ArrowRight, Upload, Eye, EyeOff } from 'lucide-react';
 
 // IT Departmanı için Not: Firebase Kimlik Doğrulama (Auth) ve Veritabanı (Firestore) modülleri içeri aktarıldı.
 import { auth, db, googleProvider } from '../utils/firebase';
@@ -247,7 +247,18 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
     (t === 'employer' || t === 'company') ? 'employer' : 'alumni'
   );
   const [step, setStep] = useState(1); // 1: Info, 2: Success
-  const [accountType, setAccountType] = useState(() => normalizeRegisterType(registerAccountType)); // 'student', 'alumni', 'employer'
+  const [accountType, setAccountType] = useState(() => {
+    try {
+      const requested = sessionStorage.getItem('iesu_register_role');
+      if (requested) {
+        sessionStorage.removeItem('iesu_register_role');
+        return normalizeRegisterType(requested);
+      }
+    } catch { /* intentional */ }
+    return normalizeRegisterType(registerAccountType || 'student');
+  }); // 'student', 'alumni', 'employer'
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const [error, setError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [touchedFields, setTouchedFields] = useState({});
@@ -480,11 +491,12 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
   };
 
   const saveProfile = async (userId, profile) => {
+    const { password: _removedPwd, passwordConfirm: _removedPwdConfirm, ...safeProfile } = profile || {};
     try {
-      await setDoc(doc(db, 'users', userId), profile);
-      if (profile.role === 'employer' || profile.role === 'company') {
+      await setDoc(doc(db, 'users', userId), safeProfile);
+      if (safeProfile.role === 'employer' || safeProfile.role === 'company') {
         try {
-          await setDoc(doc(db, 'company_profiles', userId), profile);
+          await setDoc(doc(db, 'company_profiles', userId), safeProfile);
         } catch { /* intentional */ }
       }
     } catch (err) {
@@ -520,7 +532,6 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
         title: formData.title.trim(),
         website: formData.website.trim(),
         sector: formData.sector.trim(),
-        password: formData.password || '',
         role: 'employer',
         status: 'Aktif',
         onboardingCompleted: true,
@@ -609,7 +620,6 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           studentId: formData.studentId,
           email: formData.studentEmail,
           department: formData.studentDepartment || 'Belirtilmedi',
-          password: formData.password,
           role: 'student',
           grade: formData.studentGrade || 'Aktif',
           status: 'Aktif',
@@ -659,7 +669,6 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           website: formData.website,
           sector: formData.sector || 'Teknoloji & Bilişim',
           taxNo: formData.taxNo,
-          password: formData.password,
           role: 'employer',
           status: 'Aktif',
           onboardingCompleted: true,
@@ -691,7 +700,6 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           staffId: formData.staffId || `AKD-${Date.now().toString().slice(-6)}`,
           email: formData.academicEmail,
           title: formData.academicTitle || 'Akademisyen',
-          password: formData.password,
           role: 'alumni',
           requestedRole: 'academic',
           department: formData.academicDepartment || 'Belirtilmedi',
@@ -724,7 +732,6 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           email: formData.alumniEmail,
           department: formData.alumniDepartment || 'Belirtilmedi',
           graduationYear: formData.graduationYear || new Date().getFullYear().toString(),
-          password: formData.password,
           role: 'alumni',
           status: 'Aktif',
           onboardingCompleted: true,
@@ -1482,15 +1489,23 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                       <input
                         id={`${accountType}Password`}
                         aria-label="Yeni Şifre"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         name="password"
                         minLength={6}
                         value={formData.password}
                         onChange={handleChange}
                         placeholder="Yeni Şifre (En az 6 karakter)"
-                        className="w-full h-12 pl-11 pr-4 bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/90 dark:border-slate-700 rounded-2xl focus:bg-white dark:focus:bg-slate-800 focus:border-[#dc2626] focus:ring-4 focus:ring-[#dc2626]/15 outline-none text-sm font-semibold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 placeholder:font-medium shadow-2xs transition-all duration-200"
+                        className="w-full h-12 pl-11 pr-11 bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/90 dark:border-slate-700 rounded-2xl focus:bg-white dark:focus:bg-slate-800 focus:border-[#dc2626] focus:ring-4 focus:ring-[#dc2626]/15 outline-none text-sm font-semibold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 placeholder:font-medium shadow-2xs transition-all duration-200"
                         required
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(p => !p)}
+                        aria-label={showPassword ? 'Şifreyi gizle' : 'Şifreyi göster'}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                      >
+                        {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                      </button>
                     </div>
                   </div>
 
@@ -1501,15 +1516,23 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                       <input
                         id={`${accountType}PasswordConfirm`}
                         aria-label="Yeni Şifre Tekrar"
-                        type="password"
+                        type={showPasswordConfirm ? 'text' : 'password'}
                         name="passwordConfirm"
                         minLength={6}
                         value={formData.passwordConfirm}
                         onChange={handleChange}
                         placeholder="Yeni Şifre (Tekrar)"
-                        className="w-full h-12 pl-11 pr-4 bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/90 dark:border-slate-700 rounded-2xl focus:bg-white dark:focus:bg-slate-800 focus:border-[#dc2626] focus:ring-4 focus:ring-[#dc2626]/15 outline-none text-sm font-semibold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 placeholder:font-medium shadow-2xs transition-all duration-200"
+                        className="w-full h-12 pl-11 pr-11 bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/90 dark:border-slate-700 rounded-2xl focus:bg-white dark:focus:bg-slate-800 focus:border-[#dc2626] focus:ring-4 focus:ring-[#dc2626]/15 outline-none text-sm font-semibold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 placeholder:font-medium shadow-2xs transition-all duration-200"
                         required
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPasswordConfirm(p => !p)}
+                        aria-label={showPasswordConfirm ? 'Şifre tekrarını gizle' : 'Şifre tekrarını göster'}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                      >
+                        {showPasswordConfirm ? <EyeOff size={17} /> : <Eye size={17} />}
+                      </button>
                     </div>
                   </div>
                 </div>

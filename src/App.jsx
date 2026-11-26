@@ -455,6 +455,13 @@ if (p && p.role !== 'admin') {
       return <AlumniHive currentUser={currentUser} setView={setView} />;
     };
 
+    // Yasal & kurumsal bilgilendirme sayfaları (KVKK, Gizlilik, Kullanım Koşulları, Çerez) tüm oturumlarda erişilebilir
+    const legalContentId = resolveLegalContentId(pathView);
+    if (legalContentId) {
+      const prevBranch = isAdmin ? 'admin' : isStaff ? 'staff' : (effectiveRole === 'student' ? 'student' : (effectiveRole === 'company' || effectiveRole === 'employer' ? 'company' : 'alumni'));
+      return <DynamicContentPage contentId={legalContentId} setView={setView} previousView={prevBranch} currentUser={currentUser} userRole={effectiveRole} />;
+    }
+
     // Kulüpler portalı kesin olarak kapatıldı
     if (pathView === 'clubs' || pathView === 'club_portal' || pathView === 'club_admin' || pathView === 'sksdb_clubs' || pathView === 'clubs_directory') {
       return renderHomeHiveForRole();

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { User, Users, Building2, Lock, ArrowRight, ShieldCheck, GraduationCap } from 'lucide-react';
+import { User, Users, Building2, Lock, ArrowRight, ShieldCheck, GraduationCap, Eye, EyeOff } from 'lucide-react';
 import Logo from './Logo';
 import { initiateEDevletOAuthLogin } from '../services/edevletGatewayService';
 import ThemeToggle from './shared/ThemeToggle';
@@ -25,6 +25,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     setLoginRole(normalizeLoginRole(initialRole));
@@ -319,13 +320,13 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       } else if (code === 'auth/too-many-requests') {
         setError('Çok fazla deneme yapıldı. Lütfen birkaç dakika sonra tekrar deneyin.');
       } else if (code === 'auth/network-request-failed') {
-        setError('Ağ hatası: Firebase’e bağlanılamadı. İnternet/VPN veya engeli kontrol edin.');
+        setError('İnternet bağlantınızı kontrol edin; giriş sunucusuna şu anda ulaşılamıyor.');
       } else if (code === 'auth/unauthorized-domain') {
-        setError('Bu alan adı Firebase’de yetkili değil (localhost eklenmeli).');
+        setError('Giriş servisi bu alan adı için henüz etkinleştirilmedi. Lütfen Kariyer Geliştirme Koordinatörlüğü ile iletişime geçin.');
       } else if (loginRole === 'admin') {
-        setError('Yönetici girişi başarısız' + (code ? ' (' + code + ')' : '') + '.');
+        setError('Yönetici girişi başarısız. Bilgilerinizi kontrol edip tekrar deneyin.');
       } else {
-        setError('Giriş servisine şu anda ulaşılamıyor' + (code ? ' (' + code + ')' : '') + '. Lütfen daha sonra tekrar deneyin.');
+        setError('Giriş servisine şu anda ulaşılamıyor. Lütfen birkaç dakika sonra tekrar deneyin.');
       }
       setIsLoading(false);
     }
@@ -361,6 +362,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
 
       try {
         sessionStorage.setItem('iesu_google_company_prefill', JSON.stringify(prefillProfile));
+        sessionStorage.setItem('iesu_register_role', 'employer');
       } catch { /* intentional */ }
 
       if (setRegisterAccountType) {
@@ -438,9 +440,9 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           </p>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border-l-4 border-[#990000] text-red-800 rounded-r-xl font-bold text-sm flex items-center gap-2">
-              <ShieldCheck size={18} />
-              {error}
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/60 border-l-4 border-[#990000] dark:border-red-500 text-red-800 dark:text-red-200 rounded-r-xl font-bold text-sm flex items-center gap-2">
+              <ShieldCheck size={18} className="shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
@@ -509,13 +511,21 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
                 id="password"
                 name="password"
                 aria-label="Şifre"
-                type="password" 
+                type={showPassword ? 'text' : 'password'} 
                 placeholder="Şifre" 
-                className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition text-sm font-semibold text-slate-800 dark:text-slate-100 placeholder:text-slate-400" 
+                className="w-full pl-11 pr-11 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition text-sm font-semibold text-slate-800 dark:text-slate-100 placeholder:text-slate-400" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(p => !p)}
+                aria-label={showPassword ? 'Şifreyi gizle' : 'Şifreyi göster'}
+                className="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
 
             <div className="flex items-center justify-between text-xs pt-1">
@@ -571,8 +581,12 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
                 </div>
                 <button 
                   onClick={() => {
+                    const targetRole = loginRole === 'student' ? 'student' : loginRole === 'employer' ? 'employer' : 'alumni';
+                    try {
+                      sessionStorage.setItem('iesu_register_role', targetRole);
+                    } catch { /* intentional */ }
                     if (setRegisterAccountType) {
-                      setRegisterAccountType(loginRole === 'student' ? 'student' : loginRole === 'employer' ? 'employer' : 'alumni');
+                      setRegisterAccountType(targetRole);
                     }
                     setView('register');
                   }} 

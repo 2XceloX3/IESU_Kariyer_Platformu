@@ -15,41 +15,67 @@ const MENTORS = [
 ];
 
 export default function MentorBooking({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
+  const upcomingDays = React.useMemo(() => {
+    const out = [];
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    const dayFmt = new Intl.DateTimeFormat('tr-TR', { weekday: 'short' });
+    const dateFmt = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short' });
+    while (out.length < 4) {
+      if (d.getDay() !== 0 && d.getDay() !== 6) {
+        out.push({
+          id: d.toISOString().slice(0, 10),
+          weekday: dayFmt.format(d),
+          label: dateFmt.format(d),
+          full: `${dateFmt.format(d)} ${dayFmt.format(d)}`
+        });
+      }
+      d.setDate(d.getDate() + 1);
+    }
+    return out;
+  }, []);
+  const timeSlots = ['10:00', '11:30', '14:00', '16:30'];
+
   const [selectedMentor, setSelectedMentor] = useState(null);
   const [bookingStep, setBookingStep] = useState(1); // 1: list, 2: calendar, 3: success
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDay, setSelectedDay] = useState(() => upcomingDays[0]?.full || 'Yarın');
+  const [selectedTime, setSelectedTime] = useState('14:00');
+  const [bookingNote, setBookingNote] = useState('');
   const addNotification = useAppStore(state => state.addNotification);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
 
   const backTarget = previousView || (
     activePortalBranch === 'student' ? 'student' :
     activePortalBranch === 'alumni' ? 'alumni' :
-    activePortalBranch === 'academic' ? 'academic' :
     activePortalBranch === 'company' ? 'company' :
-    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+    activePortalBranch === 'staff' ? 'staff' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'staff' ? 'staff' : 'student')
   );
 
   const handleBookSession = () => {
     if (selectedMentor) {
+      const bookedSummary = `${selectedDay}, ${selectedTime}`;
       try {
         eventBus.emit('mentorship:booked', {
           mentorId: selectedMentor.id,
           mentorName: selectedMentor.name,
           studentId: currentUser?.id || 'STU-001',
           studentName: currentUser?.name || 'Öğrenci',
-          time: '12 Ekim Salı, 14:00'
+          time: bookedSummary,
+          note: bookingNote
         });
       } catch (_) {}
       if (addNotification) {
         addNotification({
           id: 'NOTIF-MB-' + Date.now(),
           userId: currentUser?.id || 'STU-001',
-          text: `${selectedMentor.name} ile birebir mentorluk seansınız oluşturuldu (12 Ekim Salı 14:00).`,
+          text: `${selectedMentor.name} ile birebir mentorluk seansınız oluşturuldu (${bookedSummary}).`,
           read: false,
           time: 'Şimdi'
         });
       }
-      window.toast?.success?.(`${selectedMentor.name} ile mentorluk randevunuz başarıyla oluşturuldu!`);
+      window.toast?.success?.(`${selectedMentor.name} ile ${bookedSummary} randevunuz başarıyla oluşturuldu!`);
     }
     setBookingStep(3);
   };
@@ -172,31 +198,47 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
               <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"><CalendarIcon size={18} className="text-slate-400"/> Uygun Tarihler</h3>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-                {['12 Eki Salı', '13 Eki Çar', '15 Eki Cuma'].map((day, i) => (
-                  <div key={i} className={`p-3 rounded-xl border-2 text-center cursor-pointer transition-colors ${i === 0 ? 'border-[#990000] bg-red-50 text-[#990000] font-bold' : 'border-slate-100 hover:border-red-200 text-slate-600'}`}>
-                    <span className="block text-xs uppercase tracking-wider mb-1 opacity-70">{day.split(' ')[2]}</span>
-                    <span className="block text-lg">{day.split(' ')[0]} {day.split(' ')[1]}</span>
-                  </div>
-                ))}
+                {upcomingDays.map((day) => {
+                  const isActive = selectedDay === day.full;
+                  return (
+                    <button
+                      type="button"
+                      key={day.id}
+                      onClick={() => setSelectedDay(day.full)}
+                      className={`p-3 rounded-xl border-2 text-center cursor-pointer transition-colors ${isActive ? 'border-[#990000] bg-red-50 text-[#990000] font-bold' : 'border-slate-100 hover:border-red-200 text-slate-600'}`}
+                    >
+                      <span className="block text-xs uppercase tracking-wider mb-1 opacity-70">{day.weekday}</span>
+                      <span className="block text-lg">{day.label}</span>
+                    </button>
+                  );
+                })}
               </div>
 
               <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"><Clock size={18} className="text-slate-400"/> Saat Seçimi</h3>
               
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-8">
-                {['10:00', '11:30', '14:00', '16:30'].map((time, i) => (
-                  <div key={i} className={`py-2 rounded-lg border text-center cursor-pointer font-bold transition-colors ${i === 2 ? 'bg-[#990000] text-white border-[#990000] shadow-md' : 'border-slate-200 text-slate-600 hover:border-red-200'}`}>
-                    {time}
-                  </div>
-                ))}
+                {timeSlots.map((time) => {
+                  const isActive = selectedTime === time;
+                  return (
+                    <button
+                      type="button"
+                      key={time}
+                      onClick={() => setSelectedTime(time)}
+                      className={`py-2 rounded-lg border text-center cursor-pointer font-bold transition-colors ${isActive ? 'bg-[#990000] text-white border-[#990000] shadow-md' : 'border-slate-200 text-slate-600 hover:border-red-200'}`}
+                    >
+                      {time}
+                    </button>
+                  );
+                })}
               </div>
 
               <div className="mb-8">
                 <h3 className="text-sm font-bold text-gray-900 mb-2">Mentorluk Beklentiniz (Opsiyonel)</h3>
-                <textarea rows="3" placeholder="Örn: Özgeçmiş incelemesi, mülakat taktikleri..." className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-red-500 outline-none resize-none"></textarea>
+                <textarea rows="3" value={bookingNote} onChange={(e) => setBookingNote(e.target.value)} placeholder="Örn: Özgeçmiş incelemesi, mülakat taktikleri..." className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-red-500 outline-none resize-none"></textarea>
               </div>
 
               <button onClick={handleBookSession} className="w-full py-4 bg-[#990000] hover:bg-red-800 text-white rounded-xl font-black text-lg transition-colors flex items-center justify-center gap-2 cursor-pointer active:scale-95 shadow-md">
-                Randevuyu Onayla (1 Saat)
+                Randevuyu Onayla ({selectedDay}, {selectedTime})
               </button>
             </div>
           </motion.div>
@@ -209,7 +251,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
             </div>
             <h2 className="text-3xl font-black text-gray-900 mb-2">Randevu Onaylandı!</h2>
             <p className="text-slate-600 mb-8 leading-relaxed">
-              <strong>{selectedMentor.name}</strong> ile 12 Ekim Salı, 14:00'da olan mentorluk görüşmen takvimine eklendi. Bağlantı linki e-posta adresine gönderildi.
+              <strong>{selectedMentor.name}</strong> ile <strong>{selectedDay}, {selectedTime}</strong> tarihindeki mentorluk görüşmen takvimine eklendi.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 w-full">
               <button 

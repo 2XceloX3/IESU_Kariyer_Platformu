@@ -142,8 +142,8 @@ export default function CMSCareerCounseling() {
   ]);
 
   const counselorsList = [
-    { name: 'Kariyer Geliştirme Koordinatörlüğü', title: 'KGM Kıdemli Danışman & Ofis Sorumlusu', email: 'kgm@iesu.edu.tr', totalAppts: 18, rating: 4.9, avatar: 'ZŞ' },
-    { name: 'Kariyer Geliştirme Uzmanı', title: 'Kariyer Geliştirme Uzmanı', email: 'kgm@iesu.edu.tr', totalAppts: 22, rating: 5.0, avatar: 'MY' }
+    { name: 'Kariyer Geliştirme Koordinatörlüğü', title: 'KGM Kıdemli Danışman & Ofis Sorumlusu', email: 'kariyer@esenyurt.edu.tr', totalAppts: 18, rating: 4.9, avatar: 'KG' },
+    { name: 'Kariyer Geliştirme Uzmanı', title: 'Kariyer Geliştirme Uzmanı', email: 'kariyer@esenyurt.edu.tr', totalAppts: 22, rating: 5.0, avatar: 'KU' }
   ];
 
   const handleStatusChange = (id, newStatus) => {
@@ -750,25 +750,12 @@ export default function CMSCareerCounseling() {
                 </div>
               </div>
 
-              {/* Recommended Clubs & Mentors */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
-                  <h5 className="font-bold text-gray-900 text-xs uppercase tracking-wider mb-2">Eşleşen Öğrenci Kulüpleri</h5>
-                  <div className="space-y-1 text-xs text-slate-700">
-                    {(selectedTestDetail.recommendedClubs || ['İESÜ Yazılım ve İnovasyon Kulübü']).map((clb, idx) => (
-                      <div key={idx} className="flex items-center gap-1.5 font-bold">
-                        <CheckCircle size={13} className="text-emerald-600" /> {clb}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
-                  <h5 className="font-bold text-gray-900 text-xs uppercase tracking-wider mb-2">Danışman Değerlendirme Notu</h5>
-                  <p className="text-xs text-slate-600 italic">
-                    {selectedTestDetail.counselorNotes || 'Öğrencinin yetkinlik analizi tamamlanmış olup KGM bire bir danışmanlık randevusuna uygundur.'}
-                  </p>
-                </div>
+              {/* Counselor Evaluation Notes */}
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                <h5 className="font-bold text-gray-900 text-xs uppercase tracking-wider mb-2">Danışman Değerlendirme Notu</h5>
+                <p className="text-xs text-slate-600 italic">
+                  {selectedTestDetail.counselorNotes || 'Öğrencinin yetkinlik analizi tamamlanmış olup KGM bire bir danışmanlık randevusuna uygundur.'}
+                </p>
               </div>
 
             </div>
@@ -783,7 +770,23 @@ export default function CMSCareerCounseling() {
               </button>
               <button
                 onClick={() => {
-                  toast.success(`${selectedTestDetail.studentName} için KGM Bire Bir Danışmanlık Randevusu oluşturuldu.`);
+                  const nextDate = new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10);
+                  setAppointments(prev => [
+                    {
+                      id: `APPT-${Date.now().toString().slice(-4)}`,
+                      studentName: selectedTestDetail.studentName || 'Öğrenci',
+                      studentId: selectedTestDetail.studentId || 'STU-NEW',
+                      department: selectedTestDetail.department || 'İESÜ Öğrencisi',
+                      counselor: 'Kariyer Geliştirme Koordinatörlüğü',
+                      type: 'Bire Bir Kariyer Planlama & Test Yorumlama',
+                      date: `${nextDate} 14:00`,
+                      location: 'KGM Görüşme Odası 1',
+                      status: 'Onaylandı',
+                      evaluation: null
+                    },
+                    ...prev
+                  ]);
+                  window.toast?.success?.(`${selectedTestDetail.studentName} için KGM Bire Bir Danışmanlık Randevusu oluşturuldu.`);
                   setSelectedTestDetail(null);
                 }}
                 className="px-5 py-2 bg-[#990000] hover:bg-red-800 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"

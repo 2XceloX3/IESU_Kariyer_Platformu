@@ -83,11 +83,27 @@ export default function AlumniCoffeeChatModal({
   const [activeTab, setActiveTab] = useState(() => (isAlumniUser ? 'my_chats' : 'new_chat')); // 'new_chat' | 'my_chats'
   const [chatFilter, setChatFilter] = useState('all'); // 'all' | 'pending' | 'confirmed' | 'completed'
 
+  const upcomingWeekdays = useMemo(() => {
+    const days = [];
+    const cursor = new Date();
+    cursor.setDate(cursor.getDate() + 1);
+    const formatter = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' });
+    while (days.length < 7) {
+      const dow = cursor.getDay();
+      if (dow !== 0 && dow !== 6) {
+        const iso = cursor.toISOString().slice(0, 10);
+        days.push({ value: iso, label: formatter.format(cursor) });
+      }
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    return days;
+  }, []);
+
   const [selectedAlumnusId, setSelectedAlumnusId] = useState(
     propAlumnus?.id || availableAlumni[0]?.id || 'ALU-001'
   );
   const [selectedTopicId, setSelectedTopicId] = useState(initialTopic);
-  const [selectedDate, setSelectedDate] = useState('2026-10-26');
+  const [selectedDate, setSelectedDate] = useState(() => upcomingWeekdays[0]?.value || new Date(Date.now() + 86400000).toISOString().slice(0, 10));
   const [selectedSlot, setSelectedSlot] = useState('18:00 - 18:15');
   const [studentNote, setStudentNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -416,10 +432,9 @@ export default function AlumniCoffeeChatModal({
                     onChange={(e) => setSelectedDate(e.target.value)}
                     className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500"
                   >
-                    <option value="2026-10-26">26 Ekim 2026 Pazartesi</option>
-                    <option value="2026-10-27">27 Ekim 2026 Salı</option>
-                    <option value="2026-10-28">28 Ekim 2026 Çarşamba</option>
-                    <option value="2026-10-29">29 Ekim 2026 Perşembe</option>
+                    {upcomingWeekdays.map((d) => (
+                      <option key={d.value} value={d.value}>{d.label}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -492,7 +507,17 @@ export default function AlumniCoffeeChatModal({
               </div>
 
               {(() => {
-                const filtered = coffeeChats.filter((chat) => {
+                const uid = effectiveCurrentUser?.id || effectiveCurrentUser?.uid;
+                const isAdminOrStaff = ['admin', 'staff'].includes(userRole || effectiveCurrentUser?.role);
+                const scopedChats = isAdminOrStaff
+                  ? coffeeChats
+                  : coffeeChats.filter((chat) => {
+                      if (!uid) return true;
+                      return isAlumniUser
+                        ? (chat.alumnusId === uid || chat.alumnusName === effectiveCurrentUser?.name)
+                        : (chat.studentId === uid || chat.studentName === effectiveCurrentUser?.name);
+                    });
+                const filtered = scopedChats.filter((chat) => {
                   if (chatFilter === 'pending') return chat.status === 'PENDING';
                   if (chatFilter === 'confirmed') return chat.status === 'CONFIRMED';
                   if (chatFilter === 'completed') return chat.status === 'COMPLETED';
@@ -562,14 +587,18 @@ export default function AlumniCoffeeChatModal({
                       {/* Status-specific Action Bars */}
                       {chat.status === 'PENDING' && (
                         <div className="flex items-center justify-between gap-3 pt-2 border-t border-slate-100">
-                          <button
-                            type="button"
-                            onClick={() => handleConfirmChat(chat.id)}
-                            className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black transition flex items-center gap-1.5 cursor-pointer shadow-xs"
-                          >
-                            <CheckCircle2 size={13} />
-                            <span>Randevuyu Onayla (Link Oluştur)</span>
-                          </button>
+                          {(isAlumniUser || ['admin', 'staff'].includes(userRole || effectiveCurrentUser?.role)) ? (
+                            <button
+                              type="button"
+                              onClick={() => handleConfirmChat(chat.id)}
+                              className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+                            >
+                              <CheckCircle2 size={13} />
+                              <span>Randevuyu Onayla (Link Oluştur)</span>
+                            </button>
+                          ) : (
+                            <span className="text-xs font-bold text-amber-700">Mezun mentör onayı bekleniyor...</span>
+                          )}
 
                           <button
                             type="button"

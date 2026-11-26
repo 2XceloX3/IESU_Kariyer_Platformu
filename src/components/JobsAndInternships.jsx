@@ -83,7 +83,7 @@ export default function JobsAndInternships({
   const openApplyModal = (job) => {
     if (!requireLoginForApply()) return;
     setAppForm({
-      coverLetter: '',
+      coverLetter: effectiveCurrentUser?.coverLetter || '',
       phone: effectiveCurrentUser?.phone || '',
       email: effectiveCurrentUser?.email || auth?.currentUser?.email || '',
       cvType: effectiveCurrentUser?.cvUrl ? 'uploaded_cv' : 'profile',
@@ -177,7 +177,7 @@ export default function JobsAndInternships({
   };
 
   const handleApproveJob = async (jobId) => {
-    if (effectiveRole !== 'admin') {
+    if (effectiveRole !== 'admin' && effectiveRole !== 'staff') {
       window.toast?.error?.('Yalnızca Kariyer Geliştirme Koordinatörlüğü ilan onaylayabilir.');
       return;
     }
@@ -194,7 +194,7 @@ export default function JobsAndInternships({
   };
 
   const handleRejectJob = async (jobId) => {
-    if (effectiveRole !== 'admin') {
+    if (effectiveRole !== 'admin' && effectiveRole !== 'staff') {
       window.toast?.error?.('Yalnızca Kariyer Geliştirme Koordinatörlüğü ilan reddedebilir.');
       return;
     }
@@ -214,7 +214,7 @@ export default function JobsAndInternships({
     const newStatus = currentStatus === 'Pasif' ? 'Aktif' : 'Pasif';
     const uid = auth?.currentUser?.uid || effectiveCurrentUser?.id || effectiveCurrentUser?.uid;
     const job = (jobs || []).find(j => j.id === jobId);
-    const canToggle = effectiveRole === 'admin' || (effectiveRole === 'company' && job && uid && job.companyId === uid);
+    const canToggle = effectiveRole === 'admin' || effectiveRole === 'staff' || (effectiveRole === 'company' && job && uid && job.companyId === uid);
     if (!canToggle) {
       window.toast?.error?.('Bu ilanı pasife alma yetkiniz yok.');
       return;
@@ -800,7 +800,7 @@ export default function JobsAndInternships({
                             </div>
                             <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-50 gap-2 flex-wrap">
                               <button onClick={()=>setSelectedJob(job)} className={`text-[12px] font-bold text-gray-500 transition-colors flex items-center gap-1 ${theme.detailHover}`}>Detayları Gör <ChevronRight size={14} /></button>
-                              {(effectiveRole === 'admin' || (effectiveRole === 'company' && job.companyId && (job.companyId === (auth?.currentUser?.uid || effectiveCurrentUser?.id || effectiveCurrentUser?.uid)))) ? (
+                              {(isStaffOrAdmin || (effectiveRole === 'company' && job.companyId && (job.companyId === (auth?.currentUser?.uid || effectiveCurrentUser?.id || effectiveCurrentUser?.uid)))) ? (
                                 <div className="flex items-center gap-2">
                                   <button onClick={() => setView('company_ats')} className="px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-50 text-blue-900 border border-blue-200 hover:bg-blue-100 transition cursor-pointer flex items-center gap-1">
                                     <Briefcase size={13} /> ATS Adayları
@@ -809,6 +809,8 @@ export default function JobsAndInternships({
                                     {job.status === 'Pasif' ? 'Aktife Al' : 'Pasife Al'}
                                   </button>
                                 </div>
+                              ) : effectiveRole === 'company' ? (
+                                <span className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-slate-100 text-slate-500">Kurumsal Görünüm</span>
                               ) : (
                                 <button onClick={() => openApplyModal(job)} disabled={hasApplied} className={`px-5 py-2 rounded-xl font-black text-[13px] transition-all flex items-center gap-1.5 cursor-pointer ${hasApplied?'bg-gray-100 text-gray-400 cursor-not-allowed':theme.applyBtn}`}>{hasApplied?<><CheckCircle2 size={14}/> Başvuruldu</>:'Hemen Başvur'}</button>
                               )}
@@ -823,7 +825,7 @@ export default function JobsAndInternships({
             </div>
           )}
 
-          {activeTab==='onay_bekleyen' && effectiveRole === 'admin' && (
+          {activeTab==='onay_bekleyen' && isStaffOrAdmin && (
             <div className="space-y-4 animate-fade-in">
               <div className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-2xl p-4">
                 <div className="flex items-center gap-3">
@@ -848,8 +850,8 @@ export default function JobsAndInternships({
                   {pendingJobs.map(job => (
                     <div key={job.id} className="bg-white rounded-2xl border border-amber-200 p-5 shadow-xs flex items-center justify-between gap-4">
                       <div className="flex items-start gap-3 min-w-0">
-                        <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0">
-                          {job.logo ? <img src={job.logo} alt="" className="w-full h-full object-cover rounded-xl" /> : <Building2 size={20} className="text-amber-600" />}
+                        <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 overflow-hidden flex items-center justify-center shrink-0">
+                          <SafeAvatar src={job.logo} name={job.companyName || job.company || 'Firma'} size="md" className="w-full h-full rounded-xl" />
                         </div>
                         <div className="min-w-0">
                           <h4 className="font-black text-slate-900 text-sm truncate">{job.title}</h4>
@@ -991,7 +993,7 @@ export default function JobsAndInternships({
               <h3 className="font-black text-gray-900 text-[14px] mb-4 flex items-center gap-2"><Star size={15} className="text-amber-500 fill-current" /> İşveren Partnerler</h3>
               <div className="space-y-3">
                 {[...new Map((jobs||[]).map(j=>[j.company,j])).values()].slice(0,4).map((job,i)=>(
-                  <div key={i} className="flex items-center gap-3"><div className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center">{job.logo?<img src={job.logo} alt={job.company} className="w-full h-full object-cover"/>:<Building2 size={16} className="text-gray-400"/>}</div><div className="flex-1 min-w-0"><p className="text-[12px] font-bold text-gray-900 truncate">{job.company}</p><p className="text-[10px] text-gray-500">{(jobs||[]).filter(j=>j.company===job.company).length} açık pozisyon</p></div></div>
+                  <div key={i} className="flex items-center gap-3"><div className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center"><SafeAvatar src={job.logo} name={job.company || 'Firma'} size="sm" className="w-full h-full rounded-xl" /></div><div className="flex-1 min-w-0"><p className="text-[12px] font-bold text-gray-900 truncate">{job.company}</p><p className="text-[10px] text-gray-500">{(jobs||[]).filter(j=>j.company===job.company).length} açık pozisyon</p></div></div>
                 ))}
               </div>
               <div className="mt-5 pt-4 border-t border-gray-50 text-[11px] text-gray-400 flex flex-wrap gap-x-2 gap-y-1">
@@ -1008,11 +1010,13 @@ export default function JobsAndInternships({
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div role="button" tabIndex={0} onKeyDown={(e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.currentTarget.click();}}} className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={()=>setSelectedJob(null)}></div>
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative z-10 flex flex-col">
-            <div className="h-1.5 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-500 rounded-t-2xl"></div>
+            <div className={`h-1.5 bg-gradient-to-r ${theme.accentLine} rounded-t-2xl`}></div>
             <div className="p-7">
               <button onClick={()=>setSelectedJob(null)} className="absolute top-5 right-5 w-9 h-9 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 transition-colors z-10"><X size={18}/></button>
               <div className="flex items-start gap-4 mb-6 pr-10">
-                <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm border border-gray-200">{selectedJob.logo?<img src={selectedJob.logo} alt="Logo" className="w-full h-full object-cover"/>:<Building2 className="text-gray-500" size={28}/>}</div>
+                <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm border border-gray-200">
+                  <SafeAvatar src={selectedJob.logo} name={selectedJob.company || 'Firma'} size="lg" className="w-full h-full rounded-2xl" />
+                </div>
                 <div><h2 className="text-2xl font-black text-gray-900 leading-tight mb-1">{selectedJob.title}</h2><p className="text-[15px] font-bold text-[#990000]">{selectedJob.company}</p></div>
               </div>
               <div className="flex flex-wrap gap-2 mb-6">
@@ -1045,9 +1049,11 @@ export default function JobsAndInternships({
               </div>
               <div className="mt-7 pt-5 border-t border-gray-100 flex gap-3">
                 <button onClick={()=>setSelectedJob(null)} className="px-5 py-3 rounded-xl font-bold text-[14px] text-gray-600 hover:bg-gray-100 transition-all">Kapat</button>
-                <button onClick={() => { const target = selectedJob; setSelectedJob(null); openApplyModal(target); }} disabled={applications.some(a=>a.jobId===selectedJob.id&&(a.applicantId===branchTargetId||a.applicantId===currentUser?.id))} className={`flex-1 py-3 rounded-xl font-black text-[14px] shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer ${applications.some(a=>a.jobId===selectedJob.id&&(a.applicantId===branchTargetId||a.applicantId===currentUser?.id))?'bg-gray-200 text-gray-500 cursor-not-allowed shadow-none':'bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:shadow-purple-500/30 hover:scale-[1.02]'}`}>
-                  {applications.some(a=>a.jobId===selectedJob.id&&(a.applicantId===branchTargetId||a.applicantId===currentUser?.id))?<><CheckCircle2 size={16}/> Başvuruldu</>:'Hemen Başvur'}
-                </button>
+                {(!isStaffOrAdmin && effectiveRole !== 'company') && (
+                  <button onClick={() => { const target = selectedJob; setSelectedJob(null); openApplyModal(target); }} disabled={applications.some(a=>a.jobId===selectedJob.id&&(a.applicantId===branchTargetId||a.applicantId===currentUser?.id))} className={`flex-1 py-3 rounded-xl font-black text-[14px] shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer ${applications.some(a=>a.jobId===selectedJob.id&&(a.applicantId===branchTargetId||a.applicantId===currentUser?.id))?'bg-gray-200 text-gray-500 cursor-not-allowed shadow-none':theme.applyBtn}`}>
+                    {applications.some(a=>a.jobId===selectedJob.id&&(a.applicantId===branchTargetId||a.applicantId===currentUser?.id))?<><CheckCircle2 size={16}/> Başvuruldu</>:'Hemen Başvur'}
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -1060,14 +1066,14 @@ export default function JobsAndInternships({
           <div className="bg-white rounded-3xl w-full max-w-xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh] relative">
             
             {/* Modal Header */}
-            <div className="p-5 bg-gradient-to-r from-slate-950 via-purple-950 to-slate-900 text-white flex items-center justify-between shrink-0">
+            <div className={`p-5 bg-gradient-to-r ${theme.accentLine} text-white flex items-center justify-between shrink-0`}>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-white/10 text-purple-300 flex items-center justify-center font-black">
+                <div className="w-10 h-10 rounded-2xl bg-white/15 text-white flex items-center justify-center font-black">
                   <Briefcase size={20} />
                 </div>
                 <div>
                   <h3 className="font-black text-sm text-white">İş & Staj Başvuru Formu</h3>
-                  <p className="text-[11px] text-purple-200 font-medium">KGM & Firma Denetimli Başvuru Paneli</p>
+                  <p className="text-[11px] text-white/80 font-medium">KGM & Firma Denetimli Başvuru Paneli</p>
                 </div>
               </div>
 
@@ -1083,19 +1089,19 @@ export default function JobsAndInternships({
             <form onSubmit={handleCompleteApplication} className="p-6 overflow-y-auto space-y-4 flex-1 text-slate-700 bg-white custom-scrollbar">
               
               {/* Selected Job Banner */}
-              <div className="p-4 bg-purple-50/70 border border-purple-100 rounded-2xl flex items-center justify-between gap-3">
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-12 h-12 rounded-xl bg-white border border-purple-200 overflow-hidden flex items-center justify-center shrink-0">
-                    {applyModalJob.logo ? <img src={applyModalJob.logo} alt="" className="w-full h-full object-cover" /> : <Building2 size={22} className="text-purple-600" />}
+                  <div className="w-12 h-12 rounded-xl bg-white border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
+                    <SafeAvatar src={applyModalJob.logo} name={applyModalJob.company || 'Firma'} size="md" className="w-full h-full rounded-xl" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-purple-600">Başvurulan Pozisyon</p>
+                    <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.matchText}`}>Başvurulan Pozisyon</p>
                     <h4 className="font-black text-slate-900 text-sm truncate">{applyModalJob.title}</h4>
                     <p className="text-[11px] text-slate-500 font-semibold truncate">{applyModalJob.company} • {applyModalJob.location}</p>
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-1 shrink-0">
-                  <span className="bg-purple-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
+                  <span className={`text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider ${typeColors[applyModalJob.type] || 'bg-slate-900 text-white'}`}>
                     {applyModalJob.type || 'İlan'}
                   </span>
                   {((applyModalJob.type || '').toUpperCase().includes('STAJ') || (applyModalJob.title || '').toLocaleLowerCase('tr-TR').includes('staj') || applyModalJob.isLaw3308Guaranteed) && (
@@ -1211,7 +1217,7 @@ export default function JobsAndInternships({
               <div className="pt-2">
                 <button 
                   type="submit"
-                  className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition shadow-lg cursor-pointer"
+                  className={`w-full py-3.5 rounded-xl text-xs font-black uppercase tracking-wider transition shadow-lg cursor-pointer ${theme.applyBtn}`}
                 >
                   Başvuruyu Tamamla & İlet
                 </button>

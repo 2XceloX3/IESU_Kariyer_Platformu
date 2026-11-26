@@ -163,8 +163,8 @@ export default function MainFooter({ setView }) {
                 </button>
               </li>
               <li>
-                <button onClick={() => setView && setView('sem')} className="hover:underline transition flex items-center gap-2 text-left cursor-pointer">
-                  <ChevronRight size={14} className="text-white/80 shrink-0" /> Kariyer ve Yetenek Akademisi
+                <button onClick={() => setView && setView('jobs')} className="hover:underline transition flex items-center gap-2 text-left cursor-pointer">
+                  <ChevronRight size={14} className="text-white/80 shrink-0" /> İş & Staj Fırsatları
                 </button>
               </li>
             </ul>

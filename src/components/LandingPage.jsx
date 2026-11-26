@@ -51,6 +51,12 @@ export default function LandingPage({ setView, currentUser, userRole }) {
   const rawNews = useAppStore(state => state.news) || [];
   const rawAnnouncements = useAppStore(state => state.announcements) || [];
   const rawEvents = useAppStore(state => state.events) || [];
+  const rawJobs = useAppStore(state => state.jobs) || [];
+  const featuredLiveJobs = React.useMemo(() => {
+    return (Array.isArray(rawJobs) ? rawJobs : [])
+      .filter((j) => j && j.status !== 'Pasif' && j.status !== 'Reddedildi' && j.status !== 'Onay Bekliyor' && j.status !== 'Beklemede')
+      .slice(0, 4);
+  }, [rawJobs]);
   const showInstitutionalStats = useAppStore(state => state.showInstitutionalStats);
   const institutionalStatsData = useAppStore(state => state.institutionalStatsData);
   const siteConfig = useAppStore(state => state.siteConfig);
@@ -562,6 +568,112 @@ export default function LandingPage({ setView, currentUser, userRole }) {
         </div>
       </section>
 
+      {/* 3.5 ÖĞRENCİLER İÇİN CANLI STAJ & KARİYER VİTRİNİ */}
+      <section className="py-16 sm:py-24 bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-900 relative transition-colors duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
+            <div>
+              <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-widest text-[#990000] dark:text-rose-400 bg-red-50 dark:bg-red-950/40 px-3 py-1 rounded-full mb-3">
+                <Sparkles size={13} /> Öğrenci & Mezun Kariyer Vitrini
+              </span>
+              <h2 className="text-2xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                İlk Stajından Hayalindeki İşe <span className="text-[#990000] dark:text-rose-400">Tek Merkezden</span>
+              </h2>
+              <p className="text-slate-500 dark:text-slate-400 font-medium mt-2 max-w-2xl text-sm sm:text-base">
+                SGK 5510/5-b güvenceli staj ilanları, Ulusal Staj Programı rehberliği, 2 dakikada ATS uyumlu CV ve sektördeki İESÜ mezunlarıyla 15 dakikalık kahve sohbetleri seni bekliyor.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={() => setView?.('jobs')}
+                className="px-5 py-3 rounded-2xl bg-slate-900 dark:bg-slate-800 hover:bg-black dark:hover:bg-slate-700 text-white font-black text-xs uppercase tracking-wider transition shadow-md flex items-center gap-2 cursor-pointer"
+              >
+                Tüm Açık İlanları Gör <ArrowRight size={15} />
+              </button>
+              {!currentUser && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    try { sessionStorage.setItem('iesu_register_role', 'student'); } catch (_) {}
+                    setView?.('register');
+                  }}
+                  className="px-5 py-3 rounded-2xl bg-[#990000] hover:bg-red-800 text-white font-black text-xs uppercase tracking-wider transition shadow-md flex items-center gap-2 cursor-pointer"
+                >
+                  Ücretsiz Öğrenci Hesabı Aç <GraduationCap size={16} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* 3 Student Value Pillars */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="p-5 rounded-2xl bg-red-50/60 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-[#990000] text-white flex items-center justify-center shrink-0 shadow-xs">
+                <ShieldCheck size={20} />
+              </div>
+              <div>
+                <h3 className="font-black text-sm text-slate-900 dark:text-white">3308 Ücret & SGK Güvencesi</h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">Üniversite onaylı stajlarda SGK giriş bildirgen ve Form-1 sürecin tek ekrandan takip edilir.</p>
+              </div>
+            </div>
+            <div className="p-5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-emerald-700 text-white flex items-center justify-center shrink-0 shadow-xs">
+                <FileText size={20} />
+              </div>
+              <div>
+                <h3 className="font-black text-sm text-slate-900 dark:text-white">2 Dakikada ATS & EuroPass CV</h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">Bölümün, projelerin ve yetkinliklerinden anında profesyonel PDF özgeçmiş oluştur ve başvur.</p>
+              </div>
+            </div>
+            <div className="p-5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                <Users size={20} />
+              </div>
+              <div>
+                <h3 className="font-black text-sm text-slate-900 dark:text-white">Mezunla 15 Dk Kahve Sohbeti</h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">Trendyol, Baykar, Google gibi şirketlerdeki İESÜ mezunlarından doğrudan mülakat ve portfolyo tavsiyesi al.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Live Open Positions Grid */}
+          {featuredLiveJobs.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {featuredLiveJobs.map((job) => {
+                const isStaj = (job.type || '').toLocaleLowerCase('tr-TR').includes('staj') || (job.title || '').toLocaleLowerCase('tr-TR').includes('staj');
+                return (
+                  <div
+                    key={job.id}
+                    onClick={() => setView?.('jobs')}
+                    className="group p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-[#990000] dark:hover:border-rose-500/60 hover:shadow-lg transition-all cursor-pointer flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-start justify-between gap-2 mb-3">
+                        <div className="w-11 h-11 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center shrink-0">
+                          <SafeAvatar src={job.logo} name={job.company || 'Firma'} size="sm" className="w-full h-full rounded-xl" />
+                        </div>
+                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide ${isStaj ? 'bg-red-100 dark:bg-red-950/60 text-[#990000] dark:text-rose-300' : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300'}`}>
+                          {job.type || 'İlan'}
+                        </span>
+                      </div>
+                      <h4 className="font-black text-sm text-slate-900 dark:text-white group-hover:text-[#990000] dark:group-hover:text-rose-400 transition-colors line-clamp-2 leading-snug">
+                        {job.title}
+                      </h4>
+                      <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 truncate">{job.company}</p>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-slate-200/70 dark:border-slate-800 flex items-center justify-between text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                      <span className="flex items-center gap-1 truncate"><MapPin size={12} /> {job.location || 'İstanbul'}</span>
+                      <span className="text-[#990000] dark:text-rose-400 font-black flex items-center gap-0.5 shrink-0">İncele <ChevronRight size={13} /></span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* 4. ETKİNLİKLER VE HABERLER */}
       <section
         id="etkinlikler-ve-haberler"
@@ -585,7 +697,7 @@ export default function LandingPage({ setView, currentUser, userRole }) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:auto-rows-[260px]">
             {/* Top Left: Featured News (Large) */}
             {news[0] && (
-              <div onClick={() => setSelectedItem(news[0])} className="md:col-span-2 md:row-span-2 relative bg-slate-950 rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-2xl transition-all duration-500">
+              <div onClick={() => setSelectedItem(news[0])} className="md:col-span-2 md:row-span-2 min-h-[300px] md:min-h-0 relative bg-slate-950 rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-2xl transition-all duration-500">
                 <SafeEventImage
                   src={news[0].imageUrl}
                   alt={news[0].title}
@@ -640,7 +752,7 @@ export default function LandingPage({ setView, currentUser, userRole }) {
 
             {/* Bottom Row: Event 1 */}
             {events[0] && (
-              <div onClick={() => setSelectedItem(events[0])} className="col-span-1 row-span-1 relative bg-slate-900 rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-xl transition-all">
+              <div onClick={() => setSelectedItem(events[0])} className="col-span-1 row-span-1 min-h-[240px] md:min-h-0 relative bg-slate-900 rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-xl transition-all">
                 <SafeEventImage
                   src={events[0].imageUrl}
                   alt={events[0].title}
@@ -658,7 +770,7 @@ export default function LandingPage({ setView, currentUser, userRole }) {
 
             {/* Bottom Row: Event 2 */}
             {events[1] && (
-              <div onClick={() => setSelectedItem(events[1])} className="col-span-1 row-span-1 relative bg-slate-900 rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-xl transition-all">
+              <div onClick={() => setSelectedItem(events[1])} className="col-span-1 row-span-1 min-h-[240px] md:min-h-0 relative bg-slate-900 rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-xl transition-all">
                 <SafeEventImage
                   src={events[1].imageUrl}
                   alt={events[1].title}
@@ -676,7 +788,7 @@ export default function LandingPage({ setView, currentUser, userRole }) {
 
             {/* Bottom Row: News 2 */}
             {news[1] && (
-              <div onClick={() => setSelectedItem(news[1])} className="col-span-1 row-span-1 relative bg-slate-900 rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-xl transition-all">
+              <div onClick={() => setSelectedItem(news[1])} className="col-span-1 row-span-1 min-h-[240px] md:min-h-0 relative bg-slate-900 rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-xl transition-all">
                 <SafeEventImage
                   src={news[1].imageUrl}
                   alt={news[1].title}
@@ -940,7 +1052,7 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                       setSelectedPillModal(null);
                       if (setView) setView('jobs');
                     }}
-                    className="flex-1 py-3.5 bg-slate-900 hover:bg-black text-white font-black rounded-2xl text-xs uppercase tracking-widest transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                    className="flex-1 py-3.5 bg-slate-900 dark:bg-slate-700 hover:bg-black dark:hover:bg-slate-600 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
                   >
                     Açık İlanları İncele <ArrowRight size={15} />
                   </button>

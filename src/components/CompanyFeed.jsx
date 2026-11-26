@@ -174,7 +174,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
         setApplications(prev => (prev || []).map(a => a.id === appId ? { ...a, status: newStatus } : a));
       }
     } catch (e) {
-      window.toast?.error?.(e?.message || 'Durum Firestore\'a yazılamadı');
+      window.toast?.error?.('Aday durumu güncellenirken geçici bir bağlantı sorunu oluştu. Lütfen tekrar deneyin.');
       return;
     }
     const targetCandidate = allCandidateApps.find(a => a.id === appId);

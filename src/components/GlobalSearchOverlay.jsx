@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Search, X, BookOpen, Utensils, Users, Server, Briefcase, ExternalLink } from 'lucide-react';
+import { Search, X, Briefcase, ExternalLink, Calendar, FileText, MessageSquare } from 'lucide-react';
 
 const INDEX_DATA = [
-  { title: "Günün Yemekhane Menüsü (SKSDB)", type: "Internal", view: "sksdb_lunch", icon: <Utensils size={16} /> },
-  { title: "Staj & Ulusal Staj Programı Masası", type: "Internal", view: "staj", icon: <Briefcase size={16} /> },
-  { title: "BİDB Sistem Durumu & Wi-Fi", type: "Internal", view: "bidb_status", icon: <Server size={16} /> },
-  { title: "BİDB Şifre Sıfırlama & Destek Bileti", type: "Internal", view: "bidb_helpdesk", icon: <Server size={16} /> },
   { title: "Kariyer & İlan Fırsatları", type: "Internal", view: "jobs", icon: <Briefcase size={16} /> },
-  { title: "OBİS Öğrenci Bilgi Sistemi", type: "External", url: "https://obis.esenyurt.edu.tr", tooltip: "Bu işlem sizi resmi OBİS sistemine yönlendirecektir.", icon: <ExternalLink size={16} /> },
+  { title: "Staj & Ulusal Staj Programı (USP) Masası", type: "Internal", view: "staj", icon: <Briefcase size={16} /> },
+  { title: "Akıllı CV Stüdyosu", type: "Internal", view: "cvbuilder", icon: <FileText size={16} /> },
+  { title: "Kariyer Etkinlikleri & Buluşmalar", type: "Internal", view: "etkinlikler", icon: <Calendar size={16} /> },
+  { title: "Mesajlar & İletişim", type: "Internal", view: "messaging", icon: <MessageSquare size={16} /> },
+  { title: "OBS Öğrenci Bilgi Sistemi", type: "External", url: "https://obs.esenyurt.edu.tr", tooltip: "Bu işlem sizi resmi OBS sistemine yönlendirecektir.", icon: <ExternalLink size={16} /> },
   { title: "e-Devlet Kapısı", type: "External", url: "https://www.turkiye.gov.tr", tooltip: "Bu işlem sizi e-Devlet Kapısına yönlendirecektir.", icon: <ExternalLink size={16} /> }
 ];
 
@@ -37,7 +37,7 @@ export default function GlobalSearchOverlay({ isOpen, onClose, setView }) {
           <input 
             type="text"
             autoFocus
-            placeholder="Portallarda ara (Staj, İlanlar, Yemekhane, OBİS...)..."
+            placeholder="Portallarda ara (Staj, İlanlar, CV, Etkinlikler, OBS...)..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="flex-1 bg-transparent text-sm font-semibold focus:outline-none"

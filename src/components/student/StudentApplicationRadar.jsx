@@ -51,13 +51,29 @@ export default function StudentApplicationRadar({
     }
   };
 
-  // Initialize applications: merge store applications with realistic mock radar applications if store is empty
+  // Initialize & reactively sync user's own applications with radar stages
+  const myStoreApps = useMemo(() => {
+    if (!Array.isArray(storeApplications)) return [];
+    const uid = effectiveCurrentUser?.id || effectiveCurrentUser?.uid;
+    const uEmail = (effectiveCurrentUser?.email || '').toLowerCase();
+    return storeApplications.filter((a) => {
+      if (!uid && !uEmail) return true;
+      return (uid && (a.applicantId === uid || a.studentId === uid)) || (uEmail && String(a.applicantEmail || a.email || '').toLowerCase() === uEmail);
+    });
+  }, [storeApplications, effectiveCurrentUser?.id, effectiveCurrentUser?.uid, effectiveCurrentUser?.email]);
+
   const [radarApps, setRadarApps] = useState(() => {
-    if (Array.isArray(storeApplications) && storeApplications.length > 0) {
-      return storeApplications.map((a) => enrichApplicationWithRadar(a, protocols));
+    if (myStoreApps.length > 0) {
+      return myStoreApps.map((a) => enrichApplicationWithRadar(a, protocols));
     }
     return generateMockRadarApplications(effectiveCurrentUser, protocols);
   });
+
+  React.useEffect(() => {
+    if (myStoreApps.length > 0) {
+      setRadarApps(myStoreApps.map((a) => enrichApplicationWithRadar(a, protocols)));
+    }
+  }, [myStoreApps, protocols]);
 
   const stats = useMemo(() => calculateRadarStatistics(radarApps), [radarApps]);
 
@@ -464,17 +480,17 @@ export default function StudentApplicationRadar({
                           <div className="flex items-center gap-2 shrink-0">
                             {app.feedback.suggestedSemView && (
                               <button
-                                onClick={() => setView?.(app.feedback.suggestedSemView)}
+                                onClick={() => setView?.('cvbuilder')}
                                 className="px-3 py-1.5 bg-[#990000] text-white rounded-xl text-xs font-black hover:bg-red-800 transition cursor-pointer"
                               >
-                                {t('radar.semCourse')}
+                                {isEn ? 'Upgrade CV' : 'CV & Profili Güçlendir'}
                               </button>
                             )}
                             <button
                               type="button"
-                              onClick={() => handleCoffeeChatClick({ company: app.company, topic: 'interview_mock' })}
+                              onClick={() => handleCoffeeChatClick(null)}
                               className="px-3 py-1.5 bg-slate-900 text-white rounded-xl text-xs font-black hover:bg-black transition cursor-pointer flex items-center gap-1 shadow-xs"
-                              title={isEn ? "Book a 15-min coffee chat with an alumnus at this company" : "İlgili şirkette çalışan bir mezunla 15 Dk Kahve Sohbeti randevusu al"}
+                              title={isEn ? "Book a 15-min coffee chat with an alumnus mentor" : "Sektördeki bir İESÜ mezunu ile 15 Dk Kahve Sohbeti randevusu al"}
                             >
                               <Coffee size={13} /> {t('radar.coffeeChat')}
                             </button>
@@ -537,8 +553,10 @@ export default function StudentApplicationRadar({
 
       {/* Floating Subpanel Dock */}
       <SubPanelFloatingDock
-        currentRole={userRole || 'student'}
-        currentView="radar"
+        userRole={userRole || 'student'}
+        activeTab="radar"
+        currentUser={effectiveCurrentUser}
+        setSelectedUserId={setSelectedUserId}
         setView={setView}
       />
 
@@ -551,7 +569,9 @@ export default function StudentApplicationRadar({
             setSelectedAlumnusForChat(null);
           }}
           currentUser={effectiveCurrentUser}
+          userRole={userRole || 'student'}
           selectedAlumnus={selectedAlumnusForChat}
+          initialTopic="interview_mock"
         />
       )}
     </div>
