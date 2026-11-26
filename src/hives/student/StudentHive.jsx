@@ -224,8 +224,6 @@ export default function StudentHive({ currentUser, setView }) {
         return <MetaverseLibrary setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'hackathon_market':
         return <HackathonMarket setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
-      case 'sem':
-        return <SemPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView="student" setSelectedUserId={setSelectedUserId} />;
       case 'staj':
         return <StajPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView="student" setSelectedUserId={setSelectedUserId} />;
       case 'explore':
@@ -280,36 +278,15 @@ export default function StudentHive({ currentUser, setView }) {
         return <CampusMap setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'anka_chat':
         return <AnkaChat setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
-      case 'bmi_calculator':
-        return (
-          <>
-            <StudentFeed
-              setView={handleSetView}
-              setSelectedUserId={setSelectedUserId}
-              currentUser={effectiveCurrentUser}
-              userRole="student"
-              academicRole="student"
-              setSelectedGroupId={setSelectedGroupId}
-            />
-            <BMICalculatorModal isOpen={true} onClose={() => handleSetView('feed')} setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />
-          </>
-        );
-      case 'sksdb_lunch':
-        return <SKSDBLunchWidget setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
-      case 'bidb_status':
-        return <BIDBSystemStatusCard setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
-      case 'bidb_helpdesk':
-        return <BIDBHelpdeskModal setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'kariyer_board':
         return <KariyerJobBoard setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'knowledge_portal':
         return <KnowledgePortal setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
-      case 'idari_portal':
-        return <IdariPortal setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'organization':
         return <OrganizationChart setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'news':
       case 'haberler':
+      case 'duyurular':
         return <NewsEvents setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'events':
       case 'events_list':
@@ -331,15 +308,15 @@ export default function StudentHive({ currentUser, setView }) {
       case 'cerez-politikasi':
       case 'cerez-politikası': {
         const legalId = (
-          activeView === 'aydinlatma-metni' || activeView === 'aydinlatma' ? 'kvkk' :
-          activeView === 'cerez-politikasi' || activeView === 'cerez-politikası' ? 'cerez' :
-          activeView
+          currentView === 'aydinlatma-metni' || currentView === 'aydinlatma' ? 'kvkk' :
+          currentView === 'cerez-politikasi' || currentView === 'cerez-politikası' ? 'cerez' :
+          currentView
         );
         return <DynamicContentPage contentId={legalId} setView={handleSetView} previousView="student" currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       }
       default:
-        if (typeof activeView === 'string' && activeView.startsWith('inner_page_')) {
-          return <DynamicContentPage contentId={activeView.replace('inner_page_', '')} setView={handleSetView} previousView="student" currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
+        if (typeof currentView === 'string' && currentView.startsWith('inner_page_')) {
+          return <DynamicContentPage contentId={currentView.replace('inner_page_', '')} setView={handleSetView} previousView="student" currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
         }
         return (
           <StudentFeed
@@ -357,7 +334,7 @@ export default function StudentHive({ currentUser, setView }) {
   return (
     <HiveProvider>
       {!isBannerDismissed && !effectiveCurrentUser?.onboardingCompleted && currentView !== 'student_onboarding' && currentView !== 'onboarding' ? (
-        <div data-testid="onboarding-banner" className="sticky top-0 z-[60] bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-center justify-between gap-3 shadow-2xs">
+        <div data-testid="onboarding-banner" className="sticky top-16 z-30 bg-amber-50 dark:bg-amber-950/80 border-b border-amber-200 dark:border-amber-800 px-4 py-2.5 flex items-center justify-between gap-3 shadow-2xs">
           <div className="flex items-center gap-2.5 min-w-0">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
             <p className="text-xs font-bold text-amber-900 truncate sm:overflow-visible">

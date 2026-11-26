@@ -17,10 +17,12 @@ export default function Logo({ size = 'md', variant = 'default', color = 'defaul
 
   // CSS Filter to recolor the original red SVG logo (#c81d3f) to exact target themes in light mode
   const colorFilterMap = {
-    emerald: 'hue-rotate-[135deg] saturate-[3.8] brightness-[0.48]', // İdeal Zümrüt Yeşili (text-emerald-800)
-    indigo: 'hue-rotate-[275deg] saturate-[4.5] brightness-[0.25]',  // Derin Koyu Lila / Mor (Akademik)
-    purple: 'hue-rotate-[275deg] saturate-[4.5] brightness-[0.25]',  // Derin Koyu Lila / Mor
-    blue: 'hue-rotate-[215deg] saturate-[4] brightness-[0.35]',      // Derin Koyu Lacivert (text-blue-900 / Deep Navy)
+    emerald: 'hue-rotate-[135deg] saturate-[3.8] brightness-[0.48]', // İdeal Zümrüt Yeşili (Mezun)
+    amber: 'hue-rotate-[32deg] saturate-[4.2] brightness-[0.82]',    // Kurumsal Altın / Kehribar (Süper Yönetici)
+    staff: 'hue-rotate-[230deg] saturate-[4.2] brightness-[0.34]',   // Safir İndigo (Kurumsal Personel)
+    indigo: 'hue-rotate-[230deg] saturate-[4.2] brightness-[0.34]',  // Safir İndigo
+    purple: 'hue-rotate-[275deg] saturate-[4.5] brightness-[0.25]',  // Koyu Mor
+    blue: 'hue-rotate-[215deg] saturate-[4] brightness-[0.35]',      // Derin Koyu Lacivert (Firma)
     navy: 'hue-rotate-[215deg] saturate-[4] brightness-[0.35]',      // Derin Koyu Lacivert
     red: '',                                                          // Orijinal Üniversite Kırmızısı (Öğrenci)
     default: ''

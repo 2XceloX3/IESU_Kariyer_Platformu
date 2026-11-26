@@ -96,6 +96,17 @@ const BRANCH_CONFIGS = {
     hoverDot: 'group-hover/item:bg-amber-800',
     badgeStyle: 'bg-amber-50 text-amber-800 border-amber-100 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900/50',
     modalTheme: 'from-slate-950 via-amber-800 to-slate-900'
+  },
+  staff: {
+    title: 'KGM Haberleri',
+    badge: 'Canlı',
+    liveDot: 'bg-indigo-600',
+    headerBg: 'bg-indigo-50 text-indigo-800 dark:bg-indigo-950/50 dark:text-indigo-300',
+    glow: 'bg-indigo-600/5',
+    hoverText: 'group-hover/item:text-indigo-700 dark:group-hover/item:text-indigo-400',
+    hoverDot: 'group-hover/item:bg-indigo-700',
+    badgeStyle: 'bg-indigo-50 text-indigo-800 border-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-300 dark:border-indigo-900/50',
+    modalTheme: 'from-slate-950 via-indigo-800 to-blue-950'
   }
 };
 
@@ -110,7 +121,7 @@ export default function BranchNewsWidget({ branch, currentUser }) {
     if (storeActiveBranch) return storeActiveBranch;
     const role = currentUser?.role;
     if (role === 'alumni') return 'alumni';
-    if (role === 'academic') return 'academic';
+    if (role === 'staff') return 'staff';
     if (role === 'employer' || role === 'company') return 'company';
     if (role === 'admin') return 'admin';
     return 'student';

@@ -37,7 +37,7 @@ export default function JobsAndInternships({
   const effectiveRole = (() => {
     // 1. Caller bileşenden açıkça iletilen spesifik rol (admin harici) her zaman önceliklidir
     if (userRole && userRole !== 'admin') {
-      if (['student', 'alumni', 'academic', 'company', 'employer'].includes(userRole)) {
+      if (['student', 'alumni', 'staff', 'company', 'employer'].includes(userRole)) {
         return userRole === 'employer' ? 'company' : userRole;
       }
     }
@@ -46,7 +46,7 @@ export default function JobsAndInternships({
     if (effectivePreviousView) {
       if (effectivePreviousView === 'student') return 'student';
       if (effectivePreviousView === 'alumni') return 'alumni';
-      if (effectivePreviousView === 'academic') return 'academic';
+      if (effectivePreviousView === 'staff') return 'staff';
       if (effectivePreviousView === 'company') return 'company';
       if (['admin', 'admin_cms', 'yonetim_konsolu', 'admin_console'].includes(effectivePreviousView)) return 'admin';
     }
@@ -55,7 +55,7 @@ export default function JobsAndInternships({
     if (activePortalBranch) {
       if (activePortalBranch === 'student') return 'student';
       if (activePortalBranch === 'alumni') return 'alumni';
-      if (activePortalBranch === 'academic') return 'academic';
+      if (activePortalBranch === 'staff') return 'staff';
       if (activePortalBranch === 'company') return 'company';
       if (activePortalBranch === 'admin' && isAdminUser) return 'admin';
     }
@@ -64,7 +64,7 @@ export default function JobsAndInternships({
     const r = effectiveCurrentUser?.role || userRole;
     if (r === 'employer') return 'company';
     if (r === 'admin') return 'admin';
-    if (r && ['student', 'alumni', 'academic', 'company'].includes(r)) return r;
+    if (r && ['student', 'alumni', 'staff', 'company'].includes(r)) return r;
 
     return isGuest ? 'guest' : 'student';
   })();
@@ -563,13 +563,13 @@ export default function JobsAndInternships({
               <div className="absolute top-0 right-0 w-28 h-28 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
               <p className="text-[10px] font-black text-amber-300 uppercase tracking-widest mb-1.5 flex items-center gap-1.5"><Sparkles size={12} className="text-amber-300" /> Kariyer Merkezi</p>
               <h3 className="font-black text-base leading-tight mb-2 text-white">
-                {effectiveRole === 'admin' ? 'İlan & Staj Koordinasyonu' : effectiveRole==='employer'?'İlan Oluşturun':"CV'nizi Güncelleyin"}
+                {effectiveRole === 'admin' || effectiveRole === 'staff' ? 'İlan & Staj Koordinasyonu' : (effectiveRole === 'company' || effectiveRole === 'employer') ? 'İlan Oluşturun' : "CV'nizi Güncelleyin"}
               </h3>
               <p className="text-[11px] text-white/80 font-medium mb-4 leading-relaxed">
-                {effectiveRole === 'admin' ? 'Kurumsal ilanları denetleyin veya üniversite adına yeni ilan yayınlayın.' : effectiveRole==='employer'?'Üniversitenin yetenekli öğrencilerine ulaşın.':'Profesyonel özgeçmiş ve güncel profil ile kariyer hedefinize ulaşın.'}
+                {effectiveRole === 'admin' || effectiveRole === 'staff' ? 'Kurumsal ilanları denetleyin veya üniversite adına yeni ilan yayınlayın.' : (effectiveRole === 'company' || effectiveRole === 'employer') ? 'Üniversitenin yetenekli öğrenci ve mezunlarına ulaşın.' : 'Profesyonel özgeçmiş ve güncel profil ile kariyer hedefinize ulaşın.'}
               </p>
-              <button onClick={()=> (effectiveRole === 'admin' || effectiveRole === 'employer') ? setIsCreatingJob(true) : setView(effectiveRole === 'alumni' ? 'mbs' : 'profile_update')} className="w-full py-3 bg-white text-slate-900 hover:bg-slate-100 rounded-xl text-[12px] font-black uppercase tracking-wider transition-all shadow-xl hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                {(effectiveRole === 'admin' || effectiveRole === 'employer') ? 'Yeni İlan Oluştur' : 'Profili Düzenle'} <ArrowRight size={14} />
+              <button onClick={()=> (effectiveRole === 'admin' || effectiveRole === 'staff' || effectiveRole === 'company' || effectiveRole === 'employer') ? setIsCreatingJob(true) : setView(effectiveRole === 'alumni' ? 'mbs' : 'profile_update')} className="w-full py-3 bg-white text-slate-900 hover:bg-slate-100 rounded-xl text-[12px] font-black uppercase tracking-wider transition-all shadow-xl hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                {(effectiveRole === 'admin' || effectiveRole === 'staff' || effectiveRole === 'company' || effectiveRole === 'employer') ? 'Yeni İlan Oluştur' : 'Profili Düzenle'} <ArrowRight size={14} />
               </button>
             </div>
           </div>

@@ -505,7 +505,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
               setSelectedUserId={setSelectedUserId} 
               currentUser={currentUser} 
               hideDock={true}
-              onBack={() => setActiveTabState('feed')}
+              onBack={() => setActiveTab('feed')}
             />
           )}
 
@@ -785,13 +785,13 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
         </div>
 
         {/* ─── RIGHT PANEL: EXECUTIVE QUICK MANAGEMENT (320px) ─── */}
-        <div className="hidden lg:block w-[320px] shrink-0 space-y-5">
+        <div className="hidden xl:block w-[320px] shrink-0 space-y-5">
           
           {/* Ultra-Modern Royal Slate & Executive Gold Bento Management Card */}
           <div className="bg-gradient-to-br from-slate-950 via-[#0A2342] to-slate-900 text-white rounded-3xl p-5 shadow-xl border border-amber-500/40 space-y-4 relative overflow-hidden">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-black shadow-md shadow-amber-500/30">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 text-white flex items-center justify-center font-black shadow-md shadow-amber-500/30">
                   <BarChart3 size={20} />
                 </div>
                 <div>
@@ -805,19 +805,19 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
             <div className="grid grid-cols-2 gap-2">
               <div className="bg-black/40 p-3 rounded-2xl border border-white/10 text-center">
                 <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Aktif İş İlanı</p>
-                <p className="text-base font-black text-white mt-0.5">{(jobs || []).length || '24'}</p>
+                <p className="text-base font-black text-white mt-0.5">{(jobs || []).length}</p>
               </div>
               <div className="bg-black/40 p-3 rounded-2xl border border-white/10 text-center">
-                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Aktif Mezun</p>
-                <p className="text-base font-black text-emerald-400 mt-0.5">{(alumni || []).length || '3.2k+'}</p>
+                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Kayıtlı Mezun</p>
+                <p className="text-base font-black text-emerald-400 mt-0.5">{(alumni || []).length}</p>
               </div>
               <div className="bg-black/40 p-3 rounded-2xl border border-white/10 text-center">
                 <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Kayıtlı Şirket</p>
-                <p className="text-base font-black text-amber-300 mt-0.5">{(companies || []).length || '140+'}</p>
+                <p className="text-base font-black text-amber-300 mt-0.5">{(companies || []).length}</p>
               </div>
               <div className="bg-black/40 p-3 rounded-2xl border border-white/10 text-center">
                 <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">İş Başvuruları</p>
-                <p className="text-base font-black text-sky-400 mt-0.5">{(applications || []).length || '72'}</p>
+                <p className="text-base font-black text-sky-400 mt-0.5">{(applications || []).length}</p>
               </div>
             </div>
 
@@ -825,15 +825,15 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
             <div className="pt-2 border-t border-white/10 space-y-1.5">
               <button
                 onClick={() => setView('yonetim_konsolu')}
-                className={`w-full py-2.5 px-3 rounded-xl ${isStaffPortal ? 'bg-indigo-500 hover:bg-indigo-600 text-white' : 'bg-amber-500 hover:bg-amber-600 text-slate-950'} text-xs font-black transition flex items-center justify-center gap-2 shadow-md cursor-pointer`}
+                className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white text-xs font-black transition flex items-center justify-center gap-2 shadow-md cursor-pointer"
               >
-                <Scale size={15} /> {isStaffPortal ? 'Personel Çalışma Paneli (CMS)' : 'Yönetim Konsoluna Git'}
+                <Scale size={15} /> Yönetim Konsoluna Git
               </button>
               <button
-                onClick={() => setView('company_ats')}
+                onClick={() => setView('basvuru_havuzu')}
                 className="w-full py-2 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition flex items-center justify-center gap-2 border border-white/10 cursor-pointer"
               >
-                <Briefcase size={14} /> ATS Panosunu İncele
+                <Briefcase size={14} /> Başvuru Havuzunu İncele
               </button>
             </div>
           </div>

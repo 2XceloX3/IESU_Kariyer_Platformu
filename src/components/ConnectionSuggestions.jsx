@@ -61,9 +61,21 @@ const BRANCH_THEMES = {
     footerBtn: 'hover:bg-amber-50/60 text-amber-800',
     modalGradient: 'from-slate-950 via-amber-800 to-slate-900',
     modalTitle: 'İESÜ Platform Ekosistem Ağı',
-    modalSub: 'Öğrenci, Mezun, Akademisyen ve Kurumsal Paydaşlar',
+    modalSub: 'Öğrenci, Mezun ve Kurumsal Paydaşlar',
     modalBtn: 'bg-amber-700 hover:bg-amber-800',
     tabActive: 'bg-amber-700 text-white shadow-sm'
+  },
+  staff: {
+    headerBg: 'bg-indigo-50 text-indigo-800',
+    badgeStyle: 'bg-indigo-50 text-indigo-800',
+    hoverText: 'group-hover:text-indigo-700',
+    followBtn: 'bg-indigo-50 text-indigo-800 hover:bg-indigo-700 hover:text-white border border-indigo-200',
+    footerBtn: 'hover:bg-indigo-50/60 text-indigo-800',
+    modalGradient: 'from-slate-950 via-indigo-800 to-blue-950',
+    modalTitle: 'İESÜ KGM Paydaş & İletişim Ağı',
+    modalSub: 'Öğrenciler, Mezunlar ve İşveren Temsilcileri',
+    modalBtn: 'bg-indigo-700 hover:bg-indigo-800',
+    tabActive: 'bg-indigo-700 text-white shadow-sm'
   }
 };
 
@@ -104,7 +116,7 @@ export default function ConnectionSuggestions({
     if (storeActiveBranch) return storeActiveBranch;
     const role = effectiveCurrentUser?.role;
     if (role === 'alumni') return 'alumni';
-    if (role === 'academic') return 'academic';
+    if (role === 'staff') return 'staff';
     if (role === 'employer' || role === 'company') return 'company';
     if (role === 'admin') return 'admin';
     return 'student';

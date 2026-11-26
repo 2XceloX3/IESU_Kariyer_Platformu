@@ -135,17 +135,16 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
     });
   }, [allFeedItems, searchQuery, feedFilter, followedUserIds, effectiveCurrentUser?.id]);
 
-  // Guarantee Alumni branch isolation & auto-open evaluation questions
-  useEffect(() => {
-    const store = useAppStore.getState();
-    if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
-
-
-  }, []);
-
-
   const isAdmin = effectiveCurrentUser?.role === 'admin' || userRole === 'admin';
   const isStaff = !isAdmin && (effectiveCurrentUser?.role === 'staff' || userRole === 'staff');
+
+  // Guarantee Alumni branch isolation for real alumni sessions without hijacking Admin/Staff preview
+  useEffect(() => {
+    if (!isAdmin && !isStaff) {
+      const store = useAppStore.getState();
+      if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
+    }
+  }, [isAdmin, isStaff]);
   const alumniName = effectiveCurrentUser?.name || (isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : isStaff ? 'Kurumsal Personel' : 'Mezun');
   const alumniDept = isAdmin
     ? 'Kariyer Geliştirme Koordinatörlüğü'
@@ -271,15 +270,23 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                   </p>
                   
                   <div className="flex justify-center gap-6 border-y border-gray-100 py-3 mb-4">
-                    <div className="text-center cursor-pointer group">
+                    <button
+                      type="button"
+                      onClick={() => setView('network')}
+                      className="text-center cursor-pointer group"
+                    >
                       <p className="text-slate-600 text-[10px] font-black uppercase tracking-wider mb-0.5">Mezun Ağı</p>
-                      <p className="text-[15px] font-black text-gray-900 group-hover:text-emerald-700 transition">120 Bağlantı</p>
-                    </div>
+                      <p className="text-[15px] font-black text-gray-900 group-hover:text-emerald-700 transition">{(followedUserIds || []).length} Bağlantı</p>
+                    </button>
                     <div className="w-px bg-gray-100"></div>
-                    <div className="text-center cursor-pointer group">
+                    <button
+                      type="button"
+                      onClick={() => { setActiveTab('feed'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      className="text-center cursor-pointer group"
+                    >
                       <p className="text-slate-600 text-[10px] font-black uppercase tracking-wider mb-0.5">Paylaşım</p>
-                      <p className="text-[15px] font-black text-gray-900 group-hover:text-emerald-700 transition">15 Gönderi</p>
-                    </div>
+                      <p className="text-[15px] font-black text-gray-900 group-hover:text-emerald-700 transition">{(posts || []).filter(p => p?.author?.id === alumniId).length} Gönderi</p>
+                    </button>
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -569,7 +576,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               <div className="p-10 text-center bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center min-h-[300px]">
                 <div className="w-16 h-16 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center mb-6 shadow-sm"><FileText size={32} /></div>
                 <h3 className="text-lg sm:text-xl font-black text-gray-900 mb-2">Henüz görüntülenecek yayın bulunmuyor.</h3>
-                <p className="text-sm text-gray-500 font-medium max-w-sm leading-relaxed">Duyuru, etkinlik, staj ve mentorluk içerikleri yayınlandığında burada görünecek.</p>
+                <p className="text-sm text-gray-500 font-medium max-w-sm leading-relaxed">Mezun duyuruları, sektörel komite etkinlikleri ve kariyer paylaşımları yayınlandığında burada görünecek.</p>
               </div>
             ) : (
               <>
@@ -639,7 +646,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               </div>
 
               <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-50 text-amber-800 border border-amber-200">
-                {coffeeChats.filter(c => c.status === 'PENDING').length} Bekleyen
+                {coffeeChats.filter(c => c.alumniId === alumniId && c.status === 'PENDING').length} Bekleyen
               </span>
             </div>
 
@@ -652,19 +659,19 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               <div className="p-2 bg-slate-50 rounded-xl border border-slate-100">
                 <p className="text-[10px] font-bold text-slate-400 uppercase">Bekleyen</p>
                 <p className="text-base font-black text-amber-700 mt-0.5">
-                  {coffeeChats.filter(c => c.status === 'PENDING').length}
+                  {coffeeChats.filter(c => c.alumniId === alumniId && c.status === 'PENDING').length}
                 </p>
               </div>
               <div className="p-2 bg-slate-50 rounded-xl border border-slate-100">
                 <p className="text-[10px] font-bold text-slate-400 uppercase">Onaylanan</p>
                 <p className="text-base font-black text-emerald-700 mt-0.5">
-                  {coffeeChats.filter(c => c.status === 'CONFIRMED').length}
+                  {coffeeChats.filter(c => c.alumniId === alumniId && c.status === 'CONFIRMED').length}
                 </p>
               </div>
               <div className="p-2 bg-slate-50 rounded-xl border border-slate-100">
                 <p className="text-[10px] font-bold text-slate-400 uppercase">Tamamlanan</p>
                 <p className="text-base font-black text-blue-700 mt-0.5">
-                  {coffeeChats.filter(c => c.status === 'COMPLETED').length}
+                  {coffeeChats.filter(c => c.alumniId === alumniId && c.status === 'COMPLETED').length}
                 </p>
               </div>
             </div>
@@ -680,11 +687,8 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
           </div>
 
           <div className="bg-white/80 backdrop-blur-xl rounded-xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)]">
-            <h3 className="font-black text-gray-900 mb-2">Mentor Olun</h3>
-            <div className="w-full bg-gray-100 rounded-full h-2 mb-3">
-              <div className="bg-emerald-600 h-2 rounded-full" style={{ width: '80%' }}></div>
-            </div>
-            <p className="text-xs text-gray-500 font-medium mb-4">Mezun olarak tecrübelerinizi öğrencilerle paylaşın ve onlara yol gösterin.</p>
+            <h3 className="font-black text-gray-900 mb-2">Mezun Mentör Olun</h3>
+            <p className="text-xs text-gray-500 font-medium mb-4">Mezun olarak tecrübelerinizi İESÜ öğrencileriyle paylaşın ve onlara yol gösterin.</p>
             <button
               onClick={() => setShowMentorshipModal(true)}
               className="w-full py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-[13px] font-bold transition-colors cursor-pointer"
@@ -922,6 +926,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                 e.preventDefault();
                 const newMentorship = {
                   id: Date.now(),
+                  mentorId: alumniId,
                   mentorName: effectiveCurrentUser?.name || 'Mezun',
                   department: effectiveCurrentUser?.department || 'Mezun',
                   programTitle: mentorshipForm.title,

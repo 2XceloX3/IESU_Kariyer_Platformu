@@ -1,22 +1,22 @@
 import React from 'react';
-import { Home, Briefcase, Crown, Search } from 'lucide-react';
+import { Home, Briefcase, Search } from 'lucide-react';
 import Logo from './Logo';
 import useAppStore from '../store/useAppStore';
 
 /**
- * AdminOmniDock — KGM Süper Yönetici için Temiz 4'lü Alt Navigasyon Dock'u.
- * Orijinal 4'lü dock boyutlarında (max-w-[420px]), beyaz temalı ve hızlı erişimli.
+ * AdminOmniDock — KGM Süper Yönetici & Kurumsal Personel için 4'lü Alt Navigasyon Dock'u.
+ * Orijinal 4'lü dock boyutlarında (max-w-[420px]), reaktif tema destekli ve z-50 uyumlu.
  */
 export default function AdminOmniDock({ activeTab, setActiveTab, setView, setSelectedUserId, currentUser, theme, homeView }) {
-  const store = useAppStore.getState();
-  const currentBranch = store.activePortalBranch;
-  const effectiveUser = currentUser || store.currentUser;
+  const currentBranch = useAppStore(state => state.activePortalBranch);
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveUser = currentUser || storeCurrentUser;
   const isStaff = theme === 'indigo' || homeView === 'staff' || currentBranch === 'staff' || (effectiveUser?.role === 'staff' && theme !== 'emerald');
   const isEmerald = theme === 'emerald' || (!isStaff && theme !== 'amber' && currentBranch === 'alumni');
   const isAmber = !isEmerald && !isStaff;
 
   return (
-    <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-[999] animate-fade-in-up w-[95%] max-w-[420px]">
+    <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
       <div className={`bg-white/95 dark:bg-[#131c31]/95 backdrop-blur-2xl border-2 ${
         isEmerald 
           ? 'border-emerald-100 dark:border-emerald-500/40 shadow-[0_15px_40px_rgba(6,78,59,0.18)]' 
@@ -77,7 +77,6 @@ export default function AdminOmniDock({ activeTab, setActiveTab, setView, setSel
             } else {
               if (s.setActivePortalBranch) s.setActivePortalBranch('admin');
               if (setView) setView('jobs');
-              if (setActiveTab) setActiveTab('cms_jobs');
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }} 

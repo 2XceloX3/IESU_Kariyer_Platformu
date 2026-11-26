@@ -78,6 +78,7 @@ export default function PostComposer({
   const fileInputRef = useRef(null);
 
   const isAdmin = userRole === 'admin' || currentUser?.role === 'admin';
+  const isStaff = !isAdmin && (userRole === 'staff' || currentUser?.role === 'staff');
   const isAlumni = userRole === 'alumni' || currentUser?.role === 'alumni';
   const isAcademic = userRole === 'academic' || currentUser?.role === 'academic';
   const isCompany = userRole === 'company' || userRole === 'employer' || currentUser?.role === 'company';
@@ -92,13 +93,15 @@ export default function PostComposer({
     ? 'Öğrenci Kulübü'
     : isAdmin
       ? 'Süper Yönetici & Resmi Birim'
-      : isAlumni
-        ? 'İESÜ Mezunlar Portalı'
-        : isAcademic
-          ? 'Akademik Kadro'
-          : isCompany
-            ? 'Kurumsal İşveren Partner'
-            : (currentUser?.department || 'İESÜ Öğrencisi');
+      : isStaff
+        ? (currentUser?.staffTitle || 'Kurumsal Personel • KGM')
+        : isAlumni
+          ? 'İESÜ Mezunlar Portalı'
+          : isAcademic
+            ? 'Akademik Kadro'
+            : isCompany
+              ? 'Kurumsal İşveren Partner'
+              : (currentUser?.department || 'İESÜ Öğrencisi');
 
   const authorAvatar = asClub
     ? (asClub.logo || '/iesu-logo.svg')

@@ -1049,43 +1049,6 @@ export default function UserProfile({
               </div>
             </div>
 
-            {/* Takip Edilen Akademisyenler Kartı */}
-            <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-xs space-y-3">
-              <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
-                <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-2">
-                  <BookOpen size={16} className="text-blue-600" /> Takip Edilen Hocalar
-                </h3>
-                <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">2 Akademisyen</span>
-              </div>
-              <div className="space-y-2.5">
-                {[
-                  { id: 'ACM-001', name: 'Dr. Öğr. Üyesi Mehmet Selim', title: 'Mühendislik Fakültesi', avatar: null },
-                  { id: 'ACM-002', name: 'Prof. Dr. Ayşe Yılmaz', title: 'Bilgisayar Mühendisliği', avatar: null }
-                ].map(academic => (
-                  <div 
-                    key={academic.id} 
-                    onClick={() => {
-                      if (setSelectedUserId) setSelectedUserId(academic.id);
-                      if (setView) setView('user_profile');
-                    }}
-                    className="p-2.5 bg-blue-50/40 hover:bg-blue-50 rounded-2xl border border-blue-100/60 flex items-center gap-3 transition cursor-pointer"
-                  >
-                    <SafeAvatar 
-                      name={academic.name} 
-                      src={academic.avatar} 
-                      size="sm" 
-                      rounded="rounded-xl" 
-                      className="shrink-0 border border-blue-200/80 shadow-xs" 
-                    />
-                    <div className="min-w-0 flex-1">
-                      <h4 className="font-bold text-xs text-gray-900 truncate hover:text-blue-800 transition">{academic.name}</h4>
-                      <p className="text-[10px] text-blue-700 font-medium truncate">{academic.title}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Takip Edilen Akredite Firmalar Kartı */}
             <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-xs space-y-3">
               <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
@@ -2893,30 +2856,32 @@ export default function UserProfile({
                   </div>
                 </div>
 
-                {/* Fast Quick System Controls Banner */}
+                {/* Fast Quick System Controls Banner — Yalnızca Süper Yönetici kendi profilinde görür */}
+                {user?.isSelf && (effectiveCurrentUser?.role === 'admin' || userRole === 'admin') && (
                 <div className="bg-slate-950 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden border border-slate-800">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/15 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
                   <h3 className="text-sm font-black uppercase tracking-wider mb-2 flex items-center gap-2 text-amber-400">
                     <Zap size={18} /> Hızlı Yönetim Komutları
                   </h3>
                   <p className="text-xs text-slate-300 mb-4 max-w-xl">
-                    Kariyer Geliştirme Merkezi üzerinden sistem modüllerini doğrudan yönetin, rapor oluşturun veya toplu işlemler başlatın.
+                    Kariyer Geliştirme Merkezi üzerinden sistem modüllerini doğrudan yönetin, rapor oluşturun veya onay işlemlerini tamamlayın.
                   </p>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    <button onClick={() => setView?.('admin')} className="p-3 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold text-white transition flex flex-col items-center gap-1.5 border border-white/10 cursor-pointer">
+                    <button onClick={() => setView?.('admin_cms')} className="p-3 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold text-white transition flex flex-col items-center gap-1.5 border border-white/10 cursor-pointer">
                       <LayoutDashboard size={18} className="text-amber-400" /> Yönetim Paneli
                     </button>
-                    <button onClick={() => setView?.('cms_export')} className="p-3 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold text-white transition flex flex-col items-center gap-1.5 border border-white/10 cursor-pointer">
-                      <Download size={18} className="text-emerald-400" /> Data Pool Export
+                    <button onClick={() => setView?.('cms_datapool')} className="p-3 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold text-white transition flex flex-col items-center gap-1.5 border border-white/10 cursor-pointer">
+                      <Download size={18} className="text-emerald-400" /> Veri Havuzu & Excel
                     </button>
-                    <button onClick={() => setView?.('profile_update')} className="p-3 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold text-white transition flex flex-col items-center gap-1.5 border border-white/10 cursor-pointer">
-                      <Settings size={18} className="text-blue-400" /> Sistem Ayarları
+                    <button onClick={() => setView?.('platform_ayarlari')} className="p-3 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold text-white transition flex flex-col items-center gap-1.5 border border-white/10 cursor-pointer">
+                      <Settings size={18} className="text-blue-400" /> Platform Ayarları
                     </button>
-                    <button onClick={() => setView?.('admin')} className="p-3 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold text-white transition flex flex-col items-center gap-1.5 border border-white/10 cursor-pointer">
-                      <CheckCircle2 size={18} className="text-purple-400" /> Kullanıcı Onayları
+                    <button onClick={() => setView?.('operasyon')} className="p-3 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold text-white transition flex flex-col items-center gap-1.5 border border-white/10 cursor-pointer">
+                      <CheckCircle2 size={18} className="text-purple-400" /> Onay & SGK Masası
                     </button>
                   </div>
                 </div>
+                )}
 
                 {/* Official Announcements & Activity Posts */}
                 <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">

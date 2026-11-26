@@ -259,13 +259,6 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
               <button onClick={() => setView('student_kgb')} className="hover:text-[#990000] transition">KGB Karnesi</button>
             </div>
 
-            <button
-              onClick={() => setIsForm1ModalOpen(true)}
-              className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#990000] hover:bg-red-800 text-white text-xs font-bold transition shadow-xs cursor-pointer active:scale-95"
-            >
-              <Plus size={14} /> Form-1 Başvurusu
-            </button>
-
             {effectiveCurrentUser ? (
               <TopProfileMenu currentUser={effectiveCurrentUser} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} />
             ) : (
@@ -280,26 +273,24 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
         </header>
 
         {/* Corporate Hero Header */}
-        <div className="bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 text-white py-14 px-4 sm:px-8 relative overflow-hidden shadow-xl border-b border-red-900">
+        <div className="bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 text-white py-8 px-4 sm:px-8 relative overflow-hidden shadow-xl border-b border-red-900">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
           
           <div className="max-w-7xl mx-auto relative z-10">
             {/* Breadcrumbs */}
-            <div className="flex items-center gap-2 text-xs font-bold text-red-200 mb-6">
+            <div className="flex items-center gap-2 text-xs font-bold text-red-200 mb-4">
               <button onClick={() => setView(backTarget)} className="hover:text-white hover:underline transition cursor-pointer">Öğrenci Akışı</button>
-              <span>/</span>
-              <button onClick={() => setView('student_hub')} className="hover:text-white hover:underline transition cursor-pointer">Kariyer & Gelişim Araçları</button>
               <span>/</span>
               <span className="text-white font-black">Staj ve 3308 / 5510 Resmî SGK İş Akışı</span>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-8 items-start md:items-end justify-between">
+            <div className="flex flex-col md:flex-row gap-6 items-start md:items-end justify-between">
               <div className="max-w-3xl">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-black text-white mb-4 border border-white/20 uppercase tracking-widest">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-black text-white mb-3 border border-white/20 uppercase tracking-widest">
                   <Briefcase size={14} className="text-red-200" /> Resmî Yasal Staj & SGK Sistemi
                 </div>
-                <h1 className="text-3xl md:text-5xl font-black mb-4 tracking-tight text-white leading-tight drop-shadow-md">
+                <h1 className="text-2xl md:text-4xl font-black mb-3 tracking-tight text-white leading-tight drop-shadow-md">
                   Staj ve Resmî SGK İş Akışı
                 </h1>
                 <p className="text-slate-200 text-base md:text-lg font-medium leading-relaxed opacity-95">
@@ -584,55 +575,89 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
                 </div>
               </div>
 
-              {/* Status Bento Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm space-y-4">
-                  <div className="w-12 h-12 rounded-xl bg-red-50 text-[#990000] flex items-center justify-center">
-                    <Building2 size={24} />
+              {/* Status Bento Grid — Gerçek Staj Kaydı Varsa Detay, Yoksa Dürüst Başlatma Rehberi */}
+              {!internshipStatus ? (
+                <div className="bg-white dark:bg-[#131c31] rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm text-center space-y-4">
+                  <div className="w-14 h-14 rounded-2xl bg-red-50 dark:bg-rose-950/50 text-[#990000] dark:text-rose-400 flex items-center justify-center mx-auto">
+                    <Briefcase size={28} />
                   </div>
-                  <div>
-                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Kabul Edilen Kurum</span>
-                    <h3 className="text-lg font-black text-slate-900 mt-0.5">{internshipStatus?.company || '—'}</h3>
-                    <p className="text-xs font-bold text-slate-500 mt-1">{internshipStatus?.role || '3308 / 5510 Staj'}</p>
+                  <div className="max-w-lg mx-auto">
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white">Henüz Aktif Staj Başvurun Bulunmuyor</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+                      Zorunlu veya gönüllü stajın için Form-1 başvurunu oluştur; Bölüm Komisyonu onayı ve Rektörlük 5510/5-b SGK tescilini buradan adım adım takip et.
+                    </p>
                   </div>
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-600">
-                    <span>Staj Süresi:</span>
-                    <span className="text-[#990000] font-black">{internshipStatus?.duration || '22 İş Günü'}</span>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 max-w-2xl mx-auto pt-2 text-left">
+                    {[
+                      { step: '1', label: 'Form-1 Oluştur' },
+                      { step: '2', label: 'Komisyon Onayı' },
+                      { step: '3', label: 'SGK 5510 Tescil' },
+                      { step: '4', label: 'Dijital Defter' }
+                    ].map(s => (
+                      <div key={s.step} className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700">
+                        <span className="text-[10px] font-black text-[#990000] dark:text-rose-400">ADIM {s.step}</span>
+                        <p className="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">{s.label}</p>
+                      </div>
+                    ))}
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsForm1ModalOpen(true)}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#990000] hover:bg-red-800 text-white text-xs font-black shadow-md transition cursor-pointer"
+                  >
+                    <Plus size={15} /> Form-1 Staj Başvurusu Başlat
+                  </button>
                 </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-white dark:bg-[#131c31] rounded-2xl p-6 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-4">
+                    <div className="w-12 h-12 rounded-xl bg-red-50 text-[#990000] flex items-center justify-center">
+                      <Building2 size={24} />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Kabul Edilen Kurum</span>
+                      <h3 className="text-lg font-black text-slate-900 dark:text-white mt-0.5">{internshipStatus.company || '—'}</h3>
+                      <p className="text-xs font-bold text-slate-500 mt-1">{internshipStatus.role || '3308 / 5510 Staj'}</p>
+                    </div>
+                    <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300">
+                      <span>Staj Süresi:</span>
+                      <span className="text-[#990000] font-black">{internshipStatus.duration || '—'}</span>
+                    </div>
+                  </div>
 
-                <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm space-y-4">
-                  <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
-                    <UserCheck size={24} />
+                  <div className="bg-white dark:bg-[#131c31] rounded-2xl p-6 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-4">
+                    <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
+                      <UserCheck size={24} />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Staj Komisyonu</span>
+                      <h3 className="text-lg font-black text-slate-900 dark:text-white mt-0.5">{internshipStatus.advisor || 'Bölüm Staj Komisyonu'}</h3>
+                      <p className="text-xs font-bold text-emerald-600 mt-1">✓ {internshipStatus.status || 'İnceleme Sürecinde'}</p>
+                    </div>
+                    <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300">
+                      <span>Başvuru Tarihi:</span>
+                      <span className="text-slate-900 dark:text-white font-black">{internshipStatus.approvedDate || '—'}</span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Akademik Staj Komisyonu</span>
-                    <h3 className="text-lg font-black text-slate-900 mt-0.5">{internshipStatus?.advisor || 'Bölüm Staj Komisyonu'}</h3>
-                    <p className="text-xs font-bold text-emerald-600 mt-1">✓ Komisyon İnceleme Sürecinde</p>
-                  </div>
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-600">
-                    <span>Onay / Başvuru Tarihi:</span>
-                    <span className="text-slate-900 font-black">{internshipStatus?.approvedDate || new Date().toLocaleDateString('tr-TR')}</span>
-                  </div>
-                </div>
 
-                <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm space-y-4">
-                  <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
-                    <ShieldCheck size={24} />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">SGK 5510/5-b Güvencesi</span>
-                    <h3 className="text-lg font-black text-slate-900 mt-0.5">
-                      {internshipStatus?.sgkBarcode || 'SGK Tescil Bekliyor'}
-                    </h3>
-                    <p className="text-xs font-bold text-blue-600 mt-1">✓ Prim İESÜ Rektörlüğü Tarafından Karşılanmaktadır</p>
-                  </div>
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-600">
-                    <span>SGK Statüsü:</span>
-                    <span className="text-emerald-700 font-black">{internshipStatus?.sgkStatus || 'Aktif'}</span>
+                  <div className="bg-white dark:bg-[#131c31] rounded-2xl p-6 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-4">
+                    <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+                      <ShieldCheck size={24} />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">SGK 5510/5-b Güvencesi</span>
+                      <h3 className="text-lg font-black text-slate-900 dark:text-white mt-0.5">
+                        {internshipStatus.sgkBarcode || 'SGK Tescil Bekliyor'}
+                      </h3>
+                      <p className="text-xs font-bold text-blue-600 mt-1">✓ Prim İESÜ Rektörlüğü Tarafından Karşılanır</p>
+                    </div>
+                    <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300">
+                      <span>SGK Statüsü:</span>
+                      <span className="text-emerald-700 font-black">{internshipStatus.sgkStatus || 'Beklemede'}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Action Banner */}
               <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-950 rounded-2xl p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
@@ -666,21 +691,29 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
 
           {/* TAB: DİJİTAL STAJ DEFTERİ */}
           {activeTab === 'defter' && (
-            <DigitalInternshipNotebook 
-              internship={internshipStatus?.raw || internshipStatus || {
-                companyName: 'Aselsan A.Ş.',
-                studentName: effectiveCurrentUser?.name || 'Ayşe Kaya',
-                studentNo: effectiveCurrentUser?.studentNo || '20220101001',
-                faculty: effectiveCurrentUser?.faculty || 'Mühendislik ve Doğa Bilimleri Fakültesi',
-                department: effectiveCurrentUser?.department || 'Bilgisayar Mühendisliği',
-                workDays: 22,
-                startDate: '2026-07-01',
-                endDate: '2026-07-31'
-              }}
-              onUpdateInternship={handleUpdateInternship}
-              currentUser={effectiveCurrentUser}
-              isAdvisorOrAdmin={isStaffOrAdmin}
-            />
+            internshipStatus ? (
+              <DigitalInternshipNotebook 
+                internship={internshipStatus?.raw || internshipStatus}
+                onUpdateInternship={handleUpdateInternship}
+                currentUser={effectiveCurrentUser}
+                isAdvisorOrAdmin={isStaffOrAdmin}
+              />
+            ) : (
+              <div className="bg-white dark:bg-[#131c31] rounded-3xl p-10 border border-slate-200 dark:border-slate-800 shadow-sm text-center space-y-4">
+                <BookOpen size={36} className="mx-auto text-[#990000]" />
+                <h3 className="text-lg font-black text-slate-900 dark:text-white">Dijital Staj Defteri Kilitli</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+                  Dijital Staj Defteri, Form-1 staj başvurunuz oluşturulduktan sonra aktif hale gelir.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setIsForm1ModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#990000] hover:bg-red-800 text-white text-xs font-black cursor-pointer"
+                >
+                  <Plus size={14} /> Form-1 Başvurusu Oluştur
+                </button>
+              </div>
+            )
           )}
 
           {/* TAB: BÖLÜM STAJ KOMİSYONU MASASI (Staff/Admin) */}

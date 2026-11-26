@@ -258,12 +258,12 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
   return (
     <div className="min-h-screen bg-transparent font-sans">
       {/* Hyper-Modern Navbar (Glassmorphism) */}
-      <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
+      <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-40">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between relative">
           {/* LEFT: Logo & University Title */}
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer" onClick={() => {
-            const currentRole = currentUser?.role || userRole;
-            setView?.(currentRole === 'admin' ? 'admin' : (currentRole === 'employer' || currentRole === 'company') ? 'company' : currentRole === 'alumni' ? 'alumni' : currentRole === 'academic' ? 'academic' : 'student');
+            const currentRole = effectiveCurrentUser?.role || userRole;
+            setView?.(currentRole === 'admin' ? 'admin' : currentRole === 'staff' ? 'staff' : (currentRole === 'employer' || currentRole === 'company') ? 'company' : currentRole === 'alumni' ? 'alumni' : 'student');
           }}>
             <Logo color="blue" className="h-10 w-auto hover:scale-105 transition-transform shrink-0" />
             <div className="hidden sm:block text-left">
@@ -282,11 +282,11 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
 
           
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-[#990000]`} title="Bildirimler">
+            <button onClick={() => setView('notifications')} className="p-2 rounded-full transition-all flex items-center justify-center hover:bg-blue-50 text-[#0A2342] cursor-pointer" title="Bildirimler">
               <div className="relative">
-                <Bell size={24} strokeWidth={2.5} className="fill-current text-[#990000]/10" />
+                <Bell size={24} strokeWidth={2.5} className="fill-current text-[#0A2342]/10" />
                 {((notifications || []).filter(n => n.userId === effectiveCurrentUser?.id && !n.read).length > 0) && (
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 rounded-full border-2 border-white"></span>
                 )}
               </div>
             </button>
@@ -304,8 +304,8 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
             {(userRole === 'admin' || effectiveCurrentUser?.role === 'admin') ? (
               <div className="text-center">
                 <div className="relative inline-block mb-2">
-                  <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center border border-gray-200 shadow-sm mx-auto p-2">
-                    <img src="/iesu-logo.svg" alt="Admin" className="w-full h-full object-contain" />
+                  <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center border border-gray-200 shadow-sm mx-auto p-1.5 overflow-hidden">
+                    <SafeAvatar src="/iesu-logo.svg" name="Kariyer Geliştirme Koordinatörlüğü" size="2xl" rounded="rounded-xl" className="w-full h-full object-contain" />
                   </div>
                   <div className="absolute -bottom-2 -right-2 bg-orange-500 text-white p-1.5 rounded-xl shadow-md border-2 border-white">
                     <Crown size={14} />
@@ -573,7 +573,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
         </div>
 
         {/* RIGHT PANEL: Kurumsal İletişim, Şube Gündemi & Aday Takip Havuzu */}
-        <div className="hidden lg:block w-[320px] shrink-0 space-y-5">
+        <div className="hidden xl:block w-[320px] shrink-0 space-y-5">
           {/* 1. FİRMA/KURUMSAL DAL ÖZEL İK & YETENEK BÜLTENİ */}
           <BranchNewsWidget branch="company" currentUser={effectiveCurrentUser} setView={setView} />
 
@@ -619,7 +619,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
               <div className="text-center border-r border-white/10 px-1">
                 <p className="text-[9px] text-sky-300 font-black uppercase tracking-wider">İletişim</p>
                 <p className="font-black text-sky-300 text-base mt-0.5">
-                  {allCandidateApps.filter(a => a.status === 'İletişime Geçildi' || a.status === 'Mülakat' || a.status === 'Kabul Edildi').length}
+                  {allCandidateApps.filter(a => a.status === 'İletişime Geçildi' || a.status === 'Mülakata Çağrıldı' || a.status === 'Mülakat' || a.status === 'Kabul Edildi').length}
                 </p>
               </div>
               <div className="text-center pl-1">
@@ -643,9 +643,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                   <div key={app.id} className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all space-y-2 shadow-xs">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-xs">
-                          {(app.applicantName || 'Aday').substring(0, 2).toUpperCase()}
-                        </div>
+                        <SafeAvatar src={app.applicantAvatar} name={app.applicantName || 'Aday'} size="sm" className="w-8 h-8 rounded-full shrink-0 border border-blue-400/40" />
                         <div className="min-w-0 flex-1">
                           <p className="text-xs font-black text-white leading-tight truncate">{app.applicantName}</p>
                           <p className="text-[10px] text-blue-300 font-medium truncate mt-0.5">{app.applicantDept}</p>

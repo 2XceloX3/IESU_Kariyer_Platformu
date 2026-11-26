@@ -536,6 +536,7 @@ export function generateMockRadarApplications(currentUser = {}, protocols = SAMP
 export function calculateCareerReadinessScore({
   student = {},
   internships = [],
+  applications = [],
   semCertificates = [],
   clubMemberships = [],
   coffeeChats = []
@@ -544,106 +545,106 @@ export function calculateCareerReadinessScore({
   const missingItems = [];
   const breakdown = [];
 
-  // 1. 3308 Resmî / İsteğe Bağlı Staj Durumu (25 Puan)
+  // 1. 3308 Resmî / İsteğe Bağlı Staj & USP Durumu (25 Puan)
   const safeInternships = Array.isArray(internships) ? internships : [];
-  const completedInternship = safeInternships.some(
-    (i) => i.status === 'Başarılı (S / Geçti)' || i.status === 'Onaylandı' || i.status === 'SGK Girişi Yapıldı'
+  const hasInternship = safeInternships.some(
+    (i) => i.status === 'Başarılı (S / Geçti)' || i.status === 'Onaylandı' || i.status === 'Onaylı' || i.status === 'SGK Girişi Yapıldı'
   );
-  if (completedInternship) {
+  if (hasInternship) {
     score += 25;
-    breakdown.push({ label: '3308 Sayılı SGK Onaylı Staj Güvencesi', points: 25, max: 25, completed: true });
+    breakdown.push({ label: '3308 / Ulusal Staj (USP) Onayı', points: 25, max: 25, completed: true });
   } else {
-    breakdown.push({ label: '3308 Sayılı SGK Onaylı Staj', points: 0, max: 25, completed: false });
+    breakdown.push({ label: '3308 / Ulusal Staj (USP)', points: 0, max: 25, completed: false });
     missingItems.push({
       id: 'missing_internship',
-      title: '3308 Sayılı Staj SGK Başvurusu Yapın (+25 Puan)',
-      description: 'Zorunlu veya isteğe bağlı staj evraklarınızı tamamlayarak Rektörlük SGK onayınızı alın. Sanayi kuruluşlarının öğrenci seçiminde ilk baktığı kriterdir.',
+      title: 'Staj / Ulusal Staj (USP) Başvurusu Oluştur (+25 Puan)',
+      description: 'Zorunlu veya gönüllü staj Form-1 kaydını tamamlayarak üniversite SGK güvenceni başlat.',
       ctaText: 'Staj Masasına Git',
       targetView: 'staj',
-      impactText: '+25% Hazırlık Artışı'
+      impactText: '+25 Puan'
     });
   }
 
-  // 2. İESÜ Sürekli Eğitim Merkezi (SEM) Sertifikaları (30 Puan max, her sertifika 10 puan)
-  const safeCerts = Array.isArray(semCertificates) ? semCertificates : [];
-  const certCount = safeCerts.length;
-  const certPoints = Math.min(certCount * 10, 30);
-  score += certPoints;
-  breakdown.push({ label: `SEM Sertifikaları (${certCount} Adet)`, points: certPoints, max: 30, completed: certPoints >= 20 });
-  if (certCount < 2) {
-    missingItems.push({
-      id: 'missing_sem',
-      title: 'İESÜ SEM Akredite Sertifika Programı Tamamlayın (+10-20 Puan)',
-      description: 'Hedeflediğiniz alan için Bulut Bilişim, PMP veya Yapay Zekâ SEM sertifikası alarak kurumsal şirketlerin ATS taramasında öne geçin.',
-      ctaText: 'SEM Eğitimlerini Gör',
-      targetView: 'sem',
-      impactText: '+35% Eşleşme Oranı'
-    });
-  }
-
-  // 3. Öğrenci Kulüpleri ve Liderlik (15 Puan)
-  const safeClubs = Array.isArray(clubMemberships) ? clubMemberships : [];
-  const hasClub = safeClubs.length > 0 || student.clubRole;
-  if (hasClub) {
-    score += 15;
-    breakdown.push({ label: 'Kulüp Faaliyeti ve Takım Liderliği', points: 15, max: 15, completed: true });
-  } else {
-    breakdown.push({ label: 'Kulüp ve Sosyal Girişimcilik', points: 0, max: 15, completed: false });
-    missingItems.push({
-      id: 'missing_club',
-      title: 'Bir Öğrenci Kulübüne Katılın veya Proje Üretin (+15 Puan)',
-      description: 'Takım çalışması ve proje yürütme tecrübesi İK uzmanlarının aradığı en kritik yetkinlikler arasındadır.',
-      ctaText: 'Kulüpler Portalına Git',
-      targetView: 'club_portal',
-      impactText: '+15% Hazırlık Artışı'
-    });
-  }
-
-  // 4. İESÜ Dijital CV & Transkript Doğruluğu (20 Puan)
-  const hasCV = Boolean(student.cvData || student.gpa || student.department);
+  // 2. İESÜ Akıllı Dijital CV & ATS Profili (25 Puan)
+  const hasCV = Boolean(student.cvData || student.skills?.length > 0 || (Array.isArray(semCertificates) && semCertificates.length > 0));
   if (hasCV) {
-    score += 20;
-    breakdown.push({ label: 'İESÜ Dijital CV & Transkript Doğruluğu', points: 20, max: 20, completed: true });
+    score += 25;
+    breakdown.push({ label: 'Akıllı Dijital CV & Yetkinlikler', points: 25, max: 25, completed: true });
   } else {
-    breakdown.push({ label: 'İESÜ Dijital CV & Transkript', points: 5, max: 20, completed: false });
+    breakdown.push({ label: 'Akıllı Dijital CV & ATS', points: 5, max: 25, completed: false });
     score += 5;
     missingItems.push({
       id: 'missing_cv',
-      title: 'İESÜ Akredite Dijital CV Oluşturun (+15 Puan)',
-      description: 'İESÜ onaylı akredite şablon ile CV nizi tamamlayarak kurumsal havuzlara açılın.',
-      ctaText: 'CV Oluşturucuya Git',
+      title: 'Akıllı CV Oluştur ve ATS Uyumunu Ölç (+20 Puan)',
+      description: 'İK taramalarından geçen profesyonel özgeçmişini 2 dakikada hazırlayıp indir.',
+      ctaText: 'CV Stüdyosunu Aç',
       targetView: 'cvbuilder',
-      impactText: '+20% Hazırlık Artışı'
+      impactText: '+20 Puan'
     });
   }
 
-  // 5. Mezunla 15 Dakika Kahve Sohbeti / Mikro-Mentorluk (10 Puan)
+  // 3. Aktif İş & Staj Başvuruları (20 Puan)
+  const safeApps = Array.isArray(applications) ? applications : [];
+  const appCount = safeApps.length;
+  const appPoints = Math.min(appCount * 10, 20);
+  score += appPoints;
+  breakdown.push({ label: `Aktif İş & Staj Başvuruları (${appCount})`, points: appPoints, max: 20, completed: appPoints >= 20 });
+  if (appCount < 2) {
+    missingItems.push({
+      id: 'missing_applications',
+      title: 'Bölümüne Uygun Staj & İş İlanlarına Başvur (+20 Puan)',
+      description: 'Kurumsal anlaşmalı firmaların açık pozisyonlarını incele ve tek tıkla başvur.',
+      ctaText: 'İlanları Keşfet',
+      targetView: 'jobs',
+      impactText: '+20 Puan'
+    });
+  }
+
+  // 4. Akademik Profil & Bölüm Bilgisi (15 Puan)
+  const hasAcademicProfile = Boolean(student.department && (student.gpa || student.year || student.bio || (Array.isArray(clubMemberships) && clubMemberships.length > 0)));
+  if (hasAcademicProfile) {
+    score += 15;
+    breakdown.push({ label: 'Akademik Profil & Kariyer Hedefi', points: 15, max: 15, completed: true });
+  } else {
+    score += student.department ? 5 : 0;
+    breakdown.push({ label: 'Akademik Profil Bilgileri', points: student.department ? 5 : 0, max: 15, completed: false });
+    missingItems.push({
+      id: 'missing_profile',
+      title: 'Sınıf, AGNO ve Kariyer Hedefini Tamamla (+10 Puan)',
+      description: 'İşverenlerin seni yetenek havuzunda kolayca bulabilmesi için profilini güncelle.',
+      ctaText: 'Profili Güncelle',
+      targetView: 'profile_update',
+      impactText: '+10 Puan'
+    });
+  }
+
+  // 5. Mezunla 15 Dakika Kahve Sohbeti / Mentörlük (15 Puan)
   const safeChats = Array.isArray(coffeeChats) ? coffeeChats : [];
   const hasConfirmedChat = safeChats.some((c) => c.status === 'CONFIRMED' || c.status === 'COMPLETED');
   const hasPendingChat = safeChats.some((c) => c.status === 'PENDING');
   if (hasConfirmedChat) {
-    score += 10;
-    breakdown.push({ label: 'Mezunla 15 Dk Kahve Sohbeti / Mentorluk', points: 10, max: 10, completed: true });
+    score += 15;
+    breakdown.push({ label: 'Mezunla 15 Dk Kahve Sohbeti / Mentörlük', points: 15, max: 15, completed: true });
   } else if (hasPendingChat) {
-    score += 5;
-    breakdown.push({ label: 'Mezun Kahve Randevusu (Onay Bekliyor)', points: 5, max: 10, completed: false });
+    score += 8;
+    breakdown.push({ label: 'Mezun Kahve Randevusu (Onay Bekliyor)', points: 8, max: 15, completed: false });
     missingItems.push({
       id: 'missing_coffee_chat',
-      title: 'Mezun Randevunuzu Onaylayın / Takip Edin (+5 Puan)',
-      description: 'Bekleyen kahve sohbeti randevunuz onaylandığında mentorluk puanınız %100 tamamlanacaktır.',
+      title: 'Bekleyen Mezun Randevunu Takip Et (+7 Puan)',
+      description: 'Randevun onaylandığında mentörlük hazırlık puanın tamamlanır.',
       ctaText: 'Randevuları Gör',
       targetAction: 'open_coffee_chat',
-      impactText: '+5% Mentor Gücü'
+      impactText: '+7 Puan'
     });
   } else {
-    breakdown.push({ label: 'Mezun Kahve Randevusu', points: 0, max: 10, completed: false });
+    breakdown.push({ label: 'Mezun Mentör Görüşmesi', points: 0, max: 15, completed: false });
     missingItems.push({
       id: 'missing_coffee_chat',
-      title: 'Mezunla 15 Dk Kahve Sohbeti Randevusu Alın (+10 Puan)',
-      description: 'Sektör lideri bir İESÜ mezunuyla 15 dakikalık görüşme yaparak portfolyonuzu inceletin ve mülakat tüyoları alın.',
-      ctaText: 'Kahve Randevusu Al',
+      title: 'İESÜ Mezunu ile 15 Dk Kahve Sohbeti Planla (+15 Puan)',
+      description: 'Sektörde çalışan bir mezunla tanışıp CV ve mülakat tüyoları al.',
+      ctaText: 'Mentör Bul',
       targetAction: 'open_coffee_chat',
-      impactText: '+10% Mentor Gücü'
+      impactText: '+15 Puan'
     });
   }
 

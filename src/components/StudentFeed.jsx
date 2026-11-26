@@ -357,27 +357,22 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
           {/* TARGET AREA A: KARİYER & GELİŞİM ARAÇLARI (Önceliklendirilmiş Öğrenci Deneyimi) */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] p-4 text-left transition-all hover:border-red-200">
-            <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-gray-100">
+            <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-gray-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#990000] inline-block animate-pulse shrink-0"></span>
                 <div>
-                  <h4 className="text-[12px] font-black leading-tight text-gray-900">Kariyer & Gelişim Araçları</h4>
-                  <p className="text-[10px] text-slate-500 font-medium">Adım adım kariyer hazırlığı</p>
+                  <h4 className="text-[12px] font-black leading-tight text-gray-900 dark:text-white">Kariyer & Gelişim Araçları</h4>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Adım adım kariyer hazırlığı</p>
                 </div>
               </div>
-              <button 
-                onClick={() => setShowCareerHubModal(true)}
-                className="text-[10px] font-bold text-[#990000] bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded-lg transition cursor-pointer flex items-center gap-0.5"
-              >
-                <span>Tüm Araçlar</span>
-                <ChevronRight size={12} />
-              </button>
             </div>
 
             {/* Kişiselleştirilmiş Sıradaki Önerilen Adım */}
             {(() => {
+              const safePct = Number(careerProgress.percent ?? 0);
               const myAppCount = (applications || []).filter(a => a.applicantId === effectiveCurrentUser?.id || a.applicantEmail === effectiveCurrentUser?.email).length;
-              const nextStep = careerProgress.percent < 50
+              const openJobCount = (jobs || []).filter(j => j?.status === 'Yayında' || j?.status === 'Aktif' || !j?.status).length;
+              const nextStep = safePct < 50
                 ? {
                     label: 'Sıradaki Adım: Özgeçmiş & ATS Kontrolü',
                     desc: 'Staj başvuruları öncesi CV uyumunu analiz et',
@@ -387,7 +382,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                 : myAppCount === 0
                 ? {
                     label: 'Sıradaki Adım: Staj & İş Fırsatlarını İncele',
-                    desc: `${(jobs || []).length || 12}+ açık pozisyon seni bekliyor`,
+                    desc: openJobCount > 0 ? `${openJobCount} açık pozisyon seni bekliyor` : 'Yeni staj ve kariyer fırsatlarına göz at',
                     cta: 'İlanlara Göz At',
                     onClick: () => setView('jobs'),
                   }
@@ -399,15 +394,15 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                   };
 
               return (
-                <div className="mb-3 p-2.5 rounded-xl bg-gradient-to-br from-red-50/80 via-white to-amber-50/50 border border-red-100">
+                <div className="mb-3 p-2.5 rounded-xl bg-gradient-to-br from-red-50/80 via-white to-amber-50/50 dark:from-rose-950/30 dark:via-slate-900 dark:to-slate-900 border border-red-100 dark:border-rose-900/40">
                   <div className="flex items-center justify-between gap-1 mb-1">
-                    <span className="text-[10px] font-black text-[#990000] uppercase tracking-wider flex items-center gap-1">
+                    <span className="text-[10px] font-black text-[#990000] dark:text-rose-400 uppercase tracking-wider flex items-center gap-1">
                       <Sparkles size={11} /> Önerilen Adım
                     </span>
-                    <span className="text-[10px] font-bold text-slate-600">%{careerProgress.percent} Hazır</span>
+                    <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300">%{safePct} Hazır</span>
                   </div>
-                  <p className="text-[11px] font-bold text-slate-900 leading-snug">{nextStep.label}</p>
-                  <p className="text-[10px] text-slate-600 mt-0.5">{nextStep.desc}</p>
+                  <p className="text-[11px] font-bold text-slate-900 dark:text-white leading-snug">{nextStep.label}</p>
+                  <p className="text-[10px] text-slate-600 dark:text-slate-400 mt-0.5">{nextStep.desc}</p>
                   <button
                     type="button"
                     onClick={nextStep.onClick}
@@ -424,15 +419,15 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
             <div className="space-y-1">
               <button
                 onClick={() => setView('cvbuilder')}
-                className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
+                className="w-full p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-between group cursor-pointer text-left"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                     <FileText size={14} />
                   </div>
                   <div className="min-w-0">
-                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-indigo-700 transition-colors block truncate">Özgeçmiş (CV) & ATS</span>
-                    <span className="text-[9px] text-gray-500 block truncate">CV oluştur ve İK uyumunu ölç</span>
+                    <span className="text-[11px] font-bold text-gray-800 dark:text-slate-100 group-hover:text-indigo-700 transition-colors block truncate">Özgeçmiş (CV) & ATS</span>
+                    <span className="text-[9px] text-gray-500 dark:text-slate-400 block truncate">CV oluştur ve İK uyumunu ölç</span>
                   </div>
                 </div>
                 <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700">CV</span>
@@ -440,23 +435,23 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
               <button
                 onClick={() => setView('jobs')}
-                className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
+                className="w-full p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-between group cursor-pointer text-left"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <Bookmark size={14} />
+                    <Briefcase size={14} />
                   </div>
                   <div className="min-w-0">
-                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-blue-700 transition-colors block truncate">Kaydedilen İlanlar</span>
-                    <span className="text-[9px] text-gray-500 block truncate">Açık staj ve yarı zamanlı fırsatlar</span>
+                    <span className="text-[11px] font-bold text-gray-800 dark:text-slate-100 group-hover:text-blue-700 transition-colors block truncate">Açık İş & Staj İlanları</span>
+                    <span className="text-[9px] text-gray-500 dark:text-slate-400 block truncate">Staj, USP ve yarı zamanlı fırsatlar</span>
                   </div>
                 </div>
-                <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">{(jobs || []).length || 12} İlan</span>
+                <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">{(jobs || []).length} İlan</span>
               </button>
 
               <button
                 onClick={() => setView('radar')}
-                className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
+                className="w-full p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-between group cursor-pointer text-left"
                 data-testid="student-feed-quick-radar-btn"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
@@ -464,8 +459,8 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                     <Radar size={14} />
                   </div>
                   <div className="min-w-0">
-                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-[#990000] transition-colors block truncate">Başvuru Radarım</span>
-                    <span className="text-[9px] text-gray-500 block truncate">Yaptığın başvuruların durumu</span>
+                    <span className="text-[11px] font-bold text-gray-800 dark:text-slate-100 group-hover:text-[#990000] transition-colors block truncate">Başvuru Radarım</span>
+                    <span className="text-[9px] text-gray-500 dark:text-slate-400 block truncate">Yaptığın başvuruların canlı durumu</span>
                   </div>
                 </div>
                 <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-red-50 text-[#990000]">Canlı</span>
@@ -473,15 +468,15 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
               <button
                 onClick={() => setShowMentorsModal(true)}
-                className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
+                className="w-full p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-between group cursor-pointer text-left"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                     <GraduationCap size={14} />
                   </div>
                   <div className="min-w-0">
-                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-amber-700 transition-colors block truncate">Mentörlük & Rehberlik</span>
-                    <span className="text-[9px] text-gray-500 block truncate">Mezun ve akademisyen eşleşmesi</span>
+                    <span className="text-[11px] font-bold text-gray-800 dark:text-slate-100 group-hover:text-amber-700 transition-colors block truncate">Mezun Mentörlük</span>
+                    <span className="text-[9px] text-gray-500 dark:text-slate-400 block truncate">İESÜ mezunlarından 15 dk rehberlik</span>
                   </div>
                 </div>
                 <ChevronRight size={13} className="text-gray-400 group-hover:text-amber-700 transition-colors" />
@@ -489,28 +484,28 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
               <button
                 onClick={() => setView('staj')}
-                className="w-full p-2 rounded-xl hover:bg-red-50/70 transition-all flex items-center justify-between group cursor-pointer text-left border border-red-100/70 bg-red-50/30"
+                className="w-full p-2 rounded-xl hover:bg-red-50/70 transition-all flex items-center justify-between group cursor-pointer text-left border border-red-100/70 bg-red-50/30 dark:bg-rose-950/30 dark:border-rose-900/40"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-7 h-7 rounded-lg bg-[#990000] text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                     <Briefcase size={14} />
                   </div>
                   <div className="min-w-0">
-                    <span className="text-[11px] font-black text-gray-900 group-hover:text-[#990000] transition-colors block truncate">Staj & Ulusal Staj (USP)</span>
-                    <span className="text-[9px] text-gray-600 block truncate">Form-1, SGK & Dijital Defter</span>
+                    <span className="text-[11px] font-black text-gray-900 dark:text-white group-hover:text-[#990000] transition-colors block truncate">Staj & Ulusal Staj (USP)</span>
+                    <span className="text-[9px] text-gray-600 dark:text-slate-400 block truncate">Form-1, SGK & Dijital Defter</span>
                   </div>
                 </div>
                 <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-red-100 text-[#990000]">Aktif</span>
               </button>
             </div>
 
-            {/* Tüm Kariyer & Gelişim Araçları Merkezi Butonu */}
+            {/* Tek ve Net Gelişim Araçları Merkezi Butonu */}
             <button
               onClick={() => setShowCareerHubModal(true)}
-              className="w-full mt-3 py-2 px-3 bg-slate-50 hover:bg-red-50 hover:text-[#990000] text-slate-700 rounded-xl text-[11px] font-bold border border-slate-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs group"
+              className="w-full mt-3 py-2 px-3 bg-slate-50 dark:bg-slate-800 hover:bg-red-50 hover:text-[#990000] text-slate-700 dark:text-slate-200 rounded-xl text-[11px] font-bold border border-slate-200/80 dark:border-slate-700 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs group"
             >
               <Compass size={13} className="text-[#990000] group-hover:scale-110 transition-transform" />
-              <span>Gelişim Araçları Merkezi (8 Araç)</span>
+              <span>Tüm Kariyer Araçları</span>
               <ChevronRight size={12} className="text-slate-400 group-hover:text-[#990000] transition-colors" />
             </button>
           </div>
@@ -582,51 +577,115 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
         {/* FEED TAB */}
         {activeTab === 'feed' && (
-          <div className="w-full shrink-0 flex flex-col gap-6 animate-fade-in">
-          <PostComposer currentUser={effectiveCurrentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
-          {/* MOBİL HIZLI ERİŞİM KOKPİTİ (LG ALTINDA GİZLENEN SOL/SAĞ PANELİN MOBİL KÖPRÜSÜ) */}
-          <div className="lg:hidden bg-gradient-to-r from-red-950 via-[#990000] to-slate-900 rounded-2xl p-4 text-white shadow-md border border-red-800/40 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <SafeAvatar src={studentAvatar} name={studentName} size="sm" className="border-2 border-white/60" />
-                <div className="min-w-0">
-                  <h4 className="text-xs font-black text-white truncate">{studentName}</h4>
-                  <p className="text-[10px] text-red-200 font-semibold truncate">{studentDept}</p>
+          <div className="w-full shrink-0 flex flex-col gap-5 animate-fade-in">
+          {/* YENİ ÖĞRENCİ KARİYER & STAJ KOKPİTİ (MODERN ALBENİLİ HERO + ÖNE ÇIKAN STAJ/İŞ FIRSATLARI) */}
+          <div className="bg-gradient-to-br from-slate-950 via-[#6B0000] to-[#990000] text-white rounded-3xl p-5 sm:p-6 shadow-xl border border-red-500/30 relative overflow-hidden">
+            <div className="absolute -top-12 -right-12 w-56 h-56 bg-amber-400/15 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative z-10 space-y-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 border border-white/20 text-[10px] font-black uppercase tracking-wider text-amber-200 mb-1.5">
+                    <Sparkles size={11} /> İESÜ Öğrenci Kariyer & Staj Kokpiti
+                  </span>
+                  <h2 className="text-lg sm:text-xl font-black tracking-tight text-white">
+                    Hoş Geldin, {studentName.split(' ')[0]}
+                  </h2>
+                  <p className="text-xs text-rose-100/90 mt-0.5">
+                    {studentDept} • Staj, Ulusal Staj Programı (USP) ve kariyer fırsatların tek merkezde.
+                  </p>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setView('student_kgb')}
+                  className="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/20 text-white text-xs font-black flex items-center gap-1.5 transition cursor-pointer shrink-0"
+                >
+                  <GraduationCap size={14} className="text-amber-300" />
+                  KGB: %{careerProgress.percent ?? 0}
+                </button>
               </div>
-              <button 
-                onClick={() => setView('student_kgb')}
-                className="px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/20 text-[10px] font-black tracking-wide flex items-center gap-1 transition cursor-pointer"
-              >
-                <GraduationCap size={12} className="text-amber-300" />
-                <span>KGB: %{careerProgress.percent ?? 0}</span>
-              </button>
-            </div>
 
-            <div className="grid grid-cols-3 gap-2 pt-1 border-t border-white/10 text-center">
-              <button
-                onClick={() => setView('student_kgb')}
-                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold transition flex flex-col items-center gap-1 cursor-pointer"
-              >
-                <Award size={15} className="text-amber-300" />
-                <span>KGB Karnesi</span>
-              </button>
-              <button
-                onClick={() => setView('jobs')}
-                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold transition flex flex-col items-center gap-1 cursor-pointer"
-              >
-                <Briefcase size={15} className="text-emerald-300" />
-                <span>İş & Staj</span>
-              </button>
-              <button
-                onClick={() => setShowMentorsModal(true)}
-                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold transition flex flex-col items-center gap-1 cursor-pointer"
-              >
-                <Coffee size={15} className="text-teal-300" />
-                <span>Mentör Bul</span>
-              </button>
+              {/* 4 Şık Hızlı Aksiyon Kutusu */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setView('staj')}
+                  className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/15 text-left transition cursor-pointer group"
+                >
+                  <Briefcase size={16} className="text-amber-300 mb-1.5 group-hover:scale-110 transition-transform" />
+                  <div className="text-xs font-black text-white leading-tight">Staj & USP</div>
+                  <div className="text-[10px] text-rose-100/80 mt-0.5">Form-1 & SGK</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setView('jobs')}
+                  className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/15 text-left transition cursor-pointer group"
+                >
+                  <Sparkles size={16} className="text-emerald-300 mb-1.5 group-hover:scale-110 transition-transform" />
+                  <div className="text-xs font-black text-white leading-tight">İş & Staj ({(jobs || []).length})</div>
+                  <div className="text-[10px] text-rose-100/80 mt-0.5">Hemen Başvur</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setView('cvbuilder')}
+                  className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/15 text-left transition cursor-pointer group"
+                >
+                  <FileText size={16} className="text-sky-300 mb-1.5 group-hover:scale-110 transition-transform" />
+                  <div className="text-xs font-black text-white leading-tight">Akıllı CV & ATS</div>
+                  <div className="text-[10px] text-rose-100/80 mt-0.5">2 Dk’da Hazırla</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowCoffeeChatModal(true)}
+                  className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/15 text-left transition cursor-pointer group"
+                >
+                  <Coffee size={16} className="text-teal-300 mb-1.5 group-hover:scale-110 transition-transform" />
+                  <div className="text-xs font-black text-white leading-tight">Mezun Mentör</div>
+                  <div className="text-[10px] text-rose-100/80 mt-0.5">15 Dk Sohbet</div>
+                </button>
+              </div>
+
+              {/* Canlı Staj & İş Fırsatları Şeridi (Gerçek Store Verisinden) */}
+              {(() => {
+                const matchedJobs = (jobs || [])
+                  .filter(j => j && j.status !== 'Reddedildi' && j.status !== 'Beklemede')
+                  .sort((a, b) => {
+                    const aStaj = String(a.type || a.title || '').toLowerCase().includes('staj') ? 1 : 0;
+                    const bStaj = String(b.type || b.title || '').toLowerCase().includes('staj') ? 1 : 0;
+                    return bStaj - aStaj;
+                  })
+                  .slice(0, 3);
+                if (matchedJobs.length === 0) return null;
+                return (
+                  <div className="pt-3 border-t border-white/15 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-rose-100">Sana Uygun Güncel Fırsatlar</span>
+                      <button type="button" onClick={() => setView('jobs')} className="text-[11px] font-black text-amber-200 hover:underline cursor-pointer">
+                        Tümünü Gör →
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      {matchedJobs.map(job => (
+                        <button
+                          key={job.id}
+                          type="button"
+                          onClick={() => setView('jobs')}
+                          className="p-2.5 rounded-xl bg-black/25 hover:bg-black/40 border border-white/10 text-left transition cursor-pointer"
+                        >
+                          <p className="text-[11px] font-black text-white truncate">{job.title}</p>
+                          <p className="text-[10px] text-rose-200 truncate mt-0.5">{job.company || 'Kurumsal İşveren'}</p>
+                          <span className="inline-block mt-1.5 px-2 py-0.5 rounded-md bg-white/15 text-[9px] font-black text-amber-200">
+                            {job.type || 'Staj / İş'}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </div>
+
+          <PostComposer currentUser={effectiveCurrentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
           {/* FEED TABS (LINKEDIN STYLE) */}
           <div className="flex items-center gap-6 border-b border-gray-200 mb-4 px-2 overflow-x-auto">
             <button 
@@ -774,31 +833,27 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
 
 
-          {/* 3. GOOGLE STITCH CANLI MENTÖRLÜK REHBERİ KARTI (NET 24PX BOŞLUK) */}
-          <div className="bg-gradient-to-br from-slate-900 via-[#0F766E] to-teal-950 text-white rounded-3xl p-6 shadow-xl border border-teal-800/40 relative overflow-hidden my-6">
+          {/* 3. MEZUN MENTÖRLÜK REHBERİ KARTI */}
+          <div className="bg-gradient-to-br from-slate-900 via-[#0F766E] to-teal-950 text-white rounded-3xl p-5 shadow-xl border border-teal-800/40 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-teal-400/10 rounded-full blur-2xl pointer-events-none"></div>
             
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-2.5">
               <span className="bg-teal-400/20 text-teal-300 border border-teal-400/30 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                Birebir Kariyer Rehberliği
+                Birebir Mezun Rehberliği
               </span>
               <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
             </div>
 
-            <h3 className="font-black text-xl text-white leading-tight mb-2">Mentor Bulun</h3>
+            <h3 className="font-black text-lg text-white leading-tight mb-1.5">Mezun Mentör Bul</h3>
             <p className="text-xs text-teal-100 font-medium mb-4 leading-relaxed">
-              Mezun ve akademisyen mentörlerimizden birebir kariyer rehberliği ve mentörlük desteği alın.
+              Sektörde aktif çalışan İESÜ mezunlarından 15 dakikalık birebir kariyer ve mülakat rehberliği al.
             </p>
-
-            <div className="w-full bg-white/10 rounded-full h-2 mb-5 p-0.5">
-              <div className="bg-emerald-400 h-1.5 rounded-full" style={{ width: '85%' }}></div>
-            </div>
 
             <button
               onClick={() => setShowMentorsModal(true)}
-              className="w-full py-3 bg-white text-teal-900 hover:bg-slate-100 rounded-2xl text-xs font-black uppercase tracking-wider transition-all shadow-lg hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-2.5 bg-white text-teal-900 hover:bg-slate-100 rounded-2xl text-xs font-black uppercase tracking-wider transition-all shadow-lg hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center justify-center gap-2"
             >
-              Mentorları İncele <ArrowRight size={15} />
+              Mentörleri İncele <ArrowRight size={15} />
             </button>
           </div>
 
@@ -916,26 +971,6 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
             </div>
           )}
 
-
-          {/* Öğrenci Bilgi Düzenleme shortcut (NET 24PX BOŞLUK) */}
-          <div className="bg-gradient-to-br from-[#7A0000] via-[#990000] to-[#5C0000] rounded-2xl p-6 shadow-xl text-white border border-red-900 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-            <p className="text-[11px] font-black text-amber-300 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-              <Sparkles size={13} className="text-amber-300" /> Hızlı Erişim
-            </p>
-            <h3 className="font-black text-xl leading-tight mb-2 text-white">
-              Öğrenci Profilim & CV
-            </h3>
-            <p className="text-xs text-white/90 font-medium mb-5 leading-relaxed">
-              Akademik geçmişinizi, stajlarınızı, sertifikalarınızı ve kariyer hedeflerinizi profil alanından güncelleyin.
-            </p>
-            <button 
-              onClick={() => setView('profile_update')} 
-              className="w-full py-3.5 bg-white text-[#990000] hover:bg-slate-100 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center justify-center gap-2 border border-white"
-            >
-              Bilgilerimi Düzenle <ArrowRight size={16} />
-            </button>
-          </div>
 
           {/* Featured Opportunities */}
           {featuredOpportunities && (featuredOpportunities || []).filter(f => f.status === 'Yayında').length > 0 && (

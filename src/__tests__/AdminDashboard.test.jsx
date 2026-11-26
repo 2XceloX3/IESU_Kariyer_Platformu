@@ -213,7 +213,7 @@ describe('AdminDashboard Component', () => {
       allowedModules: ['content', 'messages']
     };
 
-    // 1. StaffPortal renders bespoke operational workstation and ONLY granted desks (no filler dock)
+    // 1. StaffPortal renders site-native 3-column feed + Indigo bottom dock, ONLY granted desks, and NO test banner
     const { unmount: unmountPortal } = render(
       <StaffPortal
         currentUser={contentOnlyStaff}
@@ -223,15 +223,16 @@ describe('AdminDashboard Component', () => {
         setSelectedUserId={mockSetSelectedUserId}
       />
     );
-    expect(screen.getByText(/KGM Personel Operasyon İstasyonu/i)).toBeInTheDocument();
+    expect(screen.getByText(/KURUMSAL PERSONEL PORTALI/i)).toBeInTheDocument();
     expect(screen.getAllByText(/İçerik & Duyuru Masası/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Günlük Takip Notlarım/i)).toBeInTheDocument();
+    expect(screen.getByTitle(/Akış & Ana Sayfa/i)).toBeInTheDocument();
     expect(screen.queryByText(/Öğrenci & Staj Masası/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Firma, İlan & Protokol/i)).not.toBeInTheDocument();
-    expect(screen.queryByTitle(/Kurumsal Takvim/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Süper Yönetici Modu/i)).not.toBeInTheDocument();
     unmountPortal();
 
-    // 1b. Super Admin viewing StaffPortal keeps Super Admin identity with preview bar
+    // 1b. Super Admin viewing StaffPortal sees native portal UI with all 8 modules and NO test banner
     const { unmount: unmountAdminPreview } = render(
       <StaffPortal
         currentUser={{ id: 'admin_1513', name: 'Kariyer Geliştirme Koordinatörlüğü', role: 'admin' }}
@@ -241,8 +242,9 @@ describe('AdminDashboard Component', () => {
         setSelectedUserId={mockSetSelectedUserId}
       />
     );
-    expect(screen.getByText(/Süper Yönetici Modu/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Süper Admin Merkezine Dön/i })).toBeInTheDocument();
+    expect(screen.getByText(/KURUMSAL PERSONEL PORTALI/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Süper Yönetici Modu/i)).not.toBeInTheDocument();
+    expect(screen.getAllByText(/Öğrenci & Staj Masası/i).length).toBeGreaterThan(0);
     unmountAdminPreview();
 
     // 2. TopProfileMenu for Staff MUST NOT expose Öğrenci / Mezun / Firma portal switchers
