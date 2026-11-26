@@ -43,6 +43,7 @@ const CMSCompanyEventMessages = React.lazy(() => import('./admin/CMSCompanyEvent
 const CMSCareerCounseling = React.lazy(() => import('./admin/CMSCareerCounseling'));
 const CMSCorporatePartnerships = React.lazy(() => import('./admin/CMSCorporatePartnerships'));
 import { calculateProtocolStatus } from '../services/protocolWorkflow';
+import { canStaffAccessTab, resolveStaffPermissions, STAFF_PERMISSION_GROUPS } from '../utils/staffAuth';
 const CMSAcademicRadar = React.lazy(() => import('./admin/CMSAcademicRadar'));
 const CMSCandidatePool = React.lazy(() => import('./admin/CMSCandidatePool'));
 const CMSApplicationsPool = React.lazy(() => import('./admin/CMSApplicationsPool'));
@@ -379,8 +380,22 @@ export default function AdminDashboard({
     return foundCat ? foundCat.id : 'genel';
   }, [initialTab]);
 
-  const [activeTab, setActiveTab]       = useState(() => initialTab || 'overview');
-  const [activeCategory, setActiveCategory] = useState(initialCategory);
+  const [activeTab, setActiveTab] = useState(() => {
+    if (initialTab) return initialTab;
+    try {
+      const queued = sessionStorage.getItem('iesu_cms_initial_tab');
+      if (queued) {
+        sessionStorage.removeItem('iesu_cms_initial_tab');
+        return queued;
+      }
+    } catch { /* intentional */ }
+    return 'overview';
+  });
+  const [activeCategory, setActiveCategory] = useState(() => {
+    const startTab = initialTab || activeTab;
+    const foundCat = PANEL_CATEGORIES.find(c => c.panels?.includes(startTab));
+    return foundCat ? foundCat.id : 'genel';
+  });
 
   React.useEffect(() => {
     if (initialTab) {
@@ -423,9 +438,21 @@ export default function AdminDashboard({
   // Öğrenci (students), Staj (gonullu) ve KGB (cms_ssp) aktif; Akademik Portal ve Öğrenci Kulüpleri (cms_clubs) kalıcı olarak kapalıdır
   const CLOSED_PORTAL_TABS = new Set(['academic_staff', 'cms_clubs', 'academic_catalog', 'academic_approvals', 'akademik', 'akademik_radar', 'cms_incubator', 'sem', 'cms_message_audit']);
 
+  const staffAllowedPermGroups = useMemo(
+    () => (isStaffSession ? resolveStaffPermissions(currentUser) : STAFF_PERMISSION_GROUPS.map(g => g.id)),
+    [isStaffSession, currentUser]
+  );
+
+  const isTabPermittedForSession = (tabId) => {
+    if (CLOSED_PORTAL_TABS.has(tabId)) return false;
+    if (SUPER_ADMIN_ONLY_TABS.has(tabId) && !isSuperAdmin) return false;
+    if (isStaffSession && !canStaffAccessTab(currentUser, tabId)) return false;
+    return true;
+  };
+
   const renderPanel = () => {
     const p = { students, alumni, companies, jobs, setJobs, mentorships, voluntaryInternships, setVoluntaryInternships, surveys, semCourses, newsEvents: news, setNewsEvents: setNews, alumniCards, events, setEvents, academicApprovals, alumniCardApplications, setAlumniCardApplications, alumniCardForms, setAlumniCardForms, posts, setPosts, currentUser, setView, applications, setApplications, setActiveTab };
-    if (CLOSED_PORTAL_TABS.has(activeTab) || (SUPER_ADMIN_ONLY_TABS.has(activeTab) && !isSuperAdmin)) {
+    if (!isTabPermittedForSession(activeTab)) {
       return <OverviewPanel {...p}/>;
     }
     switch(activeTab) {
@@ -548,14 +575,19 @@ export default function AdminDashboard({
     if (tab.id === 'anket' && !featureSurveys) return false;
     if (tab.id === 'kart' && !featureAlumniCard) return false;
     if ((tab.superAdminOnly || SUPER_ADMIN_ONLY_TABS.has(tab.id)) && !isSuperAdmin) return false;
+    if (isStaffSession && !canStaffAccessTab(currentUser, tab.id)) return false;
     return true;
   });
+
+  const VISIBLE_CATEGORIES = PANEL_CATEGORIES.filter(cat =>
+    cat.panels.some(p => ALL_TABS.some(t => t.id === p))
+  );
 
   // Arama filtresi
   const filteredPanels = searchQuery 
     ? ALL_TABS.filter(t => t.label.toLowerCase().includes(searchQuery.toLowerCase()))
     : ALL_TABS.filter(t => {
-        const cat = PANEL_CATEGORIES.find(c => c.id === activeCategory);
+        const cat = VISIBLE_CATEGORIES.find(c => c.id === activeCategory) || VISIBLE_CATEGORIES[0];
         return cat ? cat.panels.includes(t.id) : false;
       });
 
@@ -585,20 +617,20 @@ export default function AdminDashboard({
         </div>
 
         <div className="flex overflow-x-auto hide-scrollbar gap-1.5 ml-4 flex-1 items-center">
-          {PANEL_CATEGORIES.map(cat => (
+          {VISIBLE_CATEGORIES.map(cat => (
             <button 
               key={cat.id} 
               onClick={() => {
                 setActiveCategory(cat.id);
-                const firstAllowed = cat.panels.find(
-                  p => !CLOSED_PORTAL_TABS.has(p) && (isSuperAdmin || !SUPER_ADMIN_ONLY_TABS.has(p))
-                ) || 'overview';
+                const firstAllowed = cat.panels.find(p => ALL_TABS.some(t => t.id === p)) || 'overview';
                 setActiveTab(firstAllowed);
                 setSearchQuery('');
               }}
               className={`group flex items-center gap-1.5 px-4 py-2 text-[12px] font-bold transition-all duration-300 whitespace-nowrap rounded-xl ${
                 activeCategory === cat.id 
-                  ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white border border-amber-500 font-black shadow-md shadow-amber-500/25'
+                  ? (isStaffSession
+                      ? 'bg-gradient-to-r from-indigo-700 via-indigo-600 to-slate-800 text-white border border-indigo-500 font-black shadow-md shadow-indigo-500/25'
+                      : 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white border border-amber-500 font-black shadow-md shadow-amber-500/25')
                   : 'text-gray-600 dark:text-slate-300 hover:text-amber-800 dark:hover:text-amber-300 hover:bg-amber-50/50 dark:hover:bg-slate-800 border border-transparent hover:shadow-sm'
               }`}
             >
@@ -616,17 +648,26 @@ export default function AdminDashboard({
         
         <div className="flex items-center gap-3 shrink-0">
           <div className="hidden lg:flex items-center gap-2 mr-2">
-            {pending>0&&(
+            {pending>0 && isTabPermittedForSession('operasyon') && (
               <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 text-amber-700 dark:text-amber-300 px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer hover:bg-amber-100 dark:hover:bg-amber-500/25 transition" onClick={()=>{setSearchQuery(''); setActiveCategory('genel'); setActiveTab('operasyon');}}>
                 <ClipboardList size={13}/> {pending} Onay
               </div>
             )}
-            {unread>0&&(
+            {unread>0 && isTabPermittedForSession('mesajlar') && (
               <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-1.5 bg-red-50 dark:bg-rose-500/15 border border-red-200 dark:border-rose-500/30 text-red-700 dark:text-rose-300 px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer hover:bg-red-100 dark:hover:bg-rose-500/25 transition" onClick={()=>{setSearchQuery(''); setActiveCategory('genel'); setActiveTab('mesajlar');}}>
                 <Bell size={13}/> {unread} Mesaj
               </div>
             )}
           </div>
+          {isStaffSession && (
+            <button
+              type="button"
+              onClick={() => setView?.('staff')}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-[11px] font-black transition cursor-pointer"
+            >
+              ← Çalışma Masam
+            </button>
+          )}
           <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="admin_cms" />
         </div>
       </header>

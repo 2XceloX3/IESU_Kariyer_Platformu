@@ -127,8 +127,12 @@ export default function CompanyHive({ currentUser, setView }) {
       case 'jobs':
         return <JobsAndInternships setView={handleSetView} previousView={previousView || 'company'} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'profile':
-      case 'user_profile':
-        return <UserProfile userId={selectedUserId || effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self'} viewerHive="company" setView={handleSetView} previousView={previousView || 'company'} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
+      case 'user_profile': {
+        const ownId = effectiveCurrentUser?.role === 'admin'
+          ? 'admin_1513'
+          : (effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self');
+        return <UserProfile userId={ownId} viewerHive="company" setView={handleSetView} previousView={previousView || 'company'} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
+      }
       case 'public_profile':
         return <PublicUserProfile userId={selectedUserId} viewerHive="company" setView={handleSetView} previousView={previousView || 'company'} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'profile_update':
@@ -198,8 +202,8 @@ default:
             setView={handleSetView}
             setSelectedUserId={setSelectedUserId}
             currentUser={effectiveCurrentUser}
-            userRole="company"
-            academicRole="company"
+            userRole={effectiveCurrentUser?.role === 'admin' ? 'admin' : effectiveCurrentUser?.role === 'staff' ? 'staff' : 'company'}
+            academicRole={effectiveCurrentUser?.role === 'admin' ? 'super_admin' : effectiveCurrentUser?.role === 'staff' ? 'staff' : 'company'}
             setSelectedGroupId={setSelectedGroupId}
           />
         );

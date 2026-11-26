@@ -358,7 +358,7 @@ export default function UserProfile({
     if (
       targetUserId === 'admin_1513' ||
       targetUserId === 'admin' ||
-      (isSelfRequest && effectiveCurrentUser?.role === 'admin')
+      (isSelfRequest && (effectiveCurrentUser?.role === 'admin' || effectiveCurrentUser?.id === 'admin_1513'))
     ) {
       setUser({
         id: effectiveCurrentUser?.role === 'admin' ? (effectiveCurrentUser?.id || 'admin_1513') : 'admin_1513',
@@ -569,16 +569,16 @@ export default function UserProfile({
           (effectiveCurrentUser?.uid && (targetUserId === effectiveCurrentUser.uid))
         );
         const companyData = isSelfCompany ? {
-          id: effectiveCurrentUser?.id || targetUserId || 'CMP-001',
-          name: effectiveCurrentUser?.name || found?.name || 'Trendyol',
+          id: effectiveCurrentUser?.id || targetUserId || 'self',
+          name: effectiveCurrentUser?.name || found?.name || 'Kurumsal Firma',
           role: 'company',
-          sector: effectiveCurrentUser?.sector || (effectiveCurrentUser?.role === 'admin' ? 'Kurumsal Yönetim & Kariyer Koordinasyonu' : (found?.sector || 'E-Ticaret & Teknoloji Ortaklığı')),
-          location: effectiveCurrentUser?.location || found?.location || 'İstanbul Maslak Kampüsü',
-          foundingYear: found?.foundingYear || '2010',
-          description: effectiveCurrentUser?.description || found?.description || '',
-          alumniCount: found?.alumniCount || '42',
-          hiringConversion: found?.hiringConversion || '%84',
-          internshipDuration: found?.internshipDuration || '20 İş Günü (1 Ay)',
+          sector: effectiveCurrentUser?.sector || (effectiveCurrentUser?.role === 'admin' ? 'Kurumsal Yönetim & Kariyer Koordinasyonu' : (found?.sector || '')),
+          location: effectiveCurrentUser?.location || found?.location || '',
+          foundingYear: effectiveCurrentUser?.foundingYear || found?.foundingYear || '',
+          description: effectiveCurrentUser?.description || effectiveCurrentUser?.bio || found?.description || '',
+          alumniCount: effectiveCurrentUser?.alumniCount || found?.alumniCount || '',
+          hiringConversion: effectiveCurrentUser?.hiringConversion || found?.hiringConversion || '',
+          internshipDuration: effectiveCurrentUser?.internshipDuration || found?.internshipDuration || '',
           avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || null)),
           badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified'])),
           isSelf: true

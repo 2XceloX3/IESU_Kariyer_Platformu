@@ -133,8 +133,12 @@ export default function AlumniHive({ currentUser, setView }) {
         return <GlobalAlumniMap setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} previousView={previousView} />;
       case 'jobs':
         return <JobsAndInternships setView={handleSetView} previousView={previousView || 'alumni'} currentUser={effectiveCurrentUser} userRole="alumni" />;
-      case 'user_profile':
-        return <UserProfile userId={selectedUserId || effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self'} viewerHive="alumni" setView={handleSetView} previousView={previousView || 'alumni'} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
+      case 'user_profile': {
+        const ownId = effectiveCurrentUser?.role === 'admin'
+          ? 'admin_1513'
+          : (effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self');
+        return <UserProfile userId={ownId} viewerHive="alumni" setView={handleSetView} previousView={previousView || 'alumni'} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
+      }
       case 'public_profile':
         return <PublicUserProfile userId={selectedUserId} viewerHive="alumni" setView={handleSetView} previousView={previousView || 'alumni'} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'profile_update':
@@ -225,8 +229,8 @@ default:
             setView={handleSetView}
             setSelectedUserId={setSelectedUserId}
             currentUser={effectiveCurrentUser}
-            userRole="alumni"
-            academicRole="alumni"
+            userRole={effectiveCurrentUser?.role === 'admin' ? 'admin' : effectiveCurrentUser?.role === 'staff' ? 'staff' : 'alumni'}
+            academicRole={effectiveCurrentUser?.role === 'admin' ? 'super_admin' : effectiveCurrentUser?.role === 'staff' ? 'staff' : 'alumni'}
             setSelectedGroupId={setSelectedGroupId}
           />
         );

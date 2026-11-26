@@ -328,6 +328,17 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                 </div>
 
                 <div className="mt-4 flex flex-col gap-2 w-full">
+                  <button
+                    onClick={() => {
+                      const ownId = effectiveCurrentUser?.role === 'admin' ? 'admin_1513' : (effectiveCurrentUser?.id || 'self');
+                      if (setSelectedUserId) setSelectedUserId(ownId);
+                      useAppStore.getState().setSelectedUserId?.(ownId);
+                      setView('user_profile');
+                    }}
+                    className="w-full flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-700 text-white text-[13px] font-bold py-2.5 rounded-xl transition-all shadow-xs cursor-pointer"
+                  >
+                    <Crown size={15} /> Kurumsal Profilim (KGM)
+                  </button>
                   <button 
                     onClick={() => setView('company_ats')} 
                     className="w-full flex items-center justify-center gap-2 bg-[#1e3a5f] hover:bg-[#152843] text-white text-[13px] font-bold py-2.5 rounded-xl transition-all shadow-xs cursor-pointer"

@@ -11,7 +11,7 @@ import { handleEDevletOAuthCallback } from './services/edevletGatewayService';
 import { loadStaffAccounts } from './utils/staffAuth';
 
 const LandingPage = lazy(() => import('./components/LandingPage')), Login = lazy(() => import('./components/Login')), Register = lazy(() => import('./components/Register')), ForgotPassword = lazy(() => import('./components/ForgotPassword'));
-const PublicNewsView = lazy(() => import('./components/PublicNewsView')), AdminFeed = lazy(() => import('./components/AdminFeed')), AdminDashboard = lazy(() => import('./components/AdminDashboard'));
+const PublicNewsView = lazy(() => import('./components/PublicNewsView')), AdminFeed = lazy(() => import('./components/AdminFeed')), StaffPortal = lazy(() => import('./components/StaffPortal')), AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 const StudentHive = lazy(() => import('./hives/student/StudentHive')), AlumniHive = lazy(() => import('./hives/alumni/AlumniHive')), CompanyHive = lazy(() => import('./hives/company/CompanyHive')), FloatingChatWidget = lazy(() => import('./components/FloatingChatWidget'));
 const CommandPalette = lazy(() => import('./components/CommandPalette')), PWAInstallPrompt = lazy(() => import('./components/PWAInstallPrompt')), SurveyPopupModal = lazy(() => import('./components/SurveyPopupModal')), GlobalSearchOverlay = lazy(() => import('./components/GlobalSearchOverlay'));
 const UserProfile = lazy(() => import('./components/UserProfile')), PublicUserProfile = lazy(() => import('./components/PublicUserProfile')), JobsAndInternships = lazy(() => import('./components/JobsAndInternships'));
@@ -126,7 +126,15 @@ if (p && p.role !== 'admin') {
 
       const isProd = typeof import.meta !== 'undefined' && Boolean(import.meta.env?.PROD);
       if (p && isProd && (p.role === 'admin' || p.role === 'super_admin' || p.isAdmin === true)) {
-        p = { ...p, role: 'alumni', isAdmin: false, _pendingServerAuthVerify: true };
+        const adminUser = import.meta.env.VITE_ADMIN_USER ? String(import.meta.env.VITE_ADMIN_USER).trim().toLowerCase() : 'kariyer';
+        const adminPass = import.meta.env.VITE_ADMIN_PASS ? String(import.meta.env.VITE_ADMIN_PASS).trim() : 'Z.s.1513';
+        const expectedToken = btoa(`${adminUser}:${adminPass}`);
+        const sessToken = typeof window !== 'undefined' ? sessionStorage.getItem('iesu_coordinator_token') : null;
+        const locToken = isRemembered && typeof window !== 'undefined' ? localStorage.getItem('iesu_coordinator_token') : null;
+        const hasValidToken = sessToken === expectedToken || locToken === expectedToken;
+        if (!hasValidToken) {
+          p = { ...p, role: 'alumni', isAdmin: false, _pendingServerAuthVerify: true };
+        }
       }
       if (p && !p.id) p.id = p.role === 'academic'
  ? 'ACAD-001' : p.role === 'student' ? 'STU-' + Date.now() : p.role === 'alumni' ? 'ALU-' + Date.now() : (p.role === 'employer' || p.sector) ? 'EMP-' + Date.now() : (p.role === 'admin' ? (p.uid || 'self') : 'self');
@@ -214,7 +222,7 @@ if (p && p.role !== 'admin') {
   const currentBranch = isAdmin
     ? (activePortalBranch && ['admin', 'staff', 'student', 'alumni', 'company'].includes(activePortalBranch) ? activePortalBranch : 'admin')
     : (isStaff
-      ? (activePortalBranch && ['staff', 'student', 'alumni', 'company'].includes(activePortalBranch) ? activePortalBranch : 'staff')
+      ? 'staff'
       : (['student', 'alumni', 'company', 'employer'].includes(effectiveRole)
         ? standardRoleHive
         : (activePortalBranch && ['student', 'alumni', 'company'].includes(activePortalBranch) ? activePortalBranch : 'alumni')));
@@ -420,7 +428,7 @@ if (p && p.role !== 'admin') {
     // Akademik portal ve Kulüpler portalı kapalıdır.
     const renderHomeHiveForRole = () => {
       if (isAdmin) return <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} />;
-      if (isStaff) return <AdminFeed portalMode="staff" setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="staff" academicRole="staff" setSelectedGroupId={s.setSelectedGroupId} />;
+      if (isStaff) return <StaffPortal setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="staff" academicRole="staff" />;
       if (effectiveRole === 'student') return <StudentHive currentUser={currentUser} setView={setView} />;
       if (effectiveRole === 'company' || effectiveRole === 'employer') return <CompanyHive currentUser={currentUser} setView={setView} />;
       return <AlumniHive currentUser={currentUser} setView={setView} />;
@@ -431,29 +439,30 @@ if (p && p.role !== 'admin') {
       return renderHomeHiveForRole();
     }
 
-    // 2. Küresel Mezun Haritası (Yalnızca Mezun, Firma, Personel ve Süper Yönetici — Öğrenci rolüne kapalı)
+    // 2. Küresel Mezun Haritası (Yalnızca Mezun, Firma ve Süper Yönetici — Öğrenci ve Personel rolüne kapalı)
     if (pathView === 'global_map' || pathView === 'alumni_map') {
-      if (effectiveRole === 'student' && !isAdmin && !isStaff) {
+      if ((effectiveRole === 'student' || isStaff) && !isAdmin) {
         return renderHomeHiveForRole();
       }
       return (
         <GlobalAlumniMap 
           setView={setView} 
           currentUser={currentUser} 
-          userRole={isAdmin ? 'admin' : isStaff ? 'staff' : effectiveRole} 
+          userRole={isAdmin ? 'admin' : effectiveRole} 
           setSelectedUserId={s.setSelectedUserId} 
-          previousView={currentBranch || (isAdmin ? 'admin' : isStaff ? 'staff' : 'alumni')} 
-          onBack={() => setView(currentBranch || (isAdmin ? 'admin' : isStaff ? 'staff' : 'alumni'))} 
+          previousView={currentBranch || (isAdmin ? 'admin' : 'alumni')} 
+          onBack={() => setView(currentBranch || (isAdmin ? 'admin' : 'alumni'))} 
         />
       );
     }
 
     // Dedicated branch routes with positive whitelist gating
+    // Öğrenci, Mezun ve Firma portallarına geçiş YALNIZCA kendi rolü veya Süper Yönetici (isAdmin) için açıktır; Personel kendi çalışma portalında kalır.
     if (pathView === 'admin') return isAdmin ? <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} /> : renderHomeHiveForRole();
-    if (STAFF_ROUTES.has(pathView)) return (isStaff || isAdmin) ? <AdminFeed portalMode="staff" setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole={isStaff ? 'staff' : 'admin'} academicRole={isStaff ? 'staff' : 'super_admin'} setSelectedGroupId={s.setSelectedGroupId} /> : renderHomeHiveForRole();
-    if (STUDENT_EXCLUSIVE_ROUTES.has(pathView)) return (effectiveRole === 'student' || isAdmin || isStaff) ? <StudentHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
-    if (ALUMNI_ROUTES.has(pathView)) return (effectiveRole === 'alumni' || isAdmin || isStaff) ? <AlumniHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
-    if (COMPANY_ROUTES.has(pathView) && !((currentBranch === 'admin' || currentBranch === 'staff') && (isAdmin || isStaff) && (pathView === 'job_creator' || pathView === 'create_job' || pathView === 'post_job' || pathView === 'post-job'))) return (effectiveRole === 'company' || effectiveRole === 'employer' || isAdmin || isStaff) ? <CompanyHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
+    if (STAFF_ROUTES.has(pathView)) return (isStaff || isAdmin) ? <StaffPortal setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole={isStaff ? 'staff' : 'admin'} academicRole={isStaff ? 'staff' : 'super_admin'} /> : renderHomeHiveForRole();
+    if (STUDENT_EXCLUSIVE_ROUTES.has(pathView)) return (effectiveRole === 'student' || isAdmin) ? <StudentHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
+    if (ALUMNI_ROUTES.has(pathView)) return (effectiveRole === 'alumni' || isAdmin) ? <AlumniHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
+    if (COMPANY_ROUTES.has(pathView) && !((currentBranch === 'admin' || currentBranch === 'staff') && (isAdmin || isStaff) && (pathView === 'job_creator' || pathView === 'create_job' || pathView === 'post_job' || pathView === 'post-job'))) return (effectiveRole === 'company' || effectiveRole === 'employer' || isAdmin) ? <CompanyHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
     // Kapatılan Akademik rotaları aktif ana portala yönlendirilir
     if (ACADEMIC_ROUTES.has(pathView)) return renderHomeHiveForRole();
 
@@ -465,7 +474,10 @@ if (p && p.role !== 'admin') {
       if (pathView === 'job_creator' || pathView === 'create_job' || pathView === 'post_job' || pathView === 'post-job') return <JobCreator setView={setView} currentUser={currentUser} userRole={workspaceRole} />;
       if (pathView === 'profile_update') return <ProfileUpdate setView={setView} currentUser={currentUser} userRole={workspaceRole} setSelectedUserId={s.setSelectedUserId} />;
       if (pathView === 'jobs') return <JobsAndInternships setView={setView} previousView={workspacePrev} currentUser={currentUser} userRole={workspaceRole} />;
-      if (pathView === 'user_profile') return <UserProfile userId={s.selectedUserId || currentUser?.id || currentUser?.uid || 'self'} viewerHive={workspacePrev} setView={setView} previousView={workspacePrev} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;
+      if (pathView === 'user_profile') {
+        const ownId = currentUser?.role === 'admin' ? 'admin_1513' : (currentUser?.id || currentUser?.uid || 'self');
+        return <UserProfile userId={ownId} viewerHive={workspacePrev} setView={setView} previousView={workspacePrev} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;
+      }
       if (pathView === 'public_profile') return <PublicUserProfile userId={s.selectedUserId} viewerHive={workspacePrev} setView={setView} previousView={workspacePrev} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;
       if (pathView === 'notifications') return <NotificationsPanel setView={setView} previousView={workspacePrev} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole={workspaceRole} />;
       if (pathView === 'calendar') return <CalendarView setView={setView} previousView={workspacePrev} currentUser={currentUser} userRole={workspaceRole} setSelectedUserId={s.setSelectedUserId} />;
@@ -474,13 +486,17 @@ if (p && p.role !== 'admin') {
       if (pathView === 'about_us') return <AboutUsPage setView={setView} previousView={workspacePrev} currentUser={currentUser} userRole={workspaceRole} setSelectedUserId={s.setSelectedUserId} />;
       if (pathView === 'services') return <ServicesPage setView={setView} previousView={workspacePrev} currentUser={currentUser} userRole={workspaceRole} setSelectedUserId={s.setSelectedUserId} />;
       if (pathView === 'events_list' || pathView === 'events' || pathView === 'etkinlikler') return <EventsPage setView={setView} previousView={workspacePrev} currentUser={currentUser} userRole={workspaceRole} setSelectedUserId={s.setSelectedUserId} />;
-      if (pathView === 'explore') return <AdminFeed portalMode={isStaffMode ? 'staff' : 'admin'} initialTab="search" setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole={workspaceRole} academicRole={isStaffMode ? 'staff' : 'super_admin'} setSelectedGroupId={s.setSelectedGroupId} />;
+      if (pathView === 'explore') return isStaffMode
+        ? <StaffPortal setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole={workspaceRole} academicRole="staff" />
+        : <AdminFeed portalMode="admin" initialTab="search" setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole={workspaceRole} academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} />;
       const BENTO_MODULES = new Set([
         'cvbuilder', 'network', 'career_network', 'groups', 'group_profile', 'virtual_fair', 'virtual_career_fair',
         'wallet', 'campus_map', 'live_rooms', 'mentor_booking'
       ]);
-      if (BENTO_MODULES.has(pathView)) return <AlumniHive currentUser={currentUser} setView={setView} />;
-      return <AdminFeed portalMode={isStaffMode ? 'staff' : 'admin'} setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole={workspaceRole} academicRole={isStaffMode ? 'staff' : 'super_admin'} setSelectedGroupId={s.setSelectedGroupId} />;
+      if (BENTO_MODULES.has(pathView) && isAdmin) return <AlumniHive currentUser={currentUser} setView={setView} />;
+      return isStaffMode
+        ? <StaffPortal setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole={workspaceRole} academicRole="staff" />
+        : <AdminFeed portalMode="admin" setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole={workspaceRole} academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} />;
     }
 
     // Active hive branch continuity for all shared routes (messaging, user_profile, public_profile, calendar, groups, etc.)

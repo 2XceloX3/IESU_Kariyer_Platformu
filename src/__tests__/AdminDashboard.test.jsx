@@ -2,6 +2,9 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import AdminDashboard from '../components/AdminDashboard';
+import UserProfile from '../components/UserProfile';
+import StaffPortal from '../components/StaffPortal';
+import TopProfileMenu from '../components/TopProfileMenu';
 import { verifyStaffCredentials, hashStaffPassword } from '../utils/staffAuth';
 
 describe('AdminDashboard Component', () => {
@@ -147,5 +150,106 @@ describe('AdminDashboard Component', () => {
     const missing = verifyStaffCredentials('hayali_kullanici', 'iesu2026');
     expect(missing.ok).toBe(false);
     expect(missing.reason).toBe('not_found');
+  });
+
+  it('never impersonates Caner (ALU-001) or Trendyol (CMP-001) when Super Admin views own profile in Alumni or Company portal', () => {
+    const adminUser = {
+      id: 'admin_1513',
+      name: 'Kariyer Geliştirme Koordinatörlüğü',
+      email: 'kariyer@iesu.edu.tr',
+      role: 'admin',
+      avatar: '/iesu-logo.svg'
+    };
+
+    const { unmount } = render(
+      <UserProfile
+        userId="admin_1513"
+        viewerHive="alumni"
+        previousView="alumni"
+        currentUser={adminUser}
+        setView={mockSetView}
+        setSelectedUserId={mockSetSelectedUserId}
+      />
+    );
+    expect(screen.getAllByText(/Kariyer Geliştirme Koordinatörlüğü/i).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/Caner Öztürk/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/caner@mezun/i)).not.toBeInTheDocument();
+    unmount();
+
+    render(
+      <UserProfile
+        userId="admin_1513"
+        viewerHive="company"
+        previousView="company"
+        currentUser={adminUser}
+        setView={mockSetView}
+        setSelectedUserId={mockSetSelectedUserId}
+      />
+    );
+    expect(screen.getAllByText(/Kariyer Geliştirme Koordinatörlüğü/i).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/^Trendyol$/i)).not.toBeInTheDocument();
+  });
+
+  it('enforces granular staff allowedModules in StaffPortal, AdminDashboard, and removes Student/Alumni/Company switchers from TopProfileMenu', () => {
+    const contentOnlyStaff = {
+      id: 'STAFF-999',
+      staffAccountId: '999',
+      username: 'icerik_uzmani',
+      name: 'İçerik Uzmanı Test',
+      email: 'icerik@iesu.edu.tr',
+      role: 'staff',
+      staffTypeId: '2',
+      staffTitle: 'İçerik Editörü',
+      department: 'Kurumsal İletişim',
+      allowedModules: ['content', 'messages']
+    };
+
+    // 1. StaffPortal renders bespoke staff workspace and ONLY granted modules
+    const { unmount: unmountPortal } = render(
+      <StaffPortal
+        currentUser={contentOnlyStaff}
+        userRole="staff"
+        academicRole="staff"
+        setView={mockSetView}
+        setSelectedUserId={mockSetSelectedUserId}
+      />
+    );
+    expect(screen.getByText(/KGM Personel Çalışma Portalı/i)).toBeInTheDocument();
+    expect(screen.getByText(/İçerik, Haber & Etkinlik/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Öğrenci & Staj Yönetimi/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Firma & İş Birliği Protokolleri/i)).not.toBeInTheDocument();
+    unmountPortal();
+
+    // 2. TopProfileMenu for Staff MUST NOT expose Öğrenci / Mezun / Firma portal switchers
+    const { unmount: unmountMenu } = render(
+      <TopProfileMenu
+        currentUser={contentOnlyStaff}
+        userRole="staff"
+        academicRole="staff"
+        currentView="staff"
+        setView={mockSetView}
+        setSelectedUserId={mockSetSelectedUserId}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: /Profil Menüsünü Aç\/Kapat/i }));
+    expect(screen.getByText(/Çalışma Masam/i)).toBeInTheDocument();
+    expect(screen.getByText(/Yetkili Modüller/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Mezun Portalı/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Firma Portalı/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Öğrenci & Staj Portalı/i)).not.toBeInTheDocument();
+    unmountMenu();
+
+    // 3. AdminDashboard for content-only staff hides unauthorized categories/tabs (students, companies, alumni)
+    render(
+      <AdminDashboard
+        {...mockProps}
+        currentUser={contentOnlyStaff}
+        userRole="staff"
+        academicRole="staff"
+        initialTab="companies"
+      />
+    );
+    expect(screen.queryByRole('button', { name: /Öğrenci, Mezun & Firma/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Veri Havuzu & Excel/i })).not.toBeInTheDocument();
   });
 });

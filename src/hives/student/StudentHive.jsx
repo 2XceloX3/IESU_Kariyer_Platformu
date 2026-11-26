@@ -156,8 +156,12 @@ export default function StudentHive({ currentUser, setView }) {
         return <StudentOnboarding setView={handleSetView} onComplete={() => handleSetView('feed')} currentUser={effectiveCurrentUser} />;
       case 'jobs':
         return <JobsAndInternships setView={handleSetView} previousView={previousView || 'student'} currentUser={effectiveCurrentUser} userRole="student" />;
-      case 'user_profile':
-        return <UserProfile userId={selectedUserId || effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'self'} viewerHive="student" setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
+      case 'user_profile': {
+        const ownId = effectiveCurrentUser?.role === 'admin'
+          ? 'admin_1513'
+          : (effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'self');
+        return <UserProfile userId={ownId} viewerHive="student" setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
+      }
       case 'public_profile':
         return <PublicUserProfile userId={selectedUserId} viewerHive="student" setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'profile_update':
@@ -342,8 +346,8 @@ export default function StudentHive({ currentUser, setView }) {
             setView={handleSetView}
             setSelectedUserId={setSelectedUserId}
             currentUser={effectiveCurrentUser}
-            userRole="student"
-            academicRole="student"
+            userRole={effectiveCurrentUser?.role === 'admin' ? 'admin' : effectiveCurrentUser?.role === 'staff' ? 'staff' : 'student'}
+            academicRole={effectiveCurrentUser?.role === 'admin' ? 'super_admin' : effectiveCurrentUser?.role === 'staff' ? 'staff' : 'student'}
             setSelectedGroupId={setSelectedGroupId}
           />
         );

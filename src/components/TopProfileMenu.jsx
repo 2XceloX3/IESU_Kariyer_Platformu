@@ -332,6 +332,8 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                       setIsOpen(false); 
                       const store = useAppStore.getState();
                       store.setActivePortalBranch?.('alumni');
+                      store.setSelectedUserId?.('admin_1513');
+                      if (setSelectedUserId) setSelectedUserId('admin_1513');
                       setView?.('alumni'); 
                     }} 
                     className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
@@ -353,6 +355,8 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                       setIsOpen(false); 
                       const store = useAppStore.getState();
                       store.setActivePortalBranch?.('company');
+                      store.setSelectedUserId?.('admin_1513');
+                      if (setSelectedUserId) setSelectedUserId('admin_1513');
                       setView?.('company');
                     }} 
                     className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
@@ -374,6 +378,8 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                       setIsOpen(false); 
                       const store = useAppStore.getState();
                       store.setActivePortalBranch?.('student');
+                      store.setSelectedUserId?.('admin_1513');
+                      if (setSelectedUserId) setSelectedUserId('admin_1513');
                       setView?.('student');
                     }} 
                     className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
@@ -448,31 +454,13 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                 </p>
               </div>
               
-              {/* PERSONEL ÇALIŞMA PORTALI GEÇİŞİ (YALNIZCA YETKİLİ PERSONEL İÇİN — NORMAL KULLANICILARA KAPALI) */}
+              {/* PERSONEL ÇALIŞMA ALANI (YALNIZCA PERSONELİN KENDİ PORTALI — ÖĞRENCİ / MEZUN / FİRMA GEÇİŞİ YALNIZCA SÜPER ADMİNE AİTTİR) */}
               {isStaff && (
-                <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-                  <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2.5">Personel Çalışma Alanı</p>
+                <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-800 bg-indigo-50/40 dark:bg-slate-900/60">
+                  <p className="text-[10px] font-black text-indigo-700 dark:text-indigo-300 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                    <ShieldCheck size={12} /> Kurumsal Personel Alanı
+                  </p>
                   <div className="grid grid-cols-2 gap-2">
-                    <button 
-                      role="menuitem" 
-                      onClick={() => { 
-                        setIsOpen(false); 
-                        const store = useAppStore.getState();
-                        store.setActivePortalBranch?.('staff');
-                        setView?.('admin_cms');
-                      }} 
-                      className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
-                        currentView === 'admin_cms'
-                          ? 'bg-indigo-700 text-white font-black border-indigo-500' 
-                          : 'bg-white dark:bg-slate-800/90 hover:bg-indigo-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700'
-                      }`}
-                    >
-                      <div className={`p-1 rounded-lg ${currentView === 'admin_cms' ? 'bg-white/20 text-white' : 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'}`}>
-                        <LayoutDashboard size={16} />
-                      </div>
-                      <span className="text-[11px] font-bold">Personel CMS</span>
-                    </button>
-
                     <button 
                       role="menuitem" 
                       onClick={() => { 
@@ -483,14 +471,14 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                       }} 
                       className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
                         currentView === 'staff' || currentView === 'personel'
-                          ? 'bg-indigo-700 text-white font-black border-indigo-500' 
+                          ? 'bg-indigo-700 text-white font-black border-indigo-500 shadow-indigo-900/20' 
                           : 'bg-white dark:bg-slate-800/90 hover:bg-indigo-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700'
                       }`}
                     >
                       <div className={`p-1 rounded-lg ${currentView === 'staff' || currentView === 'personel' ? 'bg-white/20 text-white' : 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'}`}>
                         <Briefcase size={16} />
                       </div>
-                      <span className="text-[11px] font-bold">Personel Akışı</span>
+                      <span className="text-[11px] font-bold">Çalışma Masam</span>
                     </button>
 
                     <button 
@@ -498,59 +486,19 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                       onClick={() => { 
                         setIsOpen(false); 
                         const store = useAppStore.getState();
-                        store.setActivePortalBranch?.('alumni');
-                        setView?.('alumni');
+                        store.setActivePortalBranch?.('staff');
+                        setView?.('admin_cms');
                       }} 
                       className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
-                        currentView === 'alumni'
-                          ? 'bg-emerald-600 text-white font-black border-emerald-500' 
-                          : 'bg-white dark:bg-slate-800/90 hover:bg-emerald-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700'
+                        currentView === 'admin_cms'
+                          ? 'bg-indigo-700 text-white font-black border-indigo-500 shadow-indigo-900/20' 
+                          : 'bg-white dark:bg-slate-800/90 hover:bg-indigo-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700'
                       }`}
                     >
-                      <div className={`p-1 rounded-lg ${currentView === 'alumni' ? 'bg-white/20 text-white' : 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300'}`}>
-                        <UsersIcon size={16} />
+                      <div className={`p-1 rounded-lg ${currentView === 'admin_cms' ? 'bg-white/20 text-white' : 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'}`}>
+                        <LayoutDashboard size={16} />
                       </div>
-                      <span className="text-[11px] font-bold">Mezun Portalı</span>
-                    </button>
-
-                    <button 
-                      role="menuitem" 
-                      onClick={() => { 
-                        setIsOpen(false); 
-                        const store = useAppStore.getState();
-                        store.setActivePortalBranch?.('company');
-                        setView?.('company');
-                      }} 
-                      className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
-                        currentView === 'company'
-                          ? 'bg-[#0A2342] text-white font-black border-blue-500' 
-                          : 'bg-white dark:bg-slate-800/90 hover:bg-blue-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700'
-                      }`}
-                    >
-                      <div className={`p-1 rounded-lg ${currentView === 'company' ? 'bg-white/20 text-white' : 'bg-blue-100 dark:bg-blue-500/20 text-blue-900 dark:text-blue-300'}`}>
-                        <Building2 size={16} />
-                      </div>
-                      <span className="text-[11px] font-bold">Firma Portalı</span>
-                    </button>
-
-                    <button 
-                      role="menuitem" 
-                      onClick={() => { 
-                        setIsOpen(false); 
-                        const store = useAppStore.getState();
-                        store.setActivePortalBranch?.('student');
-                        setView?.('student');
-                      }} 
-                      className={`col-span-2 flex items-center justify-center gap-2 p-2 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
-                        currentView === 'student'
-                          ? 'bg-[#990000] text-white font-black border-red-500' 
-                          : 'bg-white dark:bg-slate-800/90 hover:bg-red-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700'
-                      }`}
-                    >
-                      <div className={`p-1 rounded-lg ${currentView === 'student' ? 'bg-white/20 text-white' : 'bg-red-100 dark:bg-rose-500/20 text-[#990000] dark:text-rose-300'}`}>
-                        <GraduationCap size={15} />
-                      </div>
-                      <span className="text-[11px] font-bold">Öğrenci & Staj Portalı</span>
+                      <span className="text-[11px] font-bold">Yetkili Modüller</span>
                     </button>
                   </div>
                 </div>
@@ -598,7 +546,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   </button>
                 )}
 
-                {(effectiveBranch === 'alumni' || userRole === 'alumni' || isStaff) && (
+                {!isStaff && (effectiveBranch === 'alumni' || userRole === 'alumni') && (
                   <button 
                     role="menuitem"
                     onClick={() => { setIsOpen(false); setView?.('global_map'); }}

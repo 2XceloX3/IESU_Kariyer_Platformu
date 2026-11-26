@@ -790,11 +790,9 @@ export default function PublicUserProfile({
                     <button
                       onClick={() => {
                         const selfId = (
-                          currentBranch === 'alumni' ? (effectiveCurrentUser?.id || 'ALU-001') :
-                          currentBranch === 'academic' ? (effectiveCurrentUser?.id || 'ACAD-001') :
-                          currentBranch === 'company' ? (effectiveCurrentUser?.id || 'CMP-001') :
-                          currentBranch === 'admin' ? (effectiveCurrentUser?.id || 'admin_1513') :
-                          (effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'STU-001')
+                          effectiveCurrentUser?.role === 'admin'
+                            ? 'admin_1513'
+                            : (effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'self')
                         );
                         if (setSelectedUserId) setSelectedUserId(selfId);
                         useAppStore.getState().setSelectedUserId?.(selfId);
@@ -1506,7 +1504,7 @@ export default function PublicUserProfile({
               onClick={() => {
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('alumni');
-                const selfId = effectiveCurrentUser?.id || 'ALU-001';
+                const selfId = effectiveCurrentUser?.role === 'admin' ? 'admin_1513' : (effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self');
                 if (setSelectedUserId) setSelectedUserId(selfId);
                 store.setSelectedUserId?.(selfId);
                 setView('user_profile');
@@ -1606,7 +1604,7 @@ export default function PublicUserProfile({
               onClick={() => {
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('company');
-                const selfId = effectiveCurrentUser?.id || 'CMP-001';
+                const selfId = effectiveCurrentUser?.role === 'admin' ? 'admin_1513' : (effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self');
                 if (setSelectedUserId) setSelectedUserId(selfId);
                 store.setSelectedUserId?.(selfId);
                 setView('user_profile');

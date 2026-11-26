@@ -4,7 +4,13 @@ import {
   Plus, Edit2, Shield, Activity, Power, X,
   Save, Search, Filter, ShieldCheck, Key, Check, Trash2
 } from 'lucide-react';
-import { hashStaffPassword, DEFAULT_STAFF_ACCOUNTS, normalizeStaffUsername } from '../../utils/staffAuth';
+import {
+  hashStaffPassword,
+  DEFAULT_STAFF_ACCOUNTS,
+  normalizeStaffUsername,
+  STAFF_PERMISSION_GROUPS,
+  DEFAULT_PERMISSIONS_BY_TYPE
+} from '../../utils/staffAuth';
 import { exportToCSV } from '../../utils/export';
 
 const DEFAULT_USER_TYPES = [
@@ -45,7 +51,15 @@ export default function CMSUserTypeManager() {
   
   const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
   const [editingStaffId, setEditingStaffId] = useState(null);
-  const [staffForm, setStaffForm] = useState({ name: '', username: '', email: '', password: '', typeId: '6', department: '' });
+  const [staffForm, setStaffForm] = useState({
+    name: '',
+    username: '',
+    email: '',
+    password: '',
+    typeId: '6',
+    department: '',
+    allowedModules: [...DEFAULT_PERMISSIONS_BY_TYPE['6']]
+  });
   
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
@@ -211,15 +225,28 @@ export default function CMSUserTypeManager() {
 
   const openEditStaffModal = (account) => {
     setEditingStaffId(account.id);
+    const defaultMods = DEFAULT_PERMISSIONS_BY_TYPE[String(account.typeId || '6')] || ['content', 'messages'];
     setStaffForm({
       name: account.name || '',
       username: account.username || normalizeStaffUsername('', account.email),
       email: account.email || '',
       password: '',
       typeId: account.typeId || '6',
-      department: account.department || ''
+      department: account.department || '',
+      allowedModules: Array.isArray(account.allowedModules) ? [...account.allowedModules] : [...defaultMods]
     });
     setIsStaffModalOpen(true);
+  };
+
+  const toggleStaffModule = (modId) => {
+    setStaffForm(prev => {
+      const current = Array.isArray(prev.allowedModules) ? prev.allowedModules : [];
+      const exists = current.includes(modId);
+      return {
+        ...prev,
+        allowedModules: exists ? current.filter(m => m !== modId) : [...current, modId]
+      };
+    });
   };
 
   const handleDeleteStaff = (account) => {
@@ -266,6 +293,11 @@ export default function CMSUserTypeManager() {
     }
 
     const type = userTypes.find(t => t.id === staffForm.typeId);
+    const selectedModules = Array.isArray(staffForm.allowedModules) ? staffForm.allowedModules : [];
+    if (selectedModules.length === 0) {
+      window.toast?.error?.('Personel için en az 1 yetkili çalışma alanı seçmelisiniz.');
+      return;
+    }
 
     if (editingStaffId) {
       const updated = accounts.map(a => {
@@ -283,15 +315,16 @@ export default function CMSUserTypeManager() {
           department: staffForm.department?.trim() || 'Kariyer Geliştirme Merkezi',
           typeId: staffForm.typeId || a.typeId,
           typeName: type?.name || a.typeName,
+          allowedModules: selectedModules,
           passwordHash: initialPass ? hashStaffPassword(cleanEmail, initialPass) : a.passwordHash,
           hasPassword: true
         };
       });
       saveAccounts(updated);
-      window.toast?.success?.(`${staffForm.name.trim()} (@${cleanUsername}) personel bilgileri güncellendi.`);
+      window.toast?.success?.(`${staffForm.name.trim()} (@${cleanUsername}) bilgileri ve ${selectedModules.length} yetki alanı güncellendi.`);
       setIsStaffModalOpen(false);
       setEditingStaffId(null);
-      setStaffForm({ name: '', username: '', email: '', password: '', typeId: '6', department: '' });
+      setStaffForm({ name: '', username: '', email: '', password: '', typeId: '6', department: '', allowedModules: [...DEFAULT_PERMISSIONS_BY_TYPE['6']] });
       return;
     }
 
@@ -303,6 +336,7 @@ export default function CMSUserTypeManager() {
       department: staffForm.department?.trim() || 'Kariyer Geliştirme Merkezi',
       typeId: staffForm.typeId || '6',
       typeName: type?.name || 'Kurumsal Personel',
+      allowedModules: selectedModules,
       passwordHash: hashStaffPassword(cleanEmail, initialPass),
       hasPassword: true,
       lastLogin: 'Hiç giriş yapmadı',
@@ -311,11 +345,11 @@ export default function CMSUserTypeManager() {
     
     saveAccounts([newStaff, ...accounts]);
     if (window.toast?.success) {
-      window.toast.success(`${newStaff.name} (@${cleanUsername}) oluşturuldu! Personel sekmesinden kullanıcı adı ve şifre ile giriş yapılabilir.`);
+      window.toast.success(`${newStaff.name} (@${cleanUsername}) ${selectedModules.length} yetki alanı ile oluşturuldu!`);
     }
     setIsStaffModalOpen(false);
     setEditingStaffId(null);
-    setStaffForm({ name: '', username: '', email: '', password: '', typeId: '6', department: '' });
+    setStaffForm({ name: '', username: '', email: '', password: '', typeId: '6', department: '', allowedModules: [...DEFAULT_PERMISSIONS_BY_TYPE['6']] });
   };
 
   const toggleStaffStatus = (id) => {
@@ -492,7 +526,15 @@ export default function CMSUserTypeManager() {
             <button 
               onClick={() => {
                 setEditingStaffId(null);
-                setStaffForm({ name: '', username: '', email: '', password: '', typeId: '6', department: '' });
+                setStaffForm({
+                  name: '',
+                  username: '',
+                  email: '',
+                  password: '',
+                  typeId: '6',
+                  department: '',
+                  allowedModules: [...DEFAULT_PERMISSIONS_BY_TYPE['6']]
+                });
                 setIsStaffModalOpen(true);
               }}
               className="bg-[#990000] hover:bg-red-800 text-white px-4 py-2.5 rounded-2xl text-xs font-black transition-all shadow-md flex items-center gap-2 cursor-pointer self-start sm:self-auto"
@@ -552,9 +594,16 @@ export default function CMSUserTypeManager() {
                       </td>
                       <td className="px-6 py-4 text-slate-600 font-medium">{account.email}</td>
                       <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${getTypeStyle(account.typeId)}`}>
-                          {account.typeName}
-                        </span>
+                        <div className="flex flex-col gap-1">
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold w-fit ${getTypeStyle(account.typeId)}`}>
+                            {account.typeName}
+                          </span>
+                          {account.typeId !== '1' && (
+                            <span className="text-[10px] font-bold text-indigo-700">
+                              {(Array.isArray(account.allowedModules) ? account.allowedModules : (DEFAULT_PERMISSIONS_BY_TYPE[String(account.typeId)] || [])).length} / {STAFF_PERMISSION_GROUPS.length} Yetki Alanı
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 font-mono font-bold text-slate-900" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center gap-2 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 w-fit">
@@ -715,12 +764,15 @@ export default function CMSUserTypeManager() {
         </div>
       )}
 
-      {/* 2. New Staff Modal */}
+      {/* 2. New / Edit Staff Modal (With Granular Module Permissions) */}
       {isStaffModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
-            <div className="flex items-center justify-between p-6 border-b border-slate-100">
-              <h3 className="text-lg font-bold text-slate-800">{editingStaffId ? 'Personel Hesabını Düzenle' : 'Yeni Personel Ekle'}</h3>
+          <div className="bg-white rounded-2xl w-full max-w-xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-slate-100 shrink-0">
+              <div>
+                <h3 className="text-lg font-bold text-slate-800">{editingStaffId ? 'Personel Hesabı & Yetkilerini Düzenle' : 'Yeni Personel Ekle & Yetkilendir'}</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Personel yalnızca aşağıda seçtiğiniz yetki alanlarına erişebilir.</p>
+              </div>
               <button 
                 onClick={() => { setIsStaffModalOpen(false); setEditingStaffId(null); }}
                 className="p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors"
@@ -729,98 +781,155 @@ export default function CMSUserTypeManager() {
               </button>
             </div>
             
-            <form onSubmit={handleStaffFormSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Ad Soyad</label>
-                <input 
-                  required
-                  type="text"
-                  placeholder="Örn: Ayşe Yılmaz"
-                  value={staffForm.name}
-                  onChange={e => setStaffForm({...staffForm, name: e.target.value})}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
-                />
-              </div>
+            <form onSubmit={handleStaffFormSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Ad Soyad *</label>
+                  <input 
+                    required
+                    type="text"
+                    placeholder="Örn: Ayşe Yılmaz"
+                    value={staffForm.name}
+                    onChange={e => setStaffForm({...staffForm, name: e.target.value})}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Personel Kullanıcı Adı (Giriş İçin)</label>
-                <input 
-                  required
-                  type="text"
-                  placeholder="Örn: ayse.yilmaz veya kgm_uzman"
-                  value={staffForm.username}
-                  onChange={e => setStaffForm({...staffForm, username: e.target.value})}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
-                />
-                <p className="text-[11px] text-slate-400 mt-1">Personel bu kullanıcı adı veya kurumsal e-postası ile giriş yapacaktır.</p>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Personel Kullanıcı Adı *</label>
+                  <input 
+                    required
+                    type="text"
+                    placeholder="Örn: ayse.yilmaz"
+                    value={staffForm.username}
+                    onChange={e => setStaffForm({...staffForm, username: e.target.value})}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
+                  />
+                </div>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Kurumsal E-posta Adresi</label>
-                <input 
-                  required
-                  type="email"
-                  placeholder="ad.soyad@iesu.edu.tr"
-                  value={staffForm.email}
-                  onChange={e => setStaffForm({...staffForm, email: e.target.value})}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
-                />
-              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Kurumsal E-posta *</label>
+                  <input 
+                    required
+                    type="email"
+                    placeholder="ad.soyad@iesu.edu.tr"
+                    value={staffForm.email}
+                    onChange={e => setStaffForm({...staffForm, email: e.target.value})}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  {editingStaffId ? 'Yeni Giriş Şifresi (Değiştirmek istemiyorsanız boş bırakın)' : 'Giriş Şifresi (En az 6 karakter)'}
-                </label>
-                <input 
-                  required={!editingStaffId}
-                  minLength={6}
-                  type="password"
-                  placeholder="••••••••"
-                  value={staffForm.password}
-                  onChange={e => setStaffForm({...staffForm, password: e.target.value})}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
-                />
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    {editingStaffId ? 'Yeni Şifre (Opsiyonel)' : 'Giriş Şifresi (Min 6) *'}
+                  </label>
+                  <input 
+                    required={!editingStaffId}
+                    minLength={6}
+                    type="password"
+                    placeholder="••••••••"
+                    value={staffForm.password}
+                    onChange={e => setStaffForm({...staffForm, password: e.target.value})}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
+                  />
+                </div>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Kullanıcı Tipi (Rol)</label>
-                <select 
-                  required
-                  value={staffForm.typeId}
-                  onChange={e => setStaffForm({...staffForm, typeId: e.target.value})}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
-                >
-                  <option value="">Seçiniz...</option>
-                  {userTypes.filter(t => t.id !== '1').map(t => (
-                    <option key={t.id} value={t.id}>{t.name}</option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Kullanıcı Tipi (Rol Şablonu)</label>
+                  <select 
+                    required
+                    value={staffForm.typeId}
+                    onChange={e => {
+                      const nextTypeId = e.target.value;
+                      const preset = DEFAULT_PERMISSIONS_BY_TYPE[String(nextTypeId)] || ['content', 'messages'];
+                      setStaffForm({ ...staffForm, typeId: nextTypeId, allowedModules: [...preset] });
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
+                  >
+                    <option value="">Seçiniz...</option>
+                    {userTypes.filter(t => t.id !== '1').map(t => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Bölüm / Birim</label>
+                  <input 
+                    type="text"
+                    placeholder="Kariyer Geliştirme Merkezi"
+                    value={staffForm.department}
+                    onChange={e => setStaffForm({...staffForm, department: e.target.value})}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Bölüm / Departman (Opsiyonel)</label>
-                <input 
-                  type="text"
-                  value={staffForm.department}
-                  onChange={e => setStaffForm({...staffForm, department: e.target.value})}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
-                />
+              {/* GRANULAR MODULE PERMISSION CHECKBOXES */}
+              <div className="pt-2">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <ShieldCheck size={14} className="text-[#990000]" />
+                    Yetkili Olduğu Çalışma Alanları ({(staffForm.allowedModules || []).length}/{STAFF_PERMISSION_GROUPS.length})
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const allIds = STAFF_PERMISSION_GROUPS.map(g => g.id);
+                      const allSelected = (staffForm.allowedModules || []).length === allIds.length;
+                      setStaffForm(prev => ({ ...prev, allowedModules: allSelected ? ['messages'] : allIds }));
+                    }}
+                    className="text-[11px] font-bold text-[#990000] hover:underline cursor-pointer"
+                  >
+                    {(staffForm.allowedModules || []).length === STAFF_PERMISSION_GROUPS.length ? 'Asgariye İndir' : 'Tümünü Seç'}
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {STAFF_PERMISSION_GROUPS.map(group => {
+                    const checked = (staffForm.allowedModules || []).includes(group.id);
+                    return (
+                      <label
+                        key={group.id}
+                        className={`flex items-start gap-2.5 p-3 rounded-xl border cursor-pointer transition ${
+                          checked
+                            ? 'bg-indigo-50/70 border-indigo-400 shadow-2xs'
+                            : 'bg-slate-50/70 border-slate-200 hover:border-slate-300'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => toggleStaffModule(group.id)}
+                          className="mt-0.5 w-4 h-4 rounded border-slate-300 text-indigo-700 focus:ring-indigo-600 cursor-pointer shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <div className="text-xs font-black text-slate-900 leading-snug">{group.label}</div>
+                          <div className="text-[10px] text-slate-500 leading-tight mt-0.5">{group.desc}</div>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
 
-              <div className="pt-4 mt-6 border-t border-slate-100 flex justify-end gap-3">
+              <div className="pt-4 mt-4 border-t border-slate-100 flex justify-end gap-3">
                 <button 
                   type="button"
                   onClick={() => setIsStaffModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
                 >
                   İptal
                 </button>
                 <button 
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl text-sm font-medium bg-[#990000] text-white hover:bg-red-800 transition-colors flex items-center gap-2"
+                  className="px-5 py-2.5 rounded-xl text-sm font-bold bg-[#990000] text-white hover:bg-red-800 transition-colors flex items-center gap-2 cursor-pointer"
                 >
                   <Save className="w-4 h-4" />
-                  {editingStaffId ? 'Değişiklikleri Kaydet' : 'Personeli Ekle'}
+                  {editingStaffId ? 'Yetkileri & Bilgileri Kaydet' : 'Personeli Oluştur'}
                 </button>
               </div>
             </form>
