@@ -32,6 +32,10 @@ export const PROTOCOL_TYPES = {
 };
 
 export const PROTOCOL_STATUS = {
+  PENDING_APPROVAL: 'PENDING_APPROVAL',
+  UNDER_REVIEW: 'UNDER_REVIEW',
+  REVISION_REQUESTED: 'REVISION_REQUESTED',
+  REJECTED: 'REJECTED',
   ACTIVE: 'ACTIVE',
   EXPIRING_SOON: 'EXPIRING_SOON',
   RENEWAL_REQUESTED: 'RENEWAL_REQUESTED',
@@ -40,7 +44,11 @@ export const PROTOCOL_STATUS = {
 };
 
 export const PROTOCOL_STATUS_LABELS = {
-  ACTIVE: 'Aktif Protokol',
+  PENDING_APPROVAL: 'Onay Bekliyor',
+  UNDER_REVIEW: 'KGM İncelemesinde',
+  REVISION_REQUESTED: 'Revizyon İstendi',
+  REJECTED: 'Reddedildi',
+  ACTIVE: 'Aktif & Onaylı Protokol',
   EXPIRING_SOON: 'Süresi Yaklaşan (Son 30 Gün)',
   RENEWAL_REQUESTED: 'Yenileme Talep Edildi',
   EXPIRED: 'Süresi Doldu',
@@ -129,9 +137,38 @@ export function getDaysUntilExpiration(validUntil, referenceDate = new Date()) {
  * - Aksi halde -> 'ACTIVE'
  */
 export function calculateProtocolStatus(protocol, referenceDate = new Date()) {
-  if (!protocol || typeof protocol !== 'object') return PROTOCOL_STATUS.ACTIVE;
+  if (!protocol || typeof protocol !== 'object') return PROTOCOL_STATUS.PENDING_APPROVAL;
 
   const rawStatus = String(protocol.status || '').toUpperCase().trim();
+  if (
+    rawStatus === PROTOCOL_STATUS.PENDING_APPROVAL ||
+    rawStatus === 'ONAY BEKLIYOR' ||
+    rawStatus === 'ONAY BEKLİYOR' ||
+    rawStatus === 'BEKLEMEDE'
+  ) {
+    return PROTOCOL_STATUS.PENDING_APPROVAL;
+  }
+  if (
+    rawStatus === PROTOCOL_STATUS.UNDER_REVIEW ||
+    rawStatus === 'INCELEMEDE' ||
+    rawStatus === 'İNCELEMEDE'
+  ) {
+    return PROTOCOL_STATUS.UNDER_REVIEW;
+  }
+  if (
+    rawStatus === PROTOCOL_STATUS.REVISION_REQUESTED ||
+    rawStatus === 'REVIZYON ISTENDI' ||
+    rawStatus === 'REVİZYON İSTENDİ'
+  ) {
+    return PROTOCOL_STATUS.REVISION_REQUESTED;
+  }
+  if (
+    rawStatus === PROTOCOL_STATUS.REJECTED ||
+    rawStatus === 'REDDEDILDI' ||
+    rawStatus === 'REDDEDİLDİ'
+  ) {
+    return PROTOCOL_STATUS.REJECTED;
+  }
   if (
     rawStatus === PROTOCOL_STATUS.TERMINATED ||
     rawStatus === 'FESHEDILDI' ||
@@ -169,6 +206,67 @@ export function calculateProtocolStatus(protocol, referenceDate = new Date()) {
     return PROTOCOL_STATUS.EXPIRING_SOON;
   }
   return PROTOCOL_STATUS.ACTIVE;
+}
+
+/**
+ * İkili Resmî Taslak Protokol Yazdırma / PDF Çıktısı (İESÜ ↔ Kurumsal İşletme)
+ */
+export function exportBilateralProtocolDraftPdf(protocol = {}) {
+  if (typeof window === 'undefined') return;
+  const esc = (v) => String(v ?? '—').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const statusLabel = PROTOCOL_STATUS_LABELS[calculateProtocolStatus(protocol)] || protocol.status || 'Taslak';
+  const html = `<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>${esc(protocol.protocolCode || 'IESU-Protokol')}</title>
+  <style>
+    body{font-family:Segoe UI,Arial,sans-serif;color:#0f172a;padding:36px 44px;line-height:1.6;font-size:12.5px}
+    .hdr{border-bottom:3px solid #990000;padding-bottom:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end}
+    .hdr h1{font-size:17px;margin:0;color:#0a2342}
+    .hdr p{margin:3px 0 0;color:#64748b;font-size:11px;font-weight:700}
+    .badge{background:#f1f5f9;border:1px solid #cbd5e1;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700}
+    h2{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#990000;margin:20px 0 8px;border-bottom:1px solid #e2e8f0;padding-bottom:4px}
+    table{width:100%;border-collapse:collapse;margin-bottom:14px}
+    td{padding:7px 10px;border:1px solid #e2e8f0;vertical-align:top}
+    td.k{width:34%;font-weight:700;background:#f8fafc;color:#334155}
+    .sign{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:36px}
+    .sign-box{border:1px dashed #94a3b8;padding:16px;border-radius:10px;min-height:110px}
+    @media print{body{padding:16px}}
+  </style></head><body>
+    <div class="hdr">
+      <div>
+        <h1>İSTANBUL ESENYURT ÜNİVERSİTESİ (İESÜ)</h1>
+        <p>KARİYER GELİŞTİRME KOORDİNATÖRLÜĞÜ • ÜNİVERSİTE–SANAYİ İŞ BİRLİĞİ PROTOKOLÜ</p>
+      </div>
+      <div class="badge">${esc(protocol.protocolCode || protocol.id)} • ${esc(statusLabel)}</div>
+    </div>
+    <h2>1. Taraflar & Kurumsal Bilgiler</h2>
+    <table>
+      <tr><td class="k">Üniversite Tarafı</td><td>İstanbul Esenyurt Üniversitesi Rektörlüğü — Kariyer Geliştirme Koordinatörlüğü</td></tr>
+      <tr><td class="k">İşletme / Kurum Ünvanı</td><td>${esc(protocol.companyName)}</td></tr>
+      <tr><td class="k">Sektör / Protokol Türü</td><td>${esc(protocol.sector)} — ${esc(protocol.protocolType)}</td></tr>
+      <tr><td class="k">Vergi No / MERSİS</td><td>${esc(protocol.taxNo)} / ${esc(protocol.mersisNo)}</td></tr>
+      <tr><td class="k">Resmî Adres</td><td>${esc(protocol.companyAddress)}</td></tr>
+      <tr><td class="k">İmza Yetkilisi & İletişim</td><td>${esc(protocol.contactPerson)} (${esc(protocol.contactTitle)}) • ${esc(protocol.contactEmail)} • ${esc(protocol.contactPhone)}</td></tr>
+    </table>
+    <h2>2. Kapsam, Kontenjan ve Yasal Taahhütler</h2>
+    <table>
+      <tr><td class="k">Hedef Fakülte / Birim</td><td>${esc(protocol.assignedFaculty || 'Tüm Fakülte ve MYO Programları')}</td></tr>
+      <tr><td class="k">Yıllık Staj & İstihdam Kontenjanı</td><td>${esc(protocol.committedQuota || 0)} Aday / Yıl</td></tr>
+      <tr><td class="k">Geçerlilik Süresi</td><td>${esc(protocol.signedDate || 'Onay Tarihi')} — ${esc(protocol.validUntil || '—')}</td></tr>
+      <tr><td class="k">Senato / KGM Karar No</td><td>${esc(protocol.senateDecisionNo || 'KGM / Senato Onayı Bekleniyor')}</td></tr>
+      <tr><td class="k">İş Birliği Kapsamı</td><td>${esc(protocol.scope || '3308 Sayılı Mesleki Eğitim Kanunu ve 5510 Sayılı Kanun 5/b maddesi kapsamında staj, uygulamalı eğitim ve mezun istihdamı iş birliği.')}</td></tr>
+    </table>
+    <p><strong>Yasal Taahhüt:</strong> Taraflar, 6698 Sayılı KVKK, 3308 Sayılı Mesleki Eğitim Kanunu ücret/devlet katkısı esasları ve 5510 Sayılı Kanun 5/b iş kazası-meslek hastalığı sigorta yükümlülüklerine tam uyum sağlamayı kabul eder.</p>
+    <div class="sign">
+      <div class="sign-box"><strong>İstanbul Esenyurt Üniversitesi Adına</strong><br/>Kariyer Geliştirme Koordinatörlüğü / Rektörlük<br/><br/>İmza / Kaşe: _______________________</div>
+      <div class="sign-box"><strong>${esc(protocol.companyName)} Adına</strong><br/>${esc(protocol.contactPerson)} — ${esc(protocol.contactTitle)}<br/><br/>İmza / Kaşe: _______________________</div>
+    </div>
+  </body></html>`;
+  const w = window.open('', '_blank', 'width=900,height=780');
+  if (w) {
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+    setTimeout(() => { try { w.print(); } catch (_) {} }, 350);
+  }
 }
 
 /**

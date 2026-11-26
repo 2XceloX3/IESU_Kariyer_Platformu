@@ -147,6 +147,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
 
   const getRoleLabel = (role) => {
     switch(role) {
+      case 'student': return 'Öğrenci';
       case 'alumni': return 'Mezun';
       case 'company':
       case 'employer': return 'Firma';
@@ -172,14 +173,15 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
 
   // Dal Egemenliği: Sayfa görünümü (currentView) veya açıkça belirtilen userRole önceliklidir
   const effectiveBranch = 
+    (currentView === 'student') ? 'student' :
     (currentView === 'alumni') ? 'alumni' :
     (currentView === 'company' || currentView === 'employer') ? 'company' :
     (currentView === 'staff' || currentView === 'personel' || currentView === 'personel_portali') ? 'staff' :
     (currentView === 'admin' || currentView === 'admin_cms' || currentView === 'yonetim_konsolu') ? (isStaff ? 'staff' : 'admin') :
-    (userRole && ['alumni', 'company', 'staff', 'admin'].includes(userRole)) ? userRole :
-    (activePortalBranch && ['alumni', 'company', 'staff', 'admin'].includes(activePortalBranch)
+    (userRole && ['student', 'alumni', 'company', 'staff', 'admin'].includes(userRole)) ? userRole :
+    (activePortalBranch && ['student', 'alumni', 'company', 'staff', 'admin'].includes(activePortalBranch)
       ? activePortalBranch
-      : (isAdmin ? 'admin' : isStaff ? 'staff' : (effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer' ? 'company' : 'alumni')));
+      : (isAdmin ? 'admin' : isStaff ? 'staff' : effectiveCurrentUser?.role === 'student' ? 'student' : (effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer' ? 'company' : 'alumni')));
 
   const branchUserName = effectiveCurrentUser?.name || (isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : isStaff ? 'Kurumsal Personel' : 'Kullanıcı');
 
@@ -217,6 +219,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
           }`}
         >
           <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full shrink-0 flex items-center justify-center p-0.5 ${isDark ? 'bg-slate-900 border-slate-600' : 'bg-white'} border-2 ${
+            effectiveBranch === 'student' ? (isDark ? 'border-rose-500/60' : 'border-[#990000]/50') :
             effectiveBranch === 'alumni' ? (isDark ? 'border-emerald-500/60' : 'border-emerald-600/40') :
             effectiveBranch === 'staff' ? (isDark ? 'border-indigo-400/60' : 'border-indigo-700/40') :
             effectiveBranch === 'company' ? (isDark ? 'border-blue-400/60' : 'border-blue-700/40') :
@@ -241,6 +244,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
             <span className={`text-[10px] font-bold uppercase tracking-wider ${
               isAdmin ? (isDark ? 'text-amber-400' : 'text-amber-600') :
               isStaff ? (isDark ? 'text-indigo-300' : 'text-indigo-700') :
+              effectiveBranch === 'student' ? (isDark ? 'text-rose-400' : 'text-[#990000]') :
               effectiveBranch === 'alumni' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') :
               effectiveBranch === 'company' ? (isDark ? 'text-sky-400' : 'text-blue-700') :
               (isDark ? 'text-amber-400' : 'text-amber-600')
@@ -363,7 +367,28 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     <span className={`text-[11px] font-bold ${(userRole === 'company' || userRole === 'employer' || currentView === 'company') ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>Firma Portalı</span>
                   </button>
 
-                  {/* 5. Personel Çalışma Portalı */}
+                  {/* 5. Öğrenci Portalı */}
+                  <button 
+                    role="menuitem" 
+                    onClick={() => { 
+                      setIsOpen(false); 
+                      const store = useAppStore.getState();
+                      store.setActivePortalBranch?.('student');
+                      setView?.('student');
+                    }} 
+                    className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
+                      currentView === 'student'
+                        ? 'bg-[#990000] text-white font-black border-red-500 shadow-red-950/30' 
+                        : 'bg-white dark:bg-slate-800/90 hover:bg-red-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700 hover:border-red-300 dark:hover:border-rose-500/50'
+                    }`}
+                  >
+                    <div className={`p-1 rounded-lg transition-all duration-200 ${currentView === 'student' ? 'bg-white/20 text-white' : 'bg-red-100 dark:bg-rose-500/20 text-[#990000] dark:text-rose-300 group-hover:bg-[#990000] group-hover:text-white'}`}>
+                      <GraduationCap size={16} />
+                    </div>
+                    <span className={`text-[11px] font-bold ${currentView === 'student' ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>Öğrenci Portalı</span>
+                  </button>
+
+                  {/* 6. Personel Portalı */}
                   <button 
                     role="menuitem" 
                     onClick={() => { 
@@ -372,7 +397,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                       store.setActivePortalBranch?.('staff');
                       setView?.('staff');
                     }} 
-                    className={`col-span-2 flex items-center justify-center gap-2 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
+                    className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
                       currentView === 'staff' || currentView === 'personel'
                         ? 'bg-gradient-to-r from-indigo-700 via-indigo-800 to-slate-900 text-white font-black border-indigo-500 shadow-indigo-950/30' 
                         : 'bg-white dark:bg-slate-800/90 hover:bg-indigo-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500/50'
@@ -381,7 +406,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     <div className={`p-1 rounded-lg transition-all duration-200 ${(currentView === 'staff' || currentView === 'personel') ? 'bg-white/20 text-white' : 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 group-hover:bg-indigo-700 group-hover:text-white'}`}>
                       <Briefcase size={15} />
                     </div>
-                    <span className={`text-[11px] font-bold ${(currentView === 'staff' || currentView === 'personel') ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>Personel Çalışma Portalı</span>
+                    <span className={`text-[11px] font-bold ${(currentView === 'staff' || currentView === 'personel') ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>Personel Portalı</span>
                   </button>
                 </div>
               </div>
@@ -506,6 +531,26 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                         <Building2 size={16} />
                       </div>
                       <span className="text-[11px] font-bold">Firma Portalı</span>
+                    </button>
+
+                    <button 
+                      role="menuitem" 
+                      onClick={() => { 
+                        setIsOpen(false); 
+                        const store = useAppStore.getState();
+                        store.setActivePortalBranch?.('student');
+                        setView?.('student');
+                      }} 
+                      className={`col-span-2 flex items-center justify-center gap-2 p-2 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
+                        currentView === 'student'
+                          ? 'bg-[#990000] text-white font-black border-red-500' 
+                          : 'bg-white dark:bg-slate-800/90 hover:bg-red-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700'
+                      }`}
+                    >
+                      <div className={`p-1 rounded-lg ${currentView === 'student' ? 'bg-white/20 text-white' : 'bg-red-100 dark:bg-rose-500/20 text-[#990000] dark:text-rose-300'}`}>
+                        <GraduationCap size={15} />
+                      </div>
+                      <span className="text-[11px] font-bold">Öğrenci & Staj Portalı</span>
                     </button>
                   </div>
                 </div>

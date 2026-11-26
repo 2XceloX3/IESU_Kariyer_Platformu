@@ -5,7 +5,7 @@ import useCompanyStore from './store/useCompanyStore';
 import useAppStore from '../../store/useAppStore';
 
 const PORTAL_ROUTES = new Set([
-  'alumni', 'company', 'staff', 'personel', 'personel_portali', 'admin', 'admin_cms', 
+  'student', 'alumni', 'company', 'staff', 'personel', 'personel_portali', 'admin', 'admin_cms', 
   'yonetim_konsolu', 'admin_console', 'audit_logs', 'login', 'register', 
   'landing', 'forgot_password'
 ]);
@@ -27,7 +27,6 @@ const MessagingInterface = lazy(() => import('../../components/MessagingInterfac
 const CareerNetwork = lazy(() => import('../../components/CareerNetwork'));
 const GroupsPanel = lazy(() => import('../../components/GroupsPanel'));
 const GroupProfile = lazy(() => import('../../components/GroupProfile'));
-const StudentClubPortal = lazy(() => import('../../components/StudentClubPortal'));
 const ContactPage = lazy(() => import('../../components/ContactPage'));
 const AboutUsPage = lazy(() => import('../../components/AboutUsPage'));
 const ServicesPage = lazy(() => import('../../components/ServicesPage'));
@@ -64,8 +63,8 @@ export default function CompanyHive({ currentUser, setView }) {
         const store = useAppStore.getState();
         const isUserAdmin = effectiveCurrentUser?.role === 'admin' || store.userRole === 'admin';
         const isUserStaff = !isUserAdmin && (effectiveCurrentUser?.role === 'staff' || store.userRole === 'staff');
-        if (clean === 'alumni' && (isUserAdmin || isUserStaff)) {
-          store.setActivePortalBranch?.('alumni');
+        if ((clean === 'alumni' || clean === 'student') && (isUserAdmin || isUserStaff)) {
+          store.setActivePortalBranch?.(clean);
         } else if (['staff', 'personel', 'personel_portali'].includes(clean) && (isUserAdmin || isUserStaff)) {
           store.setActivePortalBranch?.('staff');
         } else if ((clean === 'admin' || clean === 'admin_cms' || clean === 'yonetim_konsolu') && (isUserAdmin || isUserStaff)) {
@@ -150,9 +149,6 @@ export default function CompanyHive({ currentUser, setView }) {
         return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" previousView={previousView || 'company'} setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;
       case 'groups':
         return <GroupsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
-      case 'clubs':
-      case 'club_portal':
-        return <StudentClubPortal setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" previousView={previousView || 'company'} setSelectedUserId={setSelectedUserId} />;
       case 'group_profile': {
         const groupData = groups.find(g => g.id === selectedGroupId) || {};
         return <GroupProfile 

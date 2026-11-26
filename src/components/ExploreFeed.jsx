@@ -134,77 +134,23 @@ export default function ExploreFeed({
 
   const categories = [
     { id: 'all', label: 'Tümü', icon: <Sparkles size={13} /> },
-    { id: 'clubs', label: 'Kulüpler & Etkinlikler', icon: <Users size={13} /> },
-    { id: 'career', label: 'Kariyer & Staj', icon: <Briefcase size={13} /> },
-    { id: 'projects', label: 'Öğrenci Projeleri', icon: <Flame size={13} /> },
+    { id: 'career', label: userRole === 'alumni' ? 'Kariyer Fırsatları' : 'Kariyer & Staj', icon: <Briefcase size={13} /> },
+    { id: 'projects', label: 'Projeler & İnovasyon', icon: <Flame size={13} /> },
     { id: 'alumni', label: 'Mezun Başarıları', icon: <Award size={13} /> },
-    { id: 'campus', label: 'Kampüs Yaşamı', icon: <GraduationCap size={13} /> },
+    { id: 'campus', label: 'Etkinlikler & Duyurular', icon: <GraduationCap size={13} /> },
   ];
 
-  // Keşfet vitrininde öne çıkan kulüpler ve yaklaşan onaylı kulüp etkinlikleri
-  const featuredClubItems = useMemo(() => {
-    const items = [];
-    clubList.slice(0, 6).forEach((club, idx) => {
-      const mState = getClubMembershipState(club, currentUser, followedClubIds);
-      const upcomingEvt = (club.events || []).find(
-        (e) =>
-          canViewClubContent(e, club, currentUser, { surface: 'discover' }) &&
-          String(e.status || '').toLowerCase() !== 'tamamlandı'
-      );
+  // Kulüpler portalı kapatıldığı için keşfet kulüp vitrini devre dışı
+  const featuredClubItems = useMemo(() => [], []);
 
-      items.push({
-        id: `disc-club-${club.id}`,
-        club,
-        membershipState: mState,
-        upcomingEvent: upcomingEvt || null,
-        spotlightTag: upcomingEvt
-          ? 'Yaklaşan Etkinlik'
-          : idx === 0
-          ? 'Öne Çıkan Kulüp'
-          : 'Aktif Kulüp',
-      });
-    });
-    return items;
-  }, [clubList, currentUser, followedClubIds]);
-
-  // Keşfet medya ızgarası için kulüp paylaşımlarını ve genel akış paylaşımlarını birleştir
+  // Keşfet medya ızgarası (kulüp paylaşımları hariç)
   const explorePosts = useMemo(() => {
-    const clubMediaPosts = [];
-    clubList.forEach((club) => {
-      (club.posts || []).forEach((cp) => {
-        if (!canViewClubContent(cp, club, currentUser, { surface: 'discover' })) return;
-        const coverImg = cp.image || (Array.isArray(cp.images) ? cp.images[0] : null) || club.coverImage;
-        clubMediaPosts.push({
-          id: cp.id || `exp-clb-${club.id}-${Math.random()}`,
-          clubId: club.id,
-          clubName: club.name,
-          author: {
-            name: club.name,
-            avatar: club.logo,
-            department: `${club.category || 'Öğrenci Kulübü'} • Kampüs Topluluğu`,
-          },
-          content: cp.caption || cp.content || '',
-          image: coverImg || null,
-          likes: Number(cp.likes || 42),
-          comments: Array.isArray(cp.comments) ? cp.comments.length : Number(cp.comments || 4),
-          commentsList: Array.isArray(cp.comments)
-            ? cp.comments.map((c) => ({ author: c.name || c.user, text: c.text }))
-            : [],
-          exploreCategory: 'clubs',
-          spotlightLabel: 'Kulüp Paylaşımı',
-          isVideo: Boolean(cp.video || cp.mediaType === 'video'),
-          isCarousel: Array.isArray(cp.images) && cp.images.length > 1,
-        });
-      });
-    });
-
     const visualStandardPosts = (posts || [])
-      .filter((p) => p && typeof p === 'object' && p.status !== 'draft' && p.status !== 'cancelled')
+      .filter((p) => p && typeof p === 'object' && p.status !== 'draft' && p.status !== 'cancelled' && !p.clubId && !p.isClubPost && p.author?.role !== 'club')
       .map((p, index) => {
         const text = (p.content || '').toLowerCase();
         let cat = 'campus';
-        if (p.clubId || p.isClubPost) cat = 'clubs';
-        else if (text.includes('staj') || text.includes('iş') || text.includes('ilan') || p.jobData) cat = 'career';
+        if (text.includes('staj') || text.includes('iş') || text.includes('ilan') || p.jobData) cat = 'career';
         else if (text.includes('proje') || text.includes('teknofest') || text.includes('yapay zeka')) cat = 'projects';
         else if (text.includes('mezun') || text.includes('terfi')) cat = 'alumni';
 
@@ -217,8 +163,8 @@ export default function ExploreFeed({
         };
       });
 
-    return [...visualStandardPosts, ...clubMediaPosts];
-  }, [posts, clubList, currentUser]);
+    return visualStandardPosts;
+  }, [posts]);
 
   const filteredPosts = useMemo(() => {
     return explorePosts.filter((p) => {
@@ -330,7 +276,7 @@ export default function ExploreFeed({
           </div>
 
           <p className="text-xs text-slate-500 font-medium">
-            Üniversite kulüplerini, yaklaşan etkinlikleri, öğrenci projelerini ve kariyer fırsatlarını keşfet
+            Yaklaşan etkinlikleri, projeleri, mezun başarılarını ve kariyer fırsatlarını keşfet
           </p>
 
           {/* Unified Global Search Input (Matches placeholder for Vitest and User Search) */}

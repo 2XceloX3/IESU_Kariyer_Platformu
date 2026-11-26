@@ -660,42 +660,6 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-xl border border-[var(--border-soft)] shadow-[var(--shadow-soft)] overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:shadow-lg">
       {/* Header */}
-      {isClubRelatedPost && post.priorityReason && (
-        <div className="px-4 py-2 bg-slate-50/90 border-b border-slate-100 flex items-center justify-between gap-2 text-[11px]">
-          <div className="flex items-center gap-1.5 font-bold text-slate-700">
-            <Users size={13} className="text-[#990000]" />
-            <span>{post.priorityReason}</span>
-            {post.membershipState?.isMember && (
-              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black">
-                Üyesisin
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {post.clubId && (
-              <button
-                type="button"
-                onClick={handleToggleClubFollow}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition cursor-pointer ${
-                  isFollowingClub
-                    ? 'bg-slate-200/80 text-slate-700 hover:bg-slate-300'
-                    : 'bg-red-50 text-[#990000] border border-red-200 hover:bg-red-100'
-                }`}
-              >
-                {isFollowingClub ? 'Takip Ediliyor ✓' : '+ Kulübü Takip Et'}
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={handleOpenClubProfile}
-              className="text-[11px] font-bold text-[#990000] hover:underline flex items-center gap-0.5 cursor-pointer"
-            >
-              <span>Kulüp Sayfası</span>
-              <ChevronRight size={12} />
-            </button>
-          </div>
-        </div>
-      )}
       <div className="p-4 flex justify-between items-center">
         <div onClick={handleProfileClick} className="flex items-center gap-3 cursor-pointer group hover:opacity-90 transition-opacity">
           <SafeAvatar

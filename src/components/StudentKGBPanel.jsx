@@ -1126,23 +1126,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
 
                 <div className="flex items-center justify-between border-b border-slate-200 pb-1 pt-2">
                   <h4 className="font-black text-slate-900 text-sm">
-                    3. SKS Onaylı Kulüp Başkanlıkları & Sosyal Sorumluluk Liderliği
-                  </h4>
-                  <span className="text-[10px] text-indigo-700 font-bold bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">SKS Tescilli</span>
-                </div>
-                <div className="space-y-2">
-                  {(kgbDocument.sections.clubs.items || []).map((club, idx) => (
-                    <div key={idx} className="flex justify-between items-center py-1.5 border-b border-slate-100 text-slate-700 font-medium">
-                      <span>• <strong className="text-slate-900 font-bold">{club.name}</strong> — {club.role} ({club.year})</span>
-                      <span className="font-bold text-indigo-700">SKS Tescilli</span>
-                    </div>
-                  ))}
-                  <p className="text-[11px] text-slate-500 italic pt-1">{kgbDocument.sections.clubs.summary}</p>
-                </div>
-
-                <div className="flex items-center justify-between border-b border-slate-200 pb-1 pt-2">
-                  <h4 className="font-black text-slate-900 text-sm">
-                    4. Mesleki Atölye, Seminer ve Vaka Çalışmaları
+                    3. Mesleki Atölye, Seminer ve Vaka Çalışmaları
                   </h4>
                   <span className="text-[10px] text-purple-700 font-bold bg-purple-50 px-2 py-0.5 rounded border border-purple-200">Kariyer & Yetenek Karnesi</span>
                 </div>

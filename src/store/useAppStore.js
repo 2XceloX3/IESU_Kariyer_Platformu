@@ -33,10 +33,11 @@ import { useSharedStore } from '../brain/useSharedStore';
 import { useAdminStore } from '../brain/useAdminStore';
 
 const mapRoleToHive = (role) => {
+  if (role === 'student') return 'student';
   if (role === 'company' || role === 'employer') return 'company';
   if (role === 'admin') return 'admin';
   if (role === 'staff' || role === 'personel') return 'staff';
-  if (role === 'alumni' || role === 'student' || role === 'academic') return 'alumni';
+  if (role === 'alumni' || role === 'academic') return 'alumni';
   return undefined;
 };
 
@@ -91,7 +92,7 @@ export const coreStore = create(
 
       // 4. activeHive
       activeHive: 'alumni',
-      setActiveHive: (hive) => set({ activeHive: (hive === 'student' || hive === 'academic') ? 'alumni' : hive }),
+      setActiveHive: (hive) => set({ activeHive: hive === 'academic' ? 'alumni' : hive }),
 
       // 5. previousHive
       previousHive: null,
@@ -113,11 +114,11 @@ export const coreStore = create(
         if (!branch || branch === 'undefined') return;
         set((state) => {
           const currentRole = state.userRole || state.currentUser?.role;
-          const normalized = (branch === 'student' || branch === 'academic') ? 'alumni' : branch;
+          const normalized = branch === 'academic' ? 'alumni' : branch;
           // Strict branch isolation: non-admin users can never switch branch to 'admin'; non-staff/non-admin cannot switch to 'staff'
           let safeBranch = normalized;
-          if (safeBranch === 'admin' && currentRole !== 'admin') safeBranch = currentRole === 'staff' ? 'staff' : 'alumni';
-          if (safeBranch === 'staff' && currentRole !== 'admin' && currentRole !== 'staff') safeBranch = 'alumni';
+          if (safeBranch === 'admin' && currentRole !== 'admin') safeBranch = currentRole === 'staff' ? 'staff' : (currentRole === 'student' ? 'student' : 'alumni');
+          if (safeBranch === 'staff' && currentRole !== 'admin' && currentRole !== 'staff') safeBranch = currentRole === 'student' ? 'student' : 'alumni';
           try {
             if (typeof window !== 'undefined') localStorage.setItem('iesu_active_portal_branch', safeBranch);
           } catch { /* intentional */ }
@@ -130,7 +131,7 @@ export const coreStore = create(
       addFollowedUserId: (id) => set(state => ({ followedUserIds: [...new Set([...state.followedUserIds, id])] })),
       removeFollowedUserId: (id) => set(state => ({ followedUserIds: state.followedUserIds.filter(fid => fid !== id) })),
 
-      followedClubIds: ['CLUB-001'],
+      followedClubIds: [],
       setFollowedClubIds: (ids) => set({ followedClubIds: Array.isArray(ids) ? ids.map(String) : [] }),
       toggleFollowClub: (clubId) => {
         if (!clubId) return;
@@ -333,19 +334,20 @@ export const coreStore = create(
         }
         const isAdminUser = state.userRole === 'admin' || state.currentUser?.role === 'admin';
         const isStaffUser = !isAdminUser && (state.userRole === 'staff' || state.currentUser?.role === 'staff');
-        const rawBranch = (state.activePortalBranch === 'student' || state.activePortalBranch === 'academic') ? 'alumni' : state.activePortalBranch;
+        const defaultUserBranch = state.userRole === 'student' || state.currentUser?.role === 'student' ? 'student' : (state.userRole === 'company' || state.userRole === 'employer' || state.currentUser?.role === 'company' || state.currentUser?.role === 'employer' ? 'company' : 'alumni');
+        const rawBranch = state.activePortalBranch === 'academic' ? defaultUserBranch : state.activePortalBranch;
         const safeBranch = isAdminUser 
           ? (rawBranch || 'admin')
           : isStaffUser
             ? (rawBranch === 'admin' ? 'staff' : (rawBranch || 'staff'))
-            : (rawBranch === 'admin' || rawBranch === 'staff' ? 'alumni' : (rawBranch || 'alumni'));
+            : (rawBranch === 'admin' || rawBranch === 'staff' ? defaultUserBranch : (rawBranch || defaultUserBranch));
         return {
           userRole: state.userRole,
           currentUser: safeUser,
           activePortalBranch: safeBranch,
           activeHive: state.activeHive,
           followedUserIds: state.followedUserIds || [],
-          followedClubIds: state.followedClubIds || ['CLUB-001'],
+          followedClubIds: [],
           language: state.language || 'tr'
         };
       },

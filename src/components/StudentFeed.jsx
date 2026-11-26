@@ -488,19 +488,19 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               </button>
 
               <button
-                onClick={() => setView('club_portal')}
-                className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
+                onClick={() => setView('staj')}
+                className="w-full p-2 rounded-xl hover:bg-red-50/70 transition-all flex items-center justify-between group cursor-pointer text-left border border-red-100/70 bg-red-50/30"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <Users size={14} />
+                  <div className="w-7 h-7 rounded-lg bg-[#990000] text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Briefcase size={14} />
                   </div>
                   <div className="min-w-0">
-                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-emerald-700 transition-colors block truncate">Kulüp & Topluluklar</span>
-                    <span className="text-[9px] text-gray-500 block truncate">{clubList.length} kulüp • etkinlik & üyelik</span>
+                    <span className="text-[11px] font-black text-gray-900 group-hover:text-[#990000] transition-colors block truncate">Staj & Ulusal Staj (USP)</span>
+                    <span className="text-[9px] text-gray-600 block truncate">Form-1, SGK & Dijital Defter</span>
                   </div>
                 </div>
-                <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">+15 KGB</span>
+                <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-red-100 text-[#990000]">Aktif</span>
               </button>
             </div>
 
@@ -643,101 +643,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               Ağım & Takip Ettiklerim
               {feedFilter === 'following' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-red-600 rounded-t-full"></div>}
             </button>
-            <button 
-              onClick={() => setFeedFilter('clubs')} 
-              className={`pb-3 font-semibold text-[15px] transition-colors relative shrink-0 flex items-center gap-2 cursor-pointer ${feedFilter === 'clubs' ? 'text-[#990000] font-bold' : 'text-gray-500 hover:text-gray-700'}`}
-            >
-              <Users size={16} className={feedFilter === 'clubs' ? 'text-[#990000]' : 'text-gray-400'} />
-              <span>Öğrenci Kulüpleri</span>
-              <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${feedFilter === 'clubs' ? 'bg-red-100 text-[#990000]' : 'bg-gray-100 text-gray-500'}`}>
-                {clubList.length}
-              </span>
-              {feedFilter === 'clubs' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#990000] rounded-t-full"></div>}
-            </button>
           </div>
-
-          {/* ÖĞRENCİ KULÜPLERİ VİTRİNİ & HIZLI KEŞİF */}
-          {feedFilter === 'clubs' && (
-            <div className="bg-gradient-to-r from-red-50/70 via-white to-amber-50/60 rounded-2xl p-4 sm:p-5 border border-red-100/80 shadow-2xs mb-2 animate-fade-in">
-              <div className="flex items-center justify-between mb-3.5 px-1">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-red-100 text-[#990000] flex items-center justify-center shadow-2xs">
-                    <Users size={17} />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-black text-gray-900 leading-tight">Üniversite Kulüp Sosyal Ağı</h4>
-                    <p className="text-[11px] text-gray-600 font-medium">Üye olduğun ve takip ettiğin kulüplerin paylaşımları öncelikli listelenir</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => { setSelectedClubId?.(null); setView('club_portal'); }}
-                  className="text-xs font-black text-[#990000] hover:text-red-800 flex items-center gap-1.5 cursor-pointer bg-white px-3 py-1.5 rounded-xl border border-red-200/80 shadow-2xs hover:shadow-xs transition active:scale-95"
-                >
-                  <span>Kulüpler Portalı</span>
-                  <ArrowRight size={13} />
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                {clubList.slice(0, 3).map(club => {
-                  const mState = getClubMembershipState(club, effectiveCurrentUser, followedClubIds);
-                  return (
-                    <div key={club.id} className="bg-white rounded-xl p-3.5 border border-gray-200/70 shadow-2xs flex flex-col justify-between hover:border-red-200 hover:shadow-xs transition-all">
-                      <div>
-                        <div className="flex items-start gap-3 mb-2">
-                          <SafeAvatar src={club.logo} alt={club.name} name={club.name} size="md" className="shrink-0 rounded-xl" />
-                          <div className="min-w-0 flex-1">
-                            <h5
-                              onClick={() => { setSelectedClubId?.(String(club.id)); setView('club_portal'); }}
-                              className="text-xs font-bold text-gray-900 hover:text-[#990000] truncate leading-snug cursor-pointer"
-                            >
-                              {club.name}
-                            </h5>
-                            <span className="text-[10px] text-gray-500 font-semibold block truncate">{club.category}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1.5 flex-wrap mb-2.5">
-                          <span className="text-[10px] font-bold text-[#990000] bg-red-50 px-2 py-0.5 rounded-full">
-                            👥 {club.memberCount || 100}+ Üye
-                          </span>
-                          {mState.isMember ? (
-                            <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
-                              Üyesisin
-                            </span>
-                          ) : mState.isPending ? (
-                            <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">
-                              Başvurun İnceleniyor
-                            </span>
-                          ) : null}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1.5 pt-2 border-t border-slate-100">
-                        <button
-                          type="button"
-                          onClick={() => toggleFollowClub?.(String(club.id))}
-                          className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold transition cursor-pointer ${
-                            mState.isFollowing
-                              ? 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                              : 'bg-red-50 text-[#990000] hover:bg-red-100'
-                          }`}
-                        >
-                          {mState.followLabel}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => { setSelectedClubId?.(String(club.id)); setView('club_portal'); }}
-                          className="flex-1 py-1.5 px-2 bg-[#990000] hover:bg-red-800 text-white rounded-lg text-[10px] font-bold transition flex items-center justify-center gap-0.5 cursor-pointer"
-                        >
-                          <span>Kulüp Detayı</span>
-                          <ChevronRight size={12} />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
 
           {/* FEED POSTS (5M Ölçekli Sayfalamalı ve Optimize) */}
           <div className="space-y-6">
@@ -745,29 +651,18 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               <div className="p-10 text-center bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center min-h-[300px]">
                 <div className="w-16 h-16 bg-red-50 text-[#990000] rounded-2xl flex items-center justify-center mb-6 shadow-sm"><FileText size={32} /></div>
                 <h3 className="text-lg sm:text-xl font-black text-gray-900 mb-2">
-                  {feedFilter === 'clubs' ? 'Henüz kulüp yayını bulunmuyor.' : 'Henüz görüntülenecek yayın bulunmuyor.'}
+                  Henüz görüntülenecek yayın bulunmuyor.
                 </h3>
                 <p className="text-sm text-gray-500 font-medium max-w-sm leading-relaxed mb-4">
-                  {feedFilter === 'clubs'
-                    ? 'Öğrenci kulüpleri tarafından paylaşılan duyuru, hackathon ve etkinlikler burada listelenecektir.'
-                    : 'Duyuru, etkinlik, staj ve mentorluk içerikleri yayınlandığında burada görünecek.'}
+                  Duyuru, etkinlik, staj ve mentorluk içerikleri yayınlandığında burada görünecek.
                 </p>
-                {feedFilter === 'clubs' && (
+                <div className="flex flex-wrap justify-center gap-2">
                   <button
-                    onClick={() => setView('club_portal')}
-                    className="px-4 py-2 bg-[#990000] text-white rounded-xl text-xs font-bold hover:bg-red-800 transition cursor-pointer"
+                    type="button"
+                    onClick={() => setView('jobs')}
+                    className="rounded-xl bg-[#990000] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                   >
-                    Kulüpler Portalına Git
-                  </button>
-                )}
-                {feedFilter !== 'clubs' && (
-                  <div className="flex flex-wrap justify-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setView('jobs')}
-                      className="rounded-xl bg-[#990000] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
-                    >
-                      İş ve staj fırsatlarına bak
+                    İş ve staj fırsatlarına bak
                     </button>
                     <button
                       type="button"
@@ -777,7 +672,6 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                       İlk paylaşımını yap
                     </button>
                   </div>
-                )}
               </div>
             ) : (
               <>
@@ -1746,18 +1640,18 @@ groups={groups}
 
                 <button
                   type="button"
-                  onClick={() => { setShowCareerHubModal(false); setView('club_portal'); }}
+                  onClick={() => { setShowCareerHubModal(false); setView('staj'); }}
                   className="p-3.5 rounded-2xl bg-slate-50 hover:bg-rose-50/60 border border-slate-200 hover:border-rose-300 transition flex items-start gap-3 text-left cursor-pointer group"
                 >
-                  <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
-                    <Users size={18} />
+                  <div className="w-9 h-9 rounded-xl bg-rose-100 text-[#990000] flex items-center justify-center shrink-0">
+                    <Briefcase size={18} />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between">
-                      <h5 className="font-bold text-slate-900 text-xs group-hover:text-rose-700">Öğrenci Kulüpleri Portalı</h5>
-                      <span className="text-[10px] font-bold text-rose-700">+15 KGB Üyelik</span>
+                      <h5 className="font-bold text-slate-900 text-xs group-hover:text-[#990000]">Zorunlu & Ulusal Staj (USP)</h5>
+                      <span className="text-[10px] font-bold text-[#990000]">3308 / SGK</span>
                     </div>
-                    <p className="text-[11px] text-slate-600 mt-0.5 line-clamp-2">{clubList.length} öğrenci kulübünü keşfet, etkinliklere katıl ve puan kazan.</p>
+                    <p className="text-[11px] text-slate-600 mt-0.5 line-clamp-2">Form-1 staj başvurusu, Ulusal Staj Programı rehberi ve dijital staj defteri.</p>
                   </div>
                 </button>
               </div>
@@ -1772,10 +1666,10 @@ groups={groups}
                 <div>
                   <span className="text-[10px] font-bold text-[#990000] uppercase tracking-wider block">Yaklaşan Kariyer & Kampüs Etkinliği</span>
                   <h5 className="text-xs sm:text-sm font-black text-slate-900">
-                    {(events && events[0]?.title) || (clubList && clubList[0]?.events?.[0]?.title) || 'İESÜ Güz Dönemi Kariyer Günleri & Sektör Buluşması'}
+                    {(events && events[0]?.title) || 'İESÜ Güz Dönemi Kariyer Günleri & Sektör Buluşması'}
                   </h5>
                   <p className="text-[11px] text-slate-600 font-medium">
-                    {(events && events[0]?.date) || (clubList && clubList[0]?.events?.[0]?.date) || '15 Ekim 2026'} • {(events && events[0]?.location) || 'Ömer Halisdemir Konferans Salonu'}
+                    {(events && events[0]?.date) || '15 Ekim 2026'} • {(events && events[0]?.location) || 'Ömer Halisdemir Konferans Salonu'}
                   </p>
                 </div>
               </div>

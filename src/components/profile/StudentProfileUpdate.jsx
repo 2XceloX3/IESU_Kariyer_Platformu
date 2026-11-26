@@ -563,7 +563,6 @@ export default function StudentProfileUpdate({
     return true;
   };
 
-  // Comprehensive 11 TABS Architecture
   const TABS = [
     { id: 'academic', label: 'Akademik Eğitim & ÇAP', icon: GraduationCap },
     { id: 'personal', label: 'Kişisel, Askerlik & Ehliyet', icon: User },
@@ -573,13 +572,12 @@ export default function StudentProfileUpdate({
     { id: 'skills', label: 'Yetkinlikler & Dil Sınavları', icon: Sparkles },
     { id: 'career', label: 'Kariyer & Ön Yazı (Kapak)', icon: Target },
     { id: 'references', label: 'Referanslar', icon: Users, count: formData.references?.length || 0 },
-    { id: 'clubs', label: 'Kulüp & Topluluklar', icon: Layers },
     { id: 'cv_links', label: 'Özgeçmiş (PDF) & Portfolyo', icon: FileText },
     { id: 'privacy', label: 'Gizlilik & İzinler', icon: Shield }
   ];
   const TAB_GROUPS = [
     { id: 'profile', label: 'Temel profil', tabIds: ['academic', 'personal'] },
-    { id: 'experience', label: 'Deneyim ve yetkinlikler', tabIds: ['experiences', 'projects', 'certificates', 'skills', 'clubs'] },
+    { id: 'experience', label: 'Deneyim ve yetkinlikler', tabIds: ['experiences', 'projects', 'certificates', 'skills'] },
     { id: 'application', label: 'Başvuru hazırlığı', tabIds: ['career', 'references', 'cv_links'] },
     { id: 'privacy', label: 'Gizlilik', tabIds: ['privacy'] }
   ];

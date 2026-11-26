@@ -30,24 +30,24 @@ export default function Form1InternshipModal({
   const [currentStep, setCurrentStep] = useState(1);
 
   const [formData, setFormData] = useState(() => ({
-    studentName: currentUser?.name || 'Ayşe Kaya',
-    studentNo: currentUser?.studentNo || '20220101001',
-    tcNo: currentUser?.tcNo || '10000000146',
-    faculty: currentUser?.faculty || 'Mühendislik ve Doğa Bilimleri Fakültesi',
-    department: currentUser?.department || currentUser?.dept || 'Bilgisayar Mühendisliği',
-    phone: currentUser?.phone || '0555 111 2233',
-    email: currentUser?.email || 'ayse.kaya@ogr.esenyurt.edu.tr',
-    address: currentUser?.address || 'Esenyurt, İstanbul',
+    studentName: currentUser?.name || '',
+    studentNo: currentUser?.studentNo || currentUser?.studentId || '',
+    tcNo: currentUser?.tcNo || '',
+    faculty: currentUser?.faculty || '',
+    department: currentUser?.department || currentUser?.dept || '',
+    phone: currentUser?.phone || '',
+    email: currentUser?.email || '',
+    address: currentUser?.address || '',
     
     // İşyeri Bilgileri
-    companyName: initialData?.companyName || 'Aselsan A.Ş.',
-    companyAddress: initialData?.companyAddress || 'ODTÜ Teknokent Titanyum Blok No:12 Çankaya/Ankara',
-    sgkSicilNo: initialData?.sgkSicilNo || '2.4510.01.01.1234567.034.01-44',
-    taxNo: initialData?.taxNo || '1234567890',
-    companyAuthorizedPerson: initialData?.companyAuthorizedPerson || 'Ahmet Yılmaz',
-    companyAuthorizedTitle: initialData?.companyAuthorizedTitle || 'Yazılım Grup Lideri',
-    companyAuthorizedEmail: initialData?.companyAuthorizedEmail || 'ahmet.yilmaz@aselsan.com.tr',
-    companyAuthorizedPhone: initialData?.companyAuthorizedPhone || '0312 555 0000',
+    companyName: initialData?.companyName || '',
+    companyAddress: initialData?.companyAddress || '',
+    sgkSicilNo: initialData?.sgkSicilNo || '',
+    taxNo: initialData?.taxNo || '',
+    companyAuthorizedPerson: initialData?.companyAuthorizedPerson || '',
+    companyAuthorizedTitle: initialData?.companyAuthorizedTitle || '',
+    companyAuthorizedEmail: initialData?.companyAuthorizedEmail || '',
+    companyAuthorizedPhone: initialData?.companyAuthorizedPhone || '',
     
     // Tarihler & Çalışma Günleri
     startDate: initialData?.startDate || '2026-07-01',
@@ -59,13 +59,13 @@ export default function Form1InternshipModal({
     hasFamilyGss: initialData?.hasFamilyGss !== undefined ? initialData.hasFamilyGss : true,
     isEmployedElsewhere: Boolean(initialData?.isEmployedElsewhere),
     receivesPension: Boolean(initialData?.receivesPension),
-    sgkCommitmentApproved: initialData?.sgkCommitmentApproved !== undefined ? initialData.sgkCommitmentApproved : true,
+    sgkCommitmentApproved: Boolean(initialData?.sgkCommitmentApproved),
     
     // 3308 Ücret & İşveren Onayı
     isPaid: initialData?.isPaid !== undefined ? initialData.isPaid : true,
-    monthlyWage: initialData?.monthlyWage || 17500,
+    monthlyWage: initialData?.monthlyWage || '',
     hasUnemploymentFundSupport: initialData?.hasUnemploymentFundSupport !== undefined ? initialData.hasUnemploymentFundSupport : true,
-    employerApproved: initialData?.employerApproved !== undefined ? initialData.employerApproved : true,
+    employerApproved: Boolean(initialData?.employerApproved),
   }));
 
   const [validationErrors, setValidationErrors] = useState([]);

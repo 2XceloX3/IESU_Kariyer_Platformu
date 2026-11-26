@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { 
   Crown, FileText, BookOpen, Building2, Eye,
   Plus, Edit2, Shield, Activity, Power, X,
-  Save, Search, Filter, ShieldCheck, Key, Check
+  Save, Search, Filter, ShieldCheck, Key, Check, Trash2
 } from 'lucide-react';
-import { hashStaffPassword, DEFAULT_STAFF_ACCOUNTS } from '../../utils/staffAuth';
+import { hashStaffPassword, DEFAULT_STAFF_ACCOUNTS, normalizeStaffUsername } from '../../utils/staffAuth';
+import { exportToCSV } from '../../utils/export';
 
 const DEFAULT_USER_TYPES = [
   { id: '1', name: 'Süper Admin', desc: 'Tam yetki, tüm panellere erişim', color: 'bg-amber-500', text: 'text-amber-600', bgSoft: 'bg-amber-50', icon: 'Crown', permissionCount: 30 },
@@ -18,8 +19,8 @@ const DEFAULT_USER_TYPES = [
 const DEFAULT_ACCOUNTS = DEFAULT_STAFF_ACCOUNTS;
 
 const MODULES = [
-  'İçerik Yönetimi', 'İlan Yönetimi', 'Mezun & Firma Yönetimi', 
-  'Mezun İşlemleri', 'Sistem Ayarları', 'Analitik & Raporlar'
+  'İçerik Yönetimi', 'İlan & Staj Yönetimi', 'Öğrenci, Mezun & Firma Yönetimi', 
+  'Mezun & Protokol İşlemleri', 'Sistem Ayarları', 'Analitik & Raporlar'
 ];
 
 const ACTIONS = ['Okuma', 'Ekleme', 'Düzenleme', 'Silme', 'Onaylama'];
@@ -43,7 +44,8 @@ export default function CMSUserTypeManager() {
   const [matrix, setMatrix] = useState({});
   
   const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
-  const [staffForm, setStaffForm] = useState({ name: '', email: '', password: '', typeId: '', department: '' });
+  const [editingStaffId, setEditingStaffId] = useState(null);
+  const [staffForm, setStaffForm] = useState({ name: '', username: '', email: '', password: '', typeId: '6', department: '' });
   
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
@@ -110,11 +112,14 @@ export default function CMSUserTypeManager() {
       const savedAccs = localStorage.getItem('iesu_staff_accounts_v1');
       if (savedAccs) {
         const parsedAccs = JSON.parse(savedAccs);
-        if (!parsedAccs || !parsedAccs.some(a => a.typeId === '6')) {
+        if (Array.isArray(parsedAccs) && parsedAccs.length > 0) {
+          setAccounts(parsedAccs.map(acc => ({
+            ...acc,
+            username: acc.username || normalizeStaffUsername('', acc.email)
+          })));
+        } else {
           setAccounts(DEFAULT_ACCOUNTS);
           localStorage.setItem('iesu_staff_accounts_v1', JSON.stringify(DEFAULT_ACCOUNTS));
-        } else {
-          setAccounts(parsedAccs);
         }
       } else {
         setAccounts(DEFAULT_ACCOUNTS);
@@ -162,9 +167,9 @@ export default function CMSUserTypeManager() {
         } else if (type.id === '2') {
           initialMatrix[mod][act] = mod === 'İçerik Yönetimi' || act === 'Okuma';
         } else if (type.id === '3') {
-          initialMatrix[mod][act] = mod === 'Akademik İşlemler' || act === 'Okuma' || act === 'Onaylama';
+          initialMatrix[mod][act] = mod === 'Mezun & Protokol İşlemleri' || act === 'Okuma' || act === 'Onaylama';
         } else if (type.id === '4') {
-          initialMatrix[mod][act] = mod === 'İlan Yönetimi' || mod === 'Kullanıcı Yönetimi' || act === 'Okuma';
+          initialMatrix[mod][act] = mod === 'İlan & Staj Yönetimi' || mod === 'Öğrenci, Mezun & Firma Yönetimi' || act === 'Okuma';
         } else if (type.id === '5') {
           initialMatrix[mod][act] = act === 'Okuma';
         } else {
@@ -204,19 +209,101 @@ export default function CMSUserTypeManager() {
     setIsPermModalOpen(false);
   };
 
+  const openEditStaffModal = (account) => {
+    setEditingStaffId(account.id);
+    setStaffForm({
+      name: account.name || '',
+      username: account.username || normalizeStaffUsername('', account.email),
+      email: account.email || '',
+      password: '',
+      typeId: account.typeId || '6',
+      department: account.department || ''
+    });
+    setIsStaffModalOpen(true);
+  };
+
+  const handleDeleteStaff = (account) => {
+    if (account.typeId === '1') {
+      window.toast?.error?.('Süper Admin hesabı silinemez.');
+      return;
+    }
+    const updated = accounts.filter(a => a.id !== account.id);
+    saveAccounts(updated);
+    window.toast?.success?.(`${account.name} (@${account.username || ''}) personel hesabı kaldırıldı.`);
+  };
+
   const handleStaffFormSubmit = (e) => {
     e.preventDefault();
+    const cleanEmail = String(staffForm.email || '').trim().toLowerCase();
+    const cleanUsername = normalizeStaffUsername(staffForm.username, cleanEmail);
+    const initialPass = String(staffForm.password || '').trim();
+
+    if (!cleanUsername || cleanUsername.length < 3) {
+      window.toast?.error?.('Kullanıcı adı en az 3 karakter olmalıdır (harf, rakam, nokta veya alt çizgi).');
+      return;
+    }
+    if (!editingStaffId && (!initialPass || initialPass.length < 6)) {
+      window.toast?.error?.('Personel giriş şifresi en az 6 karakter olmalıdır.');
+      return;
+    }
+    if (editingStaffId && initialPass && initialPass.length < 6) {
+      window.toast?.error?.('Yeni şifre en az 6 karakter olmalıdır.');
+      return;
+    }
+    if (staffForm.typeId === '1') {
+      window.toast?.error?.('Güvenlik gereği buradan yeni Süper Admin eklenemez. Lütfen kurumsal personel rolü seçin.');
+      return;
+    }
+    const isDuplicate = accounts.some(a =>
+      a.id !== editingStaffId && (
+        (a.username && a.username.toLowerCase() === cleanUsername) ||
+        (a.email && a.email.toLowerCase() === cleanEmail)
+      )
+    );
+    if (isDuplicate) {
+      window.toast?.error?.('Bu kullanıcı adı veya e-posta adresi ile kayıtlı bir personel zaten mevcut.');
+      return;
+    }
+
     const type = userTypes.find(t => t.id === staffForm.typeId);
-    const initialPass = (staffForm.password || '').trim() || 'iesu2026';
-    
+
+    if (editingStaffId) {
+      const updated = accounts.map(a => {
+        if (a.id !== editingStaffId) return a;
+        const emailChanged = a.email?.toLowerCase() !== cleanEmail;
+        if (emailChanged && !initialPass) {
+          window.toast?.error?.('E-posta adresi değiştirildiğinde güvenlik gereği yeni bir giriş şifresi de belirlemelisiniz.');
+          return a;
+        }
+        return {
+          ...a,
+          name: staffForm.name.trim(),
+          username: cleanUsername,
+          email: cleanEmail,
+          department: staffForm.department?.trim() || 'Kariyer Geliştirme Merkezi',
+          typeId: staffForm.typeId || a.typeId,
+          typeName: type?.name || a.typeName,
+          passwordHash: initialPass ? hashStaffPassword(cleanEmail, initialPass) : a.passwordHash,
+          hasPassword: true
+        };
+      });
+      saveAccounts(updated);
+      window.toast?.success?.(`${staffForm.name.trim()} (@${cleanUsername}) personel bilgileri güncellendi.`);
+      setIsStaffModalOpen(false);
+      setEditingStaffId(null);
+      setStaffForm({ name: '', username: '', email: '', password: '', typeId: '6', department: '' });
+      return;
+    }
+
     const newStaff = {
       id: Date.now().toString(),
-      name: staffForm.name,
-      email: staffForm.email,
-      department: staffForm.department || 'Kariyer Geliştirme Merkezi',
-      typeId: staffForm.typeId,
+      name: staffForm.name.trim(),
+      username: cleanUsername,
+      email: cleanEmail,
+      department: staffForm.department?.trim() || 'Kariyer Geliştirme Merkezi',
+      typeId: staffForm.typeId || '6',
       typeName: type?.name || 'Kurumsal Personel',
-      passwordHash: hashStaffPassword(staffForm.email, initialPass),
+      passwordHash: hashStaffPassword(cleanEmail, initialPass),
       hasPassword: true,
       lastLogin: 'Hiç giriş yapmadı',
       status: 'Aktif'
@@ -224,10 +311,11 @@ export default function CMSUserTypeManager() {
     
     saveAccounts([newStaff, ...accounts]);
     if (window.toast?.success) {
-      window.toast.success(`${staffForm.name} personel hesabı oluşturuldu ve Personel Portalı girişi aktif edildi.`);
+      window.toast.success(`${newStaff.name} (@${cleanUsername}) oluşturuldu! Personel sekmesinden kullanıcı adı ve şifre ile giriş yapılabilir.`);
     }
     setIsStaffModalOpen(false);
-    setStaffForm({ name: '', email: '', password: '', typeId: '', department: '' });
+    setEditingStaffId(null);
+    setStaffForm({ name: '', username: '', email: '', password: '', typeId: '6', department: '' });
   };
 
   const toggleStaffStatus = (id) => {
@@ -276,19 +364,19 @@ export default function CMSUserTypeManager() {
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => {
-                let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-                csvContent += `İSTANBUL ESENYURT ÜNİVERSİTESİ - PERSONEL YETKİ LİSTESİ\n\n`;
-                csvContent += `Personel ID;Adı Soyadı;E-posta;Kullanıcı Rolü;Son Giriş Tarihi;Durum\n`;
-                accounts.forEach(a => {
-                  csvContent += `${a.id};"${a.name}";"${a.email}";"${a.typeName}";"${a.lastLogin}";"${a.status}"\n`;
-                });
-                const encodedUri = encodeURI(csvContent);
-                const link = document.createElement("a");
-                link.setAttribute("href", encodedUri);
-                link.setAttribute("download", `IESU_Personel_Yetki_Listesi_${new Date().toISOString().slice(0,10)}.csv`);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                exportToCSV(
+                  accounts.map(a => ({
+                    'Personel ID': a.id,
+                    'Ad Soyad': a.name,
+                    'Kullanıcı Adı': a.username || normalizeStaffUsername('', a.email),
+                    'E-posta': a.email,
+                    'Departman': a.department || 'Kariyer Geliştirme Merkezi',
+                    'Kullanıcı Rolü': a.typeName,
+                    'Son Giriş Tarihi': a.lastLogin,
+                    'Durum': a.status
+                  })),
+                  `IESU_Personel_Yetki_Listesi_${new Date().toISOString().slice(0,10)}.csv`
+                );
               }}
               className="flex items-center gap-2 bg-[#990000] hover:bg-red-800 text-white px-4 py-2.5 rounded-2xl text-xs font-black transition-all shadow-md cursor-pointer"
             >
@@ -402,7 +490,11 @@ export default function CMSUserTypeManager() {
               <p className="text-xs text-slate-500 font-medium mt-0.5">Sistemde yetkilendirilmiş idari, akademik ve yönetici personel hesapları.</p>
             </div>
             <button 
-              onClick={() => setIsStaffModalOpen(true)}
+              onClick={() => {
+                setEditingStaffId(null);
+                setStaffForm({ name: '', username: '', email: '', password: '', typeId: '6', department: '' });
+                setIsStaffModalOpen(true);
+              }}
               className="bg-[#990000] hover:bg-red-800 text-white px-4 py-2.5 rounded-2xl text-xs font-black transition-all shadow-md flex items-center gap-2 cursor-pointer self-start sm:self-auto"
             >
               <Plus className="w-4 h-4" />
@@ -429,6 +521,7 @@ export default function CMSUserTypeManager() {
                 <thead>
                   <tr className="bg-gradient-to-r from-[#990000] to-red-900 text-white font-black uppercase text-[10px] tracking-wider">
                     <th className="px-6 py-3.5">Ad Soyad</th>
+                    <th className="px-6 py-3.5">Kullanıcı Adı</th>
                     <th className="px-6 py-3.5">E-posta Adresi</th>
                     <th className="px-6 py-3.5">Kullanıcı Rolü</th>
                     <th className="px-6 py-3.5">Giriş Şifresi</th>
@@ -440,9 +533,11 @@ export default function CMSUserTypeManager() {
                 <tbody className="divide-y divide-slate-100">
                   {accounts.filter(a => {
                     if (!staffSearchTerm) return true;
-                    return a.name.toLowerCase().includes(staffSearchTerm.toLowerCase()) || 
-                           a.email.toLowerCase().includes(staffSearchTerm.toLowerCase()) ||
-                           a.typeName.toLowerCase().includes(staffSearchTerm.toLowerCase());
+                    const q = staffSearchTerm.toLowerCase();
+                    return (a.name || '').toLowerCase().includes(q) || 
+                           (a.username || '').toLowerCase().includes(q) ||
+                           (a.email || '').toLowerCase().includes(q) ||
+                           (a.typeName || '').toLowerCase().includes(q);
                   }).map(account => (
                     <tr 
                       key={account.id} 
@@ -450,6 +545,11 @@ export default function CMSUserTypeManager() {
                       className="hover:bg-slate-50 cursor-pointer transition-colors"
                     >
                       <td className="px-6 py-4 font-bold text-slate-800">{account.name}</td>
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-lg">
+                          @{account.username || normalizeStaffUsername('', account.email)}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 text-slate-600 font-medium">{account.email}</td>
                       <td className="px-6 py-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-bold ${getTypeStyle(account.typeId)}`}>
@@ -470,41 +570,56 @@ export default function CMSUserTypeManager() {
                       </td>
                       <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-2">
-                          <button 
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
-                              setTargetStaffForPassChange(account);
-                              setNewPasswordInput('');
-                              setConfirmPasswordInput('');
-                              setIsChangePassModalOpen(true);
-                            }}
-                            className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors flex items-center gap-1 font-bold text-[11px] border border-amber-200 cursor-pointer"
-                            title="Kullanıcı Kendi Şifresini Değiştirsin"
-                          >
-                            <Key className="w-3.5 h-3.5 text-amber-600" />
-                            <span>Şifre Değiştir</span>
-                          </button>
+                          {account.typeId !== '1' && (
+                            <button 
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                setTargetStaffForPassChange(account);
+                                setNewPasswordInput('');
+                                setConfirmPasswordInput('');
+                                setIsChangePassModalOpen(true);
+                              }}
+                              className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors flex items-center gap-1 font-bold text-[11px] border border-amber-200 cursor-pointer"
+                              title="Personel Şifresini Güncelle"
+                            >
+                              <Key className="w-3.5 h-3.5 text-amber-600" />
+                              <span>Şifre Değiştir</span>
+                            </button>
+                          )}
                           <button 
                             onClick={(e) => { e.stopPropagation(); openAuditLog(account); }}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors cursor-pointer"
                             title="Aksiyonlarını Gör"
                           >
                             <Activity className="w-4 h-4" />
                           </button>
-                          <button 
-                            onClick={(e) => { e.stopPropagation(); setSelectedStaffDetail(account); }}
-                            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
-                            title="Detayları Gör"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={(e) => { e.stopPropagation(); toggleStaffStatus(account.id); }}
-                            className={`p-1.5 rounded-md transition-colors ${account.status === 'Aktif' ? 'text-red-500 hover:bg-red-50' : 'text-emerald-500 hover:bg-emerald-50'}`}
-                            title={account.status === 'Aktif' ? 'Pasifleştir' : 'Aktifleştir'}
-                          >
-                            <Power className="w-4 h-4" />
-                          </button>
+                          {account.typeId !== '1' && (
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); openEditStaffModal(account); }}
+                              className="p-1.5 text-slate-500 hover:text-indigo-700 hover:bg-indigo-50 rounded-md transition-colors cursor-pointer"
+                              title="Personel Bilgilerini Düzenle"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                          )}
+                          {account.typeId !== '1' && (
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); toggleStaffStatus(account.id); }}
+                              className={`p-1.5 rounded-md transition-colors cursor-pointer ${account.status === 'Aktif' ? 'text-red-500 hover:bg-red-50' : 'text-emerald-500 hover:bg-emerald-50'}`}
+                              title={account.status === 'Aktif' ? 'Pasifleştir' : 'Aktifleştir'}
+                            >
+                              <Power className="w-4 h-4" />
+                            </button>
+                          )}
+                          {account.typeId !== '1' && (
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); handleDeleteStaff(account); }}
+                              className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
+                              title="Personel Hesabını Sil"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -605,9 +720,9 @@ export default function CMSUserTypeManager() {
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
             <div className="flex items-center justify-between p-6 border-b border-slate-100">
-              <h3 className="text-lg font-bold text-slate-800">Yeni Personel Ekle</h3>
+              <h3 className="text-lg font-bold text-slate-800">{editingStaffId ? 'Personel Hesabını Düzenle' : 'Yeni Personel Ekle'}</h3>
               <button 
-                onClick={() => setIsStaffModalOpen(false)}
+                onClick={() => { setIsStaffModalOpen(false); setEditingStaffId(null); }}
                 className="p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors"
               >
                 <X className="w-5 h-5" />
@@ -620,17 +735,32 @@ export default function CMSUserTypeManager() {
                 <input 
                   required
                   type="text"
+                  placeholder="Örn: Ayşe Yılmaz"
                   value={staffForm.name}
                   onChange={e => setStaffForm({...staffForm, name: e.target.value})}
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
                 />
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Personel Kullanıcı Adı (Giriş İçin)</label>
+                <input 
+                  required
+                  type="text"
+                  placeholder="Örn: ayse.yilmaz veya kgm_uzman"
+                  value={staffForm.username}
+                  onChange={e => setStaffForm({...staffForm, username: e.target.value})}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
+                />
+                <p className="text-[11px] text-slate-400 mt-1">Personel bu kullanıcı adı veya kurumsal e-postası ile giriş yapacaktır.</p>
+              </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">E-posta Adresi</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Kurumsal E-posta Adresi</label>
                 <input 
                   required
                   type="email"
+                  placeholder="ad.soyad@iesu.edu.tr"
                   value={staffForm.email}
                   onChange={e => setStaffForm({...staffForm, email: e.target.value})}
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
@@ -638,10 +768,14 @@ export default function CMSUserTypeManager() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Geçici Şifre</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  {editingStaffId ? 'Yeni Giriş Şifresi (Değiştirmek istemiyorsanız boş bırakın)' : 'Giriş Şifresi (En az 6 karakter)'}
+                </label>
                 <input 
-                  required
+                  required={!editingStaffId}
+                  minLength={6}
                   type="password"
+                  placeholder="••••••••"
                   value={staffForm.password}
                   onChange={e => setStaffForm({...staffForm, password: e.target.value})}
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
@@ -657,7 +791,7 @@ export default function CMSUserTypeManager() {
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000]"
                 >
                   <option value="">Seçiniz...</option>
-                  {userTypes.map(t => (
+                  {userTypes.filter(t => t.id !== '1').map(t => (
                     <option key={t.id} value={t.id}>{t.name}</option>
                   ))}
                 </select>
@@ -686,7 +820,7 @@ export default function CMSUserTypeManager() {
                   className="px-5 py-2.5 rounded-xl text-sm font-medium bg-[#990000] text-white hover:bg-red-800 transition-colors flex items-center gap-2"
                 >
                   <Save className="w-4 h-4" />
-                  Personeli Ekle
+                  {editingStaffId ? 'Değişiklikleri Kaydet' : 'Personeli Ekle'}
                 </button>
               </div>
             </form>

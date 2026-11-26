@@ -46,14 +46,15 @@ describe('AdminDashboard Component', () => {
     expect(screen.getByText(/Yönetici Paneli/i)).toBeInTheDocument();
   });
 
-  it('can navigate to alumni tab and does not expose closed student/academic tabs', () => {
+  it('exposes reactivated student and alumni tabs while keeping academic and clubs tabs strictly closed', () => {
     render(<AdminDashboard {...mockProps} />);
     
-    const alumniCatBtn = screen.getByRole('button', { name: /Mezun & Firma Yönetimi/i });
-    fireEvent.click(alumniCatBtn);
+    const userCatBtn = screen.getByRole('button', { name: /Öğrenci, Mezun & Firma/i });
+    fireEvent.click(userCatBtn);
 
-    expect(screen.queryByRole('button', { name: /Aktif Öğrenciler/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /Akademik Kadro/i })).not.toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /Öğrenci/i }).length).toBeGreaterThan(0);
+    expect(screen.queryByRole('button', { name: /Akademik Personel/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Öğrenci Kulüpleri/i })).not.toBeInTheDocument();
 
     const alumniTab = screen.getAllByRole('button', { name: /Mezun/i })[0];
     fireEvent.click(alumniTab);
@@ -89,7 +90,7 @@ describe('AdminDashboard Component', () => {
     fireEvent.click(systemCatBtn);
 
     expect(screen.queryByRole('button', { name: /Platform Ayarları/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /Kullanıcı Tipi/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Personel & Yetki Yönetimi/i })).not.toBeInTheDocument();
   });
 
   it('strictly isolates branches: does NOT embed Super Admin Portal / Decision Desk inside AdminDashboard', () => {
@@ -125,17 +126,26 @@ describe('AdminDashboard Component', () => {
     expect(screen.queryByText('GÜVENLİK YETKİ PROTOKOLÜ')).not.toBeInTheDocument();
   });
 
-  it('authenticates active staff via hashed credentials and rejects wrong passwords', () => {
+  it('authenticates active staff via username or email with salted hash and rejects wrong passwords', () => {
     const hash = hashStaffPassword('iesu2026');
     expect(hash).toMatch(/^shv1_/);
     expect(hash).not.toContain('iesu2026');
 
-    const ok = verifyStaffCredentials('personel@iesu.edu.tr', 'iesu2026');
-    expect(ok.ok).toBe(true);
-    expect(ok.user?.role).toBe('staff');
+    const okEmail = verifyStaffCredentials('personel@iesu.edu.tr', 'iesu2026');
+    expect(okEmail.ok).toBe(true);
+    expect(okEmail.user?.role).toBe('staff');
 
-    const bad = verifyStaffCredentials('personel@iesu.edu.tr', 'wrongpass');
+    const okUsername = verifyStaffCredentials('kgm_personel', 'iesu2026');
+    expect(okUsername.ok).toBe(true);
+    expect(okUsername.user?.role).toBe('staff');
+    expect(okUsername.user?.username).toBe('kgm_personel');
+
+    const bad = verifyStaffCredentials('kgm_personel', 'wrongpass');
     expect(bad.ok).toBe(false);
     expect(bad.reason).toBe('invalid_password');
+
+    const missing = verifyStaffCredentials('hayali_kullanici', 'iesu2026');
+    expect(missing.ok).toBe(false);
+    expect(missing.reason).toBe('not_found');
   });
 });

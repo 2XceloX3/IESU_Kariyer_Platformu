@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import useAppStore from '../../store/useAppStore';
+import { exportToCSV, exportToJSON } from '../../utils/export';
 import { 
   Database, Download, Search, Activity, Server, Users, FlaskConical, Ticket, 
   FileText, CheckCircle2, Filter, Layers, ArrowUpRight, Sparkles, RefreshCw, 
   GraduationCap, MessageSquare, Building2, X, BookOpen, Check, Clock,
-  Plus, Trash2, Edit3, Settings, ShieldCheck, AlertCircle, Send, MessageCircle, Eye
+  Plus, Trash2, Edit3, Settings, ShieldCheck, AlertCircle, Send, MessageCircle, Eye, Briefcase, Award
 } from 'lucide-react';
 
 export default function CMSDataPoolExport() {
@@ -12,6 +13,25 @@ export default function CMSDataPoolExport() {
   const [search, setSearch] = useState('');
   const [selectedCheckup, setSelectedCheckup] = useState(null);
   const [selectedGenericItem, setSelectedGenericItem] = useState(null);
+
+  const students = useAppStore(state => state.students) || [];
+  const alumni = useAppStore(state => state.alumni) || [];
+  const companies = useAppStore(state => state.companies) || [];
+  const jobs = useAppStore(state => state.jobs) || [];
+  const applications = useAppStore(state => state.applications) || [];
+  const voluntaryInternships = useAppStore(state => state.voluntaryInternships) || [];
+  const storeProtocols = useAppStore(state => state.corporateProtocols) || [];
+
+  const corporateProtocols = useMemo(() => {
+    try {
+      const local = JSON.parse(localStorage.getItem('iesu_corporate_protocols_v1') || '[]');
+      if (Array.isArray(local) && local.length > 0) {
+        const ids = new Set(local.map(p => p.id));
+        return [...local, ...storeProtocols.filter(p => !ids.has(p.id))];
+      }
+    } catch { /* intentional */ }
+    return storeProtocols;
+  }, [storeProtocols]);
 
   const bmiRecords = useAppStore(state => state.bmiRecords) || [];
   const helpdeskTickets = useAppStore(state => state.helpdeskTickets) || [];
@@ -24,7 +44,27 @@ export default function CMSDataPoolExport() {
   const checkupRecords = useAppStore(state => state.checkupRecords) || [];
   const newsletterSubscribers = useAppStore(state => state.newsletterSubscribers) || [];
   const careerFairApplications = useAppStore(state => state.careerFairApplications) || [];
-  const adminMessages = useAppStore(state => state.adminMessages) || [];
+  const storeAdminMessages = useAppStore(state => state.adminMessages) || [];
+  const adminMessages = useMemo(() => {
+    try {
+      const local = JSON.parse(localStorage.getItem('iesu_admin_messages_v1') || '[]');
+      if (Array.isArray(local) && local.length > 0) {
+        const mapped = local.map((m, i) => ({
+          id: m.id || `CONTACT-${i}`,
+          companyName: m.senderName || m.companyName || m.name || 'Web İletişim Formu',
+          subject: m.subject || m.topic || 'İletişim Talebi',
+          email: m.email || '-',
+          phone: m.phone || '-',
+          message: m.message || m.content || '',
+          date: m.date || 'Yeni',
+          status: m.status || 'Beklemede'
+        }));
+        const ids = new Set(storeAdminMessages.map(x => x.id));
+        return [...mapped.filter(x => !ids.has(x.id)), ...storeAdminMessages];
+      }
+    } catch { /* intentional */ }
+    return storeAdminMessages;
+  }, [storeAdminMessages]);
   const alumniAssocApplications = useAppStore(state => state.alumniAssocApplications) || [];
   const alumniCardApplications = useAppStore(state => state.alumniCardApplications) || [];
   const featureAlumniCard = useAppStore(state => state.featureAlumniCard);
@@ -343,7 +383,44 @@ export default function CMSDataPoolExport() {
     if (window.toast) window.toast.success(`"${filename}" Excel/CSV dosyası başarıyla indirildi.`);
   };
 
-  const totalPoolRecords = checkupRecords.length + bmiRecords.length + helpdeskTickets.length + labReservations.length + researchCallApplications.length + eventRegistrations.length + surveys.length + newsletterSubscribers.length + careerFairApplications.length + adminMessages.length + alumniAssocApplications.length;
+  const totalCoreRecords = students.length + alumni.length + companies.length + jobs.length + applications.length + voluntaryInternships.length + corporateProtocols.length;
+  const totalPoolRecords = totalCoreRecords + checkupRecords.length + bmiRecords.length + helpdeskTickets.length + labReservations.length + researchCallApplications.length + eventRegistrations.length + surveys.length + newsletterSubscribers.length + careerFairApplications.length + adminMessages.length + alumniAssocApplications.length;
+
+  const handleFullJsonBackup = () => {
+    exportToJSON({
+      exportedAt: new Date().toISOString(),
+      institution: 'İstanbul Esenyurt Üniversitesi — Kariyer Geliştirme Koordinatörlüğü',
+      counts: {
+        students: students.length,
+        alumni: alumni.length,
+        companies: companies.length,
+        jobs: jobs.length,
+        applications: applications.length,
+        voluntaryInternships: voluntaryInternships.length,
+        corporateProtocols: corporateProtocols.length,
+        adminMessages: adminMessages.length,
+        surveys: surveys.length,
+        alumniAssocApplications: alumniAssocApplications.length,
+        alumniCardApplications: alumniCardApplications.length,
+      },
+      data: {
+        students,
+        alumni,
+        companies,
+        jobs,
+        applications,
+        voluntaryInternships,
+        corporateProtocols,
+        adminMessages,
+        careerFairApplications,
+        surveys,
+        checkupRecords,
+        newsletterSubscribers,
+        alumniAssocApplications,
+        alumniCardApplications,
+      },
+    }, `IESU_Kariyer_Tam_Veri_Yedegi_${new Date().toISOString().slice(0, 10)}.json`);
+  };
 
   return (
     <div className="space-y-6 font-sans">
@@ -359,11 +436,20 @@ export default function CMSDataPoolExport() {
               <div className="p-2.5 bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 text-white">
                 <Database size={26} />
               </div>
-              Veri Havuzu & Excel
+              Veri Havuzu & Excel / JSON Dışa Aktarım Merkezi
             </h2>
             <p className="text-teal-50 text-xs md:text-sm font-medium mt-2 max-w-2xl leading-relaxed">
-              Öğrenciler, akademisyenler ve mezunların sisteme gönderdiği tüm verileri canlı havuzda izleyin ve Microsoft Excel formatında indirin.
+              Öğrenci, mezun, firma, staj, başvuru, kurumsal protokol ve iletişim verilerinin tamamını KVKK maskeli Microsoft Excel (.csv) veya tam JSON yedeği olarak tek tıkla çekin.
             </p>
+            <div className="mt-4 flex flex-wrap items-center gap-2.5">
+              <button
+                type="button"
+                onClick={handleFullJsonBackup}
+                className="px-4 py-2.5 bg-white text-teal-900 hover:bg-teal-50 font-black text-xs rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer"
+              >
+                <Download size={15} /> Tüm Platform Verisini İndir (.JSON Tam Yedek)
+              </button>
+            </div>
           </div>
 
           {/* KPI Stat Cards */}
@@ -374,13 +460,55 @@ export default function CMSDataPoolExport() {
             </div>
             <div className="bg-white/15 border border-white/30 backdrop-blur-md p-3.5 rounded-2xl text-white shadow-sm">
               <span className="text-[10px] font-bold uppercase tracking-wider text-teal-100 block">Aktif Veri Kanalları</span>
-              <span className="text-xl font-black text-white mt-0.5 block">9 Havuz</span>
+              <span className="text-xl font-black text-white mt-0.5 block">16 Havuz</span>
             </div>
             <div className="bg-white/15 border border-white/30 backdrop-blur-md p-3.5 rounded-2xl col-span-2 sm:col-span-1 text-white shadow-sm">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-teal-100 block">Excel Uyum Formatı</span>
-              <span className="text-xs font-black text-amber-200 mt-1 block">UTF-8 BOM (.csv/.xlsx)</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-teal-100 block">Excel & Yedek Formatı</span>
+              <span className="text-xs font-black text-amber-200 mt-1 block">UTF-8 BOM (.csv) + .json</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* CORE PLATFORM DATA EXPORT STRIP (7 Ana Havuz - Tek Tıkla Excel/CSV) */}
+      <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm space-y-3">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
+              <Layers size={16} className="text-teal-600" /> Çekirdek Platform Veri Havuzları (Tek Tıkla Excel / CSV İndir)
+            </h3>
+            <p className="text-[11px] text-slate-500 font-medium">
+              Tüm ana veritabanı tabloları KVKK maskeli (T.C. & şifre korumalı) ve Türkçe Excel uyumlu (;) olarak indirilir.
+            </p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
+          {[
+            { label: 'Öğrenciler', count: students.length, color: 'rose', icon: <GraduationCap size={16} />, onExport: () => exportToCSV(students, 'IESU_Ogrenci_Listesi.csv') },
+            { label: 'Mezunlar (MBS)', count: alumni.length, color: 'emerald', icon: <Award size={16} />, onExport: () => exportToCSV(alumni, 'IESU_Mezun_Listesi.csv') },
+            { label: 'Firmalar', count: companies.length, color: 'blue', icon: <Building2 size={16} />, onExport: () => exportToCSV(companies, 'IESU_Firma_Listesi.csv') },
+            { label: 'İş & Staj İlanları', count: jobs.length, color: 'amber', icon: <Briefcase size={16} />, onExport: () => exportToCSV(jobs, 'IESU_Is_Staj_Ilanlari.csv') },
+            { label: 'Başvurular', count: applications.length, color: 'indigo', icon: <FileText size={16} />, onExport: () => exportToCSV(applications, 'IESU_Basvuru_Havuzu.csv') },
+            { label: 'Staj Talepleri', count: voluntaryInternships.length, color: 'orange', icon: <Clock size={16} />, onExport: () => exportToCSV(voluntaryInternships, 'IESU_Staj_Talepleri.csv') },
+            { label: 'Protokoller', count: corporateProtocols.length, color: 'teal', icon: <ShieldCheck size={16} />, onExport: () => exportToCSV(corporateProtocols, 'IESU_Kurumsal_Protokoller.csv') },
+          ].map(pool => (
+            <button
+              key={pool.label}
+              type="button"
+              onClick={pool.onExport}
+              className="group p-3 rounded-2xl border border-slate-200 hover:border-teal-500 bg-slate-50/70 hover:bg-teal-50/60 transition text-left flex flex-col justify-between gap-2 cursor-pointer"
+              title={`${pool.label} tablosunu Excel / CSV olarak indir`}
+            >
+              <div className="flex items-center justify-between text-slate-600 group-hover:text-teal-700">
+                {pool.icon}
+                <Download size={13} className="opacity-60 group-hover:opacity-100" />
+              </div>
+              <div>
+                <div className="text-lg font-black text-slate-900 leading-none">{pool.count}</div>
+                <div className="text-[11px] font-bold text-slate-600 mt-1 truncate">{pool.label}</div>
+              </div>
+            </button>
+          ))}
         </div>
       </div>
 

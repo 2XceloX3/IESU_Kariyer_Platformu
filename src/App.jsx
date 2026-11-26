@@ -12,7 +12,7 @@ import { loadStaffAccounts } from './utils/staffAuth';
 
 const LandingPage = lazy(() => import('./components/LandingPage')), Login = lazy(() => import('./components/Login')), Register = lazy(() => import('./components/Register')), ForgotPassword = lazy(() => import('./components/ForgotPassword'));
 const PublicNewsView = lazy(() => import('./components/PublicNewsView')), AdminFeed = lazy(() => import('./components/AdminFeed')), AdminDashboard = lazy(() => import('./components/AdminDashboard'));
-const AlumniHive = lazy(() => import('./hives/alumni/AlumniHive')), CompanyHive = lazy(() => import('./hives/company/CompanyHive')), FloatingChatWidget = lazy(() => import('./components/FloatingChatWidget'));
+const StudentHive = lazy(() => import('./hives/student/StudentHive')), AlumniHive = lazy(() => import('./hives/alumni/AlumniHive')), CompanyHive = lazy(() => import('./hives/company/CompanyHive')), FloatingChatWidget = lazy(() => import('./components/FloatingChatWidget'));
 const CommandPalette = lazy(() => import('./components/CommandPalette')), PWAInstallPrompt = lazy(() => import('./components/PWAInstallPrompt')), SurveyPopupModal = lazy(() => import('./components/SurveyPopupModal')), GlobalSearchOverlay = lazy(() => import('./components/GlobalSearchOverlay'));
 const UserProfile = lazy(() => import('./components/UserProfile')), PublicUserProfile = lazy(() => import('./components/PublicUserProfile')), JobsAndInternships = lazy(() => import('./components/JobsAndInternships'));
 const NotificationsPanel = lazy(() => import('./components/NotificationsPanel')), CalendarView = lazy(() => import('./components/CalendarView')), MessagingInterface = lazy(() => import('./components/MessagingInterface'));
@@ -35,7 +35,7 @@ const ADMIN_CMS = new Set([
   'aday_havuzu', 'user_types', 'audit_log', 'site_editor', 'cms_sync', 
   'institutional_stats', 'cms_career_counseling', 'cms_corporate_partnerships', 
   'company_edu_requests', 'company_event_msgs', 'content_import', 'cms_ment', 
-  'cms_portfolios', 'cms_incubator', 'cms_clubs', 'cms_gallery', 
+  'cms_portfolios', 'cms_incubator', 'cms_gallery', 'students',
   'world_map'
 ]);
 const ALUMNI_ROUTES = new Set(['alumni', 'mbs', 'alumni_card', 'alumni_assoc_portal', 'mezun_dernek', 'birlik_agi', 'alumni_dao']), ACADEMIC_ROUTES = new Set(['academic', 'research_hub', 'academic_catalog', 'counseling_approvals', 'academic_onboarding']);
@@ -45,13 +45,13 @@ const STUDENT_EXCLUSIVE_ROUTES = new Set([
   'student', 'feed', 'student_kgb', 'student_analytics', 'career_test', 
   'career_roadmap', 'startup_incubator', 'smart_certs', 'digital_portfolio', 
   'reward_store', 'metaverse_library', 'hackathon_market', 
-  'club_admin', 'sem', 'staj', 'anka_chat', 'skills', 'skill_tree', 'mentor_match', 'knowledge_portal', 'student_onboarding', 'onboarding', 'ats_scanner', 'ats_resume_scanner', 'ats_optimizer'
+  'sem', 'staj', 'anka_chat', 'skills', 'skill_tree', 'mentor_match', 'knowledge_portal', 'student_onboarding', 'onboarding', 'ats_scanner', 'ats_resume_scanner', 'ats_optimizer'
 ]);
 const SHARED_ROUTES = new Set([
   'user_profile', 'public_profile', 'profile_update', 'messaging', 'notifications', 
   'calendar', 'groups', 'group_profile', 'network', 'career_network', 'live_rooms', 
   'mentor_booking', 'virtual_fair', 'wallet', 'campus_map', 'explore', 'leaderboard', 'global_map',
-  'jobs', 'cvbuilder', 'interview_sim', 'applications', 'news', 'events', 'events_list', 'contact', 'contact_us', 'about_us', 'services', 'ats_scanner', 'clubs', 'club_portal'
+  'jobs', 'cvbuilder', 'interview_sim', 'applications', 'news', 'events', 'events_list', 'contact', 'contact_us', 'about_us', 'services', 'ats_scanner'
 ]);
 
 const LEGAL_PAGE_ALIASES = {
@@ -76,7 +76,7 @@ const NotFound = ({ setView, currentUser }) => (
     <h1 className="text-2xl font-black text-slate-900">Sayfa Bulunamadı</h1>
     <p className="text-slate-500 text-center max-w-sm">Aradığınız sayfa mevcut değil veya taşınmış olabilir.</p>
     <button
-      onClick={() => setView(currentUser ? (currentUser.role === 'admin' ? 'admin' : (currentUser.role === 'company' || currentUser.role === 'employer') ? 'company' : 'alumni') : 'landing')}
+      onClick={() => setView(currentUser ? (currentUser.role === 'admin' ? 'admin' : currentUser.role === 'staff' ? 'staff' : currentUser.role === 'student' ? 'student' : (currentUser.role === 'company' || currentUser.role === 'employer') ? 'company' : 'alumni') : 'landing')}
       className="bg-[#990000] text-white px-6 py-3 rounded-xl font-bold hover:bg-red-700 transition"
     >
       Ana Sayfaya Dön
@@ -166,7 +166,7 @@ if (p && p.role !== 'admin') {
     }
   }, [storeCurrentUser, currentUser]);
   const effectiveRole = currentUser?.role || userRole || null;
-  const standardRoleHive = effectiveRole === 'company' || effectiveRole === 'employer' ? 'company' : effectiveRole === 'staff' ? 'staff' : 'alumni';
+  const standardRoleHive = effectiveRole === 'student' ? 'student' : (effectiveRole === 'company' || effectiveRole === 'employer') ? 'company' : effectiveRole === 'staff' ? 'staff' : 'alumni';
   const verifyCoordinatorSession = useCallback(() => {
     try {
       const isVerifiedFirebaseAdmin = Boolean(
@@ -212,13 +212,13 @@ if (p && p.role !== 'admin') {
     (currentUser?.role === 'staff' || userRole === 'staff')
   );
   const currentBranch = isAdmin
-    ? (activePortalBranch && ['admin', 'staff', 'alumni', 'company'].includes(activePortalBranch) ? activePortalBranch : 'admin')
+    ? (activePortalBranch && ['admin', 'staff', 'student', 'alumni', 'company'].includes(activePortalBranch) ? activePortalBranch : 'admin')
     : (isStaff
-      ? (activePortalBranch && ['staff', 'alumni', 'company'].includes(activePortalBranch) ? activePortalBranch : 'staff')
-      : (['alumni', 'company', 'employer'].includes(effectiveRole)
+      ? (activePortalBranch && ['staff', 'student', 'alumni', 'company'].includes(activePortalBranch) ? activePortalBranch : 'staff')
+      : (['student', 'alumni', 'company', 'employer'].includes(effectiveRole)
         ? standardRoleHive
-        : (activePortalBranch && ['alumni', 'company'].includes(activePortalBranch) ? activePortalBranch : 'alumni')));
-  const loginInitialRole = COMPANY_ROUTES.has(pathView) ? 'employer' : STAFF_ROUTES.has(pathView) ? 'staff' : 'alumni';
+        : (activePortalBranch && ['student', 'alumni', 'company'].includes(activePortalBranch) ? activePortalBranch : 'alumni')));
+  const loginInitialRole = STUDENT_EXCLUSIVE_ROUTES.has(pathView) ? 'student' : COMPANY_ROUTES.has(pathView) ? 'employer' : STAFF_ROUTES.has(pathView) ? 'staff' : 'alumni';
 
   const setView = useCallback((v) => {
     const raw = typeof v === 'function' ? v(pathView) : v;
@@ -246,7 +246,7 @@ if (p && p.role !== 'admin') {
       } catch (_) {}
       try { useAppStore.getState().setCurrentUser(currentUser); } catch { /* store may not be ready */ }
       if (!userRole && currentUser.role) setUserRole(currentUser.role);
-      const targetBranch = currentUser.role === 'admin' ? 'admin' : currentUser.role === 'staff' ? 'staff' : (currentUser.role === 'company' || currentUser.role === 'employer' ? 'company' : 'alumni');
+      const targetBranch = currentUser.role === 'admin' ? 'admin' : currentUser.role === 'staff' ? 'staff' : currentUser.role === 'student' ? 'student' : (currentUser.role === 'company' || currentUser.role === 'employer' ? 'company' : 'alumni');
       if (targetBranch && targetBranch !== 'undefined') {
         setActivePortalBranch?.(targetBranch);
       }
@@ -262,6 +262,7 @@ if (p && p.role !== 'admin') {
   useEffect(() => {
     if (!pathView) return;
     if (COMPANY_ROUTES.has(pathView) && (['company', 'employer'].includes(effectiveRole) || ((isAdmin || isStaff) && !((activePortalBranch === 'admin' || activePortalBranch === 'staff') && (pathView === 'job_creator' || pathView === 'create_job' || pathView === 'post_job' || pathView === 'post-job'))))) setActivePortalBranch?.('company');
+    else if (STUDENT_EXCLUSIVE_ROUTES.has(pathView) && (effectiveRole === 'student' || isAdmin || isStaff)) setActivePortalBranch?.('student');
     else if (ALUMNI_ROUTES.has(pathView) && (effectiveRole === 'alumni' || isAdmin || isStaff)) setActivePortalBranch?.('alumni');
     else if (STAFF_ROUTES.has(pathView) && (isStaff || isAdmin)) setActivePortalBranch?.('staff');
     else if ((ADMIN_CMS.has(pathView) || pathView === 'admin') && isAdmin) setActivePortalBranch?.('admin');
@@ -279,7 +280,7 @@ if (p && p.role !== 'admin') {
       handleEDevletOAuthCallback(code, state)
         .then((userProfile) => {
           const rawRole = userProfile?.role || 'alumni';
-          const targetRole = (rawRole === 'company' || rawRole === 'employer') ? 'company' : rawRole === 'admin' ? 'admin' : 'alumni';
+          const targetRole = rawRole === 'student' ? 'student' : (rawRole === 'company' || rawRole === 'employer') ? 'company' : rawRole === 'admin' ? 'admin' : 'alumni';
           setCurrentUser({ ...userProfile, role: targetRole });
           setUserRole(targetRole);
           setActivePortalBranch?.(targetRole);
@@ -375,8 +376,12 @@ if (p && p.role !== 'admin') {
       const matchedActiveStaff = staffAccounts.find(acc =>
         acc.status === 'Aktif' &&
         String(acc.typeId) !== '1' &&
-        ((currentUser?.email && acc.email?.toLowerCase() === String(currentUser.email).toLowerCase()) ||
-          (currentUser?.id && String(acc.id) === String(currentUser.id)))
+        (
+          (currentUser?.staffAccountId && String(acc.id) === String(currentUser.staffAccountId)) ||
+          (currentUser?.id && (`STAFF-${acc.id}` === String(currentUser.id) || String(acc.id) === String(currentUser.id))) ||
+          (currentUser?.username && acc.username && acc.username.toLowerCase() === String(currentUser.username).toLowerCase()) ||
+          (currentUser?.email && acc.email && acc.email.toLowerCase() === String(currentUser.email).toLowerCase())
+        )
       );
       if (!matchedActiveStaff) {
         setCurrentUser(null);
@@ -410,8 +415,27 @@ if (p && p.role !== 'admin') {
       );
     }
 
-    // 2. Küresel Mezun Haritası (Süper Yönetici, Personel ve tüm portallardan engelsiz erişim)
+    // Positive whitelist fallback: render user's dedicated home portal hive when unauthorized
+    // Aktif portallar: Öğrenci (Kulüpler hariç, Staj & Ulusal Staj), Mezun, Firma, Personel ve Süper Yönetici.
+    // Akademik portal ve Kulüpler portalı kapalıdır.
+    const renderHomeHiveForRole = () => {
+      if (isAdmin) return <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} />;
+      if (isStaff) return <AdminFeed portalMode="staff" setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="staff" academicRole="staff" setSelectedGroupId={s.setSelectedGroupId} />;
+      if (effectiveRole === 'student') return <StudentHive currentUser={currentUser} setView={setView} />;
+      if (effectiveRole === 'company' || effectiveRole === 'employer') return <CompanyHive currentUser={currentUser} setView={setView} />;
+      return <AlumniHive currentUser={currentUser} setView={setView} />;
+    };
+
+    // Kulüpler portalı kesin olarak kapatıldı
+    if (pathView === 'clubs' || pathView === 'club_portal' || pathView === 'club_admin' || pathView === 'sksdb_clubs' || pathView === 'clubs_directory') {
+      return renderHomeHiveForRole();
+    }
+
+    // 2. Küresel Mezun Haritası (Yalnızca Mezun, Firma, Personel ve Süper Yönetici — Öğrenci rolüne kapalı)
     if (pathView === 'global_map' || pathView === 'alumni_map') {
+      if (effectiveRole === 'student' && !isAdmin && !isStaff) {
+        return renderHomeHiveForRole();
+      }
       return (
         <GlobalAlumniMap 
           setView={setView} 
@@ -423,24 +447,15 @@ if (p && p.role !== 'admin') {
         />
       );
     }
-    
-    // Positive whitelist fallback: render user's dedicated home portal hive when unauthorized
-    // Öğrenci ve Akademik portallar kapatıldı — Mezun, Firma, Personel ve Süper Yönetici aktif.
-    const renderHomeHiveForRole = () => {
-      if (isAdmin) return <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} />;
-      if (isStaff) return <AdminFeed portalMode="staff" setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="staff" academicRole="staff" setSelectedGroupId={s.setSelectedGroupId} />;
-      if (effectiveRole === 'company' || effectiveRole === 'employer') return <CompanyHive currentUser={currentUser} setView={setView} />;
-      return <AlumniHive currentUser={currentUser} setView={setView} />;
-    };
 
     // Dedicated branch routes with positive whitelist gating
     if (pathView === 'admin') return isAdmin ? <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} /> : renderHomeHiveForRole();
     if (STAFF_ROUTES.has(pathView)) return (isStaff || isAdmin) ? <AdminFeed portalMode="staff" setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole={isStaff ? 'staff' : 'admin'} academicRole={isStaff ? 'staff' : 'super_admin'} setSelectedGroupId={s.setSelectedGroupId} /> : renderHomeHiveForRole();
-    if (pathView === 'birlik_agi' || pathView === 'mezun_dernek') return <AlumniHive currentUser={currentUser} setView={setView} />;
+    if (STUDENT_EXCLUSIVE_ROUTES.has(pathView)) return (effectiveRole === 'student' || isAdmin || isStaff) ? <StudentHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
     if (ALUMNI_ROUTES.has(pathView)) return (effectiveRole === 'alumni' || isAdmin || isStaff) ? <AlumniHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
     if (COMPANY_ROUTES.has(pathView) && !((currentBranch === 'admin' || currentBranch === 'staff') && (isAdmin || isStaff) && (pathView === 'job_creator' || pathView === 'create_job' || pathView === 'post_job' || pathView === 'post-job'))) return (effectiveRole === 'company' || effectiveRole === 'employer' || isAdmin || isStaff) ? <CompanyHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
-    // Kapatılan Öğrenci ve Akademik rotaları aktif ana portala yönlendirilir
-    if (ACADEMIC_ROUTES.has(pathView) || STUDENT_EXCLUSIVE_ROUTES.has(pathView)) return renderHomeHiveForRole();
+    // Kapatılan Akademik rotaları aktif ana portala yönlendirilir
+    if (ACADEMIC_ROUTES.has(pathView)) return renderHomeHiveForRole();
 
     // Admin & Staff branch handling for shared / other views
     if ((currentBranch === 'admin' && isAdmin) || (currentBranch === 'staff' && (isStaff || isAdmin))) {
@@ -469,6 +484,7 @@ if (p && p.role !== 'admin') {
     }
 
     // Active hive branch continuity for all shared routes (messaging, user_profile, public_profile, calendar, groups, etc.)
+    if (currentBranch === 'student') return <StudentHive currentUser={currentUser} setView={setView} />;
     if (currentBranch === 'company') return <CompanyHive currentUser={currentUser} setView={setView} />;
     return <AlumniHive currentUser={currentUser} setView={setView} />;
   };

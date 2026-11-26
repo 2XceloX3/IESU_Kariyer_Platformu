@@ -6,11 +6,36 @@ import { MessageSquare, Send, Trash2, Search, Users, User, Building2, BookOpen }
 import useAppStore from '../../store/useAppStore';
 
 export default function CMSMessages({ messages, setMessages }) {
-  const adminMessages = useAppStore(state => state.adminMessages);
+  const storeAdminMessages = useAppStore(state => state.adminMessages) || [];
   const setAdminMessages = useAppStore(state => state.setAdminMessages);
+  const [localContactMessages] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('iesu_admin_messages_v1') || '[]');
+      if (!Array.isArray(saved)) return [];
+      return saved.map((m, idx) => ({
+        id: m.id || `LOCAL-MSG-${idx}`,
+        companyName: m.senderName || m.companyName || m.name || 'Web İletişim Formu',
+        subject: m.subject || m.topic || 'Genel İletişim Talebi',
+        email: m.email || m.senderEmail || '-',
+        phone: m.phone || '-',
+        message: m.message || m.content || '',
+        date: m.date || (m.timestamp ? new Date(m.timestamp).toLocaleDateString('tr-TR') : 'Yeni'),
+        status: m.status || 'Beklemede',
+        source: 'contact_form'
+      }));
+    } catch {
+      return [];
+    }
+  });
+  const adminMessages = React.useMemo(() => {
+    const existingIds = new Set(storeAdminMessages.map(m => m.id));
+    return [...localContactMessages.filter(m => !existingIds.has(m.id)), ...storeAdminMessages];
+  }, [storeAdminMessages, localContactMessages]);
+
   const [selectedMessageId, setSelectedMessageId] = useState(null);
   const [selectedAdminMsgId, setSelectedAdminMsgId] = useState(null);
   const [reply, setReply] = useState('');
+  const [inboxSearch, setInboxSearch] = useState('');
   const [activeTab, setActiveTab] = useState('inbox'); // inbox, admin_pool, bulk, pool
   
   // Bulk messaging state
@@ -20,7 +45,16 @@ export default function CMSMessages({ messages, setMessages }) {
     content: ''
   });
 
-  const sortedMessages = [...(messages || [])].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  const sortedMessages = [...(messages || [])]
+    .filter(m => {
+      const q = inboxSearch.trim().toLowerCase();
+      if (!q) return true;
+      return (
+        (m.senderName || m.from || '').toLowerCase().includes(q) ||
+        (m.content || m.subject || '').toLowerCase().includes(q)
+      );
+    })
+    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
   const selectedMessage = sortedMessages.find(m => m.id === selectedMessageId);
 
   const handleDelete = (id) => {
@@ -297,6 +331,8 @@ export default function CMSMessages({ messages, setMessages }) {
                   <Search className="absolute left-3 top-2.5 text-gray-500" size={16} />
                   <input 
                     type="text" 
+                    value={inboxSearch}
+                    onChange={e => setInboxSearch(e.target.value)}
                     placeholder="Mesajlarda ara..." 
                     className="w-full bg-gray-50 border-none rounded-xl pl-9 pr-4 py-2 text-sm font-medium focus:ring-2 focus:ring-red-500/20 transition"
                   />

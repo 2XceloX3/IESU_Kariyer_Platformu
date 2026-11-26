@@ -215,89 +215,26 @@ export function combineFeedItems(
     });
   }
 
-  // Kulüp keşif tanıtım kartları (en fazla 6 aktif kulüp)
-  const maxClubs = Math.min(clubs.length, 6);
-  for (let i = 0; i < maxClubs; i++) {
-    const club = clubs[i];
-    if (!club || typeof club !== 'object' || club.id == null) continue;
-    const clubIdStr = String(club.id);
-    const hasDedicatedPost = clubIdsWithPosts.has(clubIdStr);
-    const id = `club-${clubIdStr}`;
-    if (seenIds.has(id)) continue;
-    seenIds.add(id);
-
-    const membership = getClubMembershipState(club, user, followedClubIds);
-    if (membership.isMember || membership.isFollowing || !hasDedicatedPost) {
-      extraItems.push({
-        id,
-        originalId: club.id,
-        clubId: clubIdStr,
-        clubName: club.name,
-        clubLogo: club.logo,
-        clubCategory: club.category,
-        authorId: clubIdStr,
-        isClubPost: true,
-        feedType: 'club',
-        author: {
-          id: clubIdStr,
-          name: club.name || 'Öğrenci Kulübü',
-          role: 'club',
-          avatar: club.logo || '/iesu-logo.svg',
-          title: `Öğrenci Kulübü • ${club.category || 'Kampüs Topluluğu'}`,
-        },
-        authorAvatar: club.logo || null,
-        role: `Öğrenci Kulübü • ${club.category || 'Kampüs Topluluğu'}`,
-        time: 'Aktif Topluluk',
-        type: 'Öğrenci Kulübü',
-        title: `${club.name} Yeni Üyelerini ve Etkinlik Katılımcılarını Bekliyor!`,
-        content:
-          club.description ||
-          `${club.name} bünyesinde düzenlenen kampüs etkinliklerine ve projelere katılmak için kulüp sayfasını ziyaret edebilirsiniz.`,
-        image: club.coverImage || club.image || club.logo || null,
-        memberCount: club.memberCount || club.members?.length || 45,
-        likes: club.memberCount || 30,
-        comments: 4,
-        membershipState: membership,
-        priorityReason: membership.isMember
-          ? 'Üyesi Olduğun Kulüp'
-          : membership.isFollowing
-          ? 'Takip Ettiğin Kulüp'
-          : 'Önerilen Öğrenci Kulübü',
-        priorityTier: membership.isMember ? 1 : membership.isFollowing ? 2 : hasDedicatedPost ? 5 : 4,
-      });
-    }
-  }
-
-  const allRaw = [...personalizedBase, ...extraItems];
-
-  // Genel akışta paylaşılan kullanıcı gönderileri, iş/staj ilanları, kariyer fırsatları,
-  // üniversite etkinlikleri ve kulüp paylaşımlarının dengeli bir şekilde görünmesi için harmanla:
-  const priorityClubStream = [];
-  const userPostStream = [];
-  const jobAndOppStream = [];
-  const eventStream = [];
-  const discoveryClubStream = [];
-  const newsAndAnnStream = [];
-
-  for (let i = 0; i < allRaw.length; i++) {
-    const item = allRaw[i];
-    if (!item || typeof item !== 'object') continue;
+  // Kulüpler portalı kapatıldığı için kulüp tanıtım kartları ve kulüp akışı eklenmez
+  const allRaw = [...personalizedBase, ...extraItems].filter((item) => {
+    if (!item || typeof item !== 'object') return false;
     const isClubItem = Boolean(
       item.clubId ||
       item.isClubPost ||
       item.author?.role === 'club' ||
       (typeof item.feedType === 'string' && item.feedType.startsWith('club'))
     );
+    return !isClubItem;
+  });
 
-    if (isClubItem) {
-      if ((item.priorityTier || 5) <= 2) {
-        priorityClubStream.push(item);
-      } else if (item.feedType === 'club_event') {
-        eventStream.push(item);
-      } else {
-        discoveryClubStream.push(item);
-      }
-    } else if (item.feedType === 'post') {
+  const userPostStream = [];
+  const jobAndOppStream = [];
+  const eventStream = [];
+  const newsAndAnnStream = [];
+
+  for (let i = 0; i < allRaw.length; i++) {
+    const item = allRaw[i];
+    if (item.feedType === 'post') {
       userPostStream.push(item);
     } else if (item.isJob || item.feedType === 'job' || item.isCareerOpportunity || item.feedType === 'career_opp') {
       jobAndOppStream.push(item);
@@ -313,8 +250,6 @@ export function combineFeedItems(
     userPostStream,
     jobAndOppStream,
     eventStream,
-    priorityClubStream,
-    discoveryClubStream,
     newsAndAnnStream,
   ];
   let hasMore = true;

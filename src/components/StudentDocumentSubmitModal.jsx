@@ -300,9 +300,9 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-black text-slate-900 truncate">1. İmzalı Başvuru Formu</p>
-                    <p className="text-[10px] text-slate-600 font-medium truncate mt-0.5">{files.doc1.name}</p>
-                    <span className="text-[9px] text-emerald-700 font-bold flex items-center gap-1 mt-1">
-                      <CheckCircle2 size={11} /> {files.doc1.size} • Yüklendi (Değiştir)
+                    <p className="text-[10px] text-slate-600 font-medium truncate mt-0.5">{files.doc1.uploaded ? files.doc1.name : 'Henüz dosya seçilmedi'}</p>
+                    <span className={`text-[9px] font-bold flex items-center gap-1 mt-1 ${files.doc1.uploaded ? 'text-emerald-700' : 'text-slate-500'}`}>
+                      {files.doc1.uploaded ? <><CheckCircle2 size={11} /> {files.doc1.size} • Yüklendi (Değiştir)</> : 'PDF / PNG / JPG yüklemek için tıklayın'}
                     </span>
                   </div>
                 </div>
@@ -317,9 +317,9 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-black text-slate-900 truncate">2. SGK Müstahaklık Belgesi</p>
-                    <p className="text-[10px] text-slate-600 font-medium truncate mt-0.5">{files.doc2.name}</p>
-                    <span className="text-[9px] text-emerald-700 font-bold flex items-center gap-1 mt-1">
-                      <CheckCircle2 size={11} /> {files.doc2.size} • Yüklendi (Değiştir)
+                    <p className="text-[10px] text-slate-600 font-medium truncate mt-0.5">{files.doc2.uploaded ? files.doc2.name : 'Henüz dosya seçilmedi'}</p>
+                    <span className={`text-[9px] font-bold flex items-center gap-1 mt-1 ${files.doc2.uploaded ? 'text-emerald-700' : 'text-slate-500'}`}>
+                      {files.doc2.uploaded ? <><CheckCircle2 size={11} /> {files.doc2.size} • Yüklendi (Değiştir)</> : 'e-Devlet barkodlu PDF yükleyin'}
                     </span>
                   </div>
                 </div>
@@ -334,9 +334,9 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-black text-slate-900 truncate">3. T.C. Kimlik Fotokopisi</p>
-                    <p className="text-[10px] text-slate-600 font-medium truncate mt-0.5">{files.doc3.name}</p>
-                    <span className="text-[9px] text-emerald-700 font-bold flex items-center gap-1 mt-1">
-                      <CheckCircle2 size={11} /> {files.doc3.size} • Yüklendi (Değiştir)
+                    <p className="text-[10px] text-slate-600 font-medium truncate mt-0.5">{files.doc3.uploaded ? files.doc3.name : 'Henüz dosya seçilmedi'}</p>
+                    <span className={`text-[9px] font-bold flex items-center gap-1 mt-1 ${files.doc3.uploaded ? 'text-emerald-700' : 'text-slate-500'}`}>
+                      {files.doc3.uploaded ? <><CheckCircle2 size={11} /> {files.doc3.size} • Yüklendi (Değiştir)</> : 'Ön/arka kimlik taraması yükleyin'}
                     </span>
                   </div>
                 </div>
@@ -351,9 +351,9 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-black text-slate-900 truncate">4. İSG Eğitimi Belgesi / Sözleşme</p>
-                    <p className="text-[10px] text-slate-600 font-medium truncate mt-0.5">{files.doc4.name}</p>
-                    <span className="text-[9px] text-emerald-700 font-bold flex items-center gap-1 mt-1">
-                      <CheckCircle2 size={11} /> {files.doc4.size} • Yüklendi (Değiştir)
+                    <p className="text-[10px] text-slate-600 font-medium truncate mt-0.5">{files.doc4.uploaded ? files.doc4.name : 'Henüz dosya seçilmedi'}</p>
+                    <span className={`text-[9px] font-bold flex items-center gap-1 mt-1 ${files.doc4.uploaded ? 'text-emerald-700' : 'text-slate-500'}`}>
+                      {files.doc4.uploaded ? <><CheckCircle2 size={11} /> {files.doc4.size} • Yüklendi (Değiştir)</> : 'İSG sertifikası veya sözleşme yükleyin'}
                     </span>
                   </div>
                 </div>

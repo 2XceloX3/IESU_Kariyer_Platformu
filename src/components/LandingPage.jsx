@@ -42,20 +42,11 @@ export default function LandingPage({ setView, currentUser, userRole }) {
   const [activeTab, setActiveTab] = useState('haberler');
   const [itemLiked, setItemLiked] = useState(false);
   const [itemSaved, setItemSaved] = useState(false);
-  const [itemLikesCount, setItemLikesCount] = useState(24);
+  const [itemLikesCount, setItemLikesCount] = useState(0);
   const [newCommentText, setNewCommentText] = useState('');
-  const [commentsList, setCommentsList] = useState([
-    { author: 'Ayşe Kaya (Bilgisayar Müh.)', text: 'Çok harika bir etkinlik, ben katıldım!', time: '10 dk önce' },
-    { author: 'Mehmet Demir (İşletme)', text: 'Detaylar ve staj başvuruları için mükemmel bir fırsat.', time: '1 saat önce' }
-  ]);
+  const [commentsList, setCommentsList] = useState([]);
 
-  const mockLikers = [
-    { name: 'Ayşe K.', dept: 'Bilgisayar Müh.' },
-    { name: 'Mehmet D.', dept: 'İşletme' },
-    { name: 'Elif Ş.', dept: 'Yazılım Müh.' },
-    { name: 'Can A.', dept: 'Endüstri Müh.' },
-    { name: 'Zeynep K.', dept: 'Sağlık B.' }
-  ];
+  const mockLikers = [];
 
   const rawNews = useAppStore(state => state.news) || [];
   const rawAnnouncements = useAppStore(state => state.announcements) || [];
@@ -271,8 +262,8 @@ export default function LandingPage({ setView, currentUser, userRole }) {
 
 
       <SEO 
-        title="İESÜ Mezunlar Portalı" 
-        description="İstanbul Esenyurt Üniversitesi (İESÜ) Mezunlar Portalı ve Kariyer Geliştirme Koordinatörlüğü"
+        title="İESÜ Kariyer & Mezunlar Platformu" 
+        description="İstanbul Esenyurt Üniversitesi (İESÜ) Öğrenci Staj & Ulusal Staj, Mezunlar Portalı (MBS) ve Kurumsal İş Birliği Platformu"
         url="https://kariyer.esenyurt.edu.tr/"
       />
 
@@ -327,9 +318,29 @@ export default function LandingPage({ setView, currentUser, userRole }) {
         </section>
       )}
 
-        {/* Action Pills with Informative Modals — İESÜ Mezunlar Portalı Odaklı */}
+        {/* Action Pills — 4 Temel Platform Modülü (Öğrenci Staj, Mezun MBS, Dijital Mezun Kartı, Kurumsal İş Birliği) */}
         <section className="relative z-10 py-4 max-w-7xl mx-auto px-4">
-          <div className="flex justify-center flex-wrap gap-4">
+          <div className="flex justify-center flex-wrap gap-3.5">
+            <button 
+              onClick={() => setSelectedPillModal({
+                id: 'staj',
+                title: 'Öğrenci Staj & Ulusal Staj Programı (USP)',
+                badge: '🎒 Öğrenci Kariyer & Staj',
+                imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop&q=60',
+                desc: 'Cumhurbaşkanlığı İnsan Kaynakları Ofisi Ulusal Staj Programı (USP), 3308 sayılı kanun kapsamındaki zorunlu/isteğe bağlı staj başvuruları, SGK giriş bildirgesi ve Form-1 evrak süreçlerinizi tek noktadan yönetin.',
+                features: [
+                  'Ulusal Staj Programı (USP) Başvuru Rehberi & Takibi',
+                  'Zorunlu & İsteğe Bağlı Staj Evrak Havuzu (Form-1 / SGK)',
+                  'Kariyer Gelişim Belgesi (KGB) ve Akıllı CV Stüdyosu'
+                ],
+                targetView: 'staj'
+              })} 
+              className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl rounded-full px-6 py-3 flex items-center gap-3 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
+            >
+              <div className="bg-red-100 dark:bg-red-950/60 p-1.5 rounded-full text-[#990000] dark:text-red-400 group-hover:bg-[#990000] group-hover:text-white transition-colors"><Briefcase size={18} /></div>
+              <span className="font-bold text-slate-900 dark:text-slate-100 text-[13px]">Staj & Ulusal Staj (USP)</span>
+            </button>
+
             <button 
               onClick={() => setSelectedPillModal({
                 id: 'mbs',
@@ -340,7 +351,7 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                 features: [
                   'Doğrulanmış İESÜ Mezun Profili ve Kayıt Güncelleme',
                   'Sektörel Mezun Komiteleri ve Dayanışma Ağı',
-                  'Mezun Buluşmaları ve Kurumsal Duyurular'
+                  'Küresel Mezun Haritası ve Dijital Mezun Kartı'
                 ],
                 targetView: 'mbs'
               })} 
@@ -352,22 +363,22 @@ export default function LandingPage({ setView, currentUser, userRole }) {
 
             <button 
               onClick={() => setSelectedPillModal({
-                id: 'alumni_card',
-                title: 'Dijital Mezun Kartı & Ayrıcalıklar',
-                badge: '💳 Resmî Mezun Kimliği',
-                imageUrl: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800&auto=format&fit=crop&q=60',
-                desc: 'Ömür boyu geçerli İESÜ Dijital Mezun Kartı ile kampüs kütüphanesi, sosyal tesisler, lisansüstü bursları ve anlaşmalı kurumsal markalardaki ayrıcalıklardan yararlanın.',
+                id: 'company_protocol',
+                title: 'Kurumsal Firma & İş Birliği Protokolü',
+                badge: '🏢 Üniversite–Sanayi Protokolü',
+                imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&auto=format&fit=crop&q=60',
+                desc: 'İşletmeniz için İstanbul Esenyurt Üniversitesi ile resmî staj ve istihdam iş birliği protokolü oluşturun, onaylı taslak protokol PDF’inizi indirin ve ATS üzerinden doğrudan aday seçin.',
                 features: [
-                  'QR & Barkod Doğrulamalı 3D Dijital Mezun Kimliği',
-                  'Kütüphane ve Kampüs Tesislerinde Ömür Boyu Erişim',
-                  'Lisansüstü Eğitim ve Kurumsal Marka İndirimleri'
+                  'Online İş Birliği Protokol Başvurusu & Taslak PDF',
+                  'ATS Aday Değerlendirme & Stajyer / Mezun İstihdamı',
+                  'Kampüs Kariyer Günleri & Kurumsal Stant Başvurusu'
                 ],
-                targetView: 'alumni_card'
+                targetView: 'company'
               })} 
               className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl rounded-full px-6 py-3 flex items-center gap-3 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
             >
-              <div className="bg-red-100 dark:bg-red-950/60 p-1.5 rounded-full text-[#990000] dark:text-red-400 group-hover:bg-[#990000] group-hover:text-white transition-colors"><ShieldCheck size={18} /></div>
-              <span className="font-bold text-slate-900 dark:text-slate-100 text-[13px]">Dijital Mezun Kartı</span>
+              <div className="bg-blue-100 dark:bg-blue-950/60 p-1.5 rounded-full text-[#0A2342] dark:text-blue-400 group-hover:bg-[#0A2342] group-hover:text-white transition-colors"><Handshake size={18} /></div>
+              <span className="font-bold text-slate-900 dark:text-slate-100 text-[13px]">Kurumsal Protokol & İşveren</span>
             </button>
 
             <button 
@@ -386,24 +397,24 @@ export default function LandingPage({ setView, currentUser, userRole }) {
               })} 
               className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl rounded-full px-6 py-3 flex items-center gap-3 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
             >
-              <div className="bg-purple-100 dark:bg-purple-950/60 p-1.5 rounded-full text-purple-600 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors"><FileText size={18} /></div>
+              <div className="bg-indigo-100 dark:bg-indigo-950/60 p-1.5 rounded-full text-indigo-700 dark:text-indigo-400 group-hover:bg-indigo-700 group-hover:text-white transition-colors"><FileText size={18} /></div>
               <span className="font-bold text-slate-900 dark:text-slate-100 text-[13px]">Akıllı CV Stüdyosu</span>
             </button>
           </div>
         </section>
 
-      {/* 3. BENTO BOX GRID: İESÜ MEZUNLAR PORTALI EKOSİSTEMİ */}
-      <section className="py-20 sm:py-28 bg-[#fdfdfd] dark:bg-slate-950 relative overflow-hidden transition-colors duration-300">
+      {/* 3. BENTO BOX GRID: İESÜ KARİYER & MEZUN EKOSİSTEMİ */}
+      <section className="py-20 sm:py-24 bg-[#fdfdfd] dark:bg-slate-950 relative overflow-hidden transition-colors duration-300">
         {/* Subtle Corporate Grid Background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
-          <div className="text-center mb-16">
+          <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-black mb-3 tracking-tight text-[#990000] dark:text-red-400">
-              İESÜ Mezunlar Portalı.
+              İESÜ Kariyer & Mezun Ekosistemi
             </h2>
-            <p className="text-slate-500 dark:text-slate-400 font-medium text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-              İstanbul Esenyurt Üniversitesi mezunlarıyla yaşam boyu kariyer, dayanışma, küresel iletişim ve sektörel iş birliği ağı.
+            <p className="text-slate-500 dark:text-slate-400 font-medium text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+              Öğrencilerimiz için Ulusal Staj & kariyer planlaması, mezunlarımız için yaşam boyu İESÜ Mezunlar Portalı, işverenler için resmî üniversite-sanayi iş birliği protokolü tek çatı altında.
             </p>
           </div>
 
@@ -441,30 +452,30 @@ export default function LandingPage({ setView, currentUser, userRole }) {
               </div>
             </SpotlightCard>
 
-            {/* Bento 2: Mezun Kariyer Danışmanlığı */}
+            {/* Bento 2: Öğrenci Staj & Ulusal Staj (USP) */}
             <SpotlightCard 
-              spotlightColor="rgba(10,35,66,0.05)" 
+              spotlightColor="rgba(153,0,0,0.06)" 
               className="col-span-1 row-span-1 md:col-start-3 md:row-start-1 p-6 md:p-8 flex flex-col !bg-white dark:!bg-slate-900 cursor-pointer hover:-translate-y-1 transition-transform border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl"
               onClick={() => setSelectedPillModal({
-                id: 'bento_kariyer_rehberligi',
-                title: 'Mezun Kariyer Danışmanlığı & CV Analizi',
-                badge: '🎯 Profesyonel Kariyer Koçluğu',
+                id: 'bento_ogrenci_staj',
+                title: 'Öğrenci Staj & Ulusal Staj Programı (USP)',
+                badge: '🎒 Öğrenci Portalı',
                 imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=60',
-                desc: 'Kariyer Geliştirme Koordinatörlüğü uzmanları tarafından mezunlarımıza kariyer geçişi, liderlik gelişimi, ATS uyumlu özgeçmiş analizi ve mülakat hazırlığı desteği sunulmaktadır.',
+                desc: 'İstanbul Esenyurt Üniversitesi öğrencilerine özel Ulusal Staj Programı (USP), zorunlu ve isteğe bağlı staj başvuruları, SGK giriş bildirgesi ve KGB takibi.',
                 features: [
-                  'Birebir Kariyer Geçişi ve Yükselme Danışmanlığı',
-                  'Profesyonel Özgeçmiş (CV) ve EuroPass İncelemesi',
-                  'Sektör Liderleriyle Network Buluşmaları',
-                  'Kurumsal İş Fırsatlarına Doğrudan Erişim'
+                  'Ulusal Staj Programı (USP) Başvuru Rehberi',
+                  'Zorunlu & İsteğe Bağlı Staj Form-1 ve SGK Takibi',
+                  'Öğrenci Kariyer Gelişim Belgesi (KGB)',
+                  'Akıllı CV ve Staj Fırsatları'
                 ],
-                targetView: 'services'
+                targetView: 'staj'
               })}
             >
               <div className="w-12 h-12 bg-red-50/80 dark:bg-red-950/50 rounded-xl flex items-center justify-center text-[#990000] dark:text-red-400 mb-5 border border-red-100/50 dark:border-red-900/40">
-                <TrendingUp size={24} />
+                <Briefcase size={24} />
               </div>
-              <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">Kariyer Danışmanlığı</h3>
-              <p className="text-gray-500 dark:text-slate-400 text-[13px] font-medium leading-relaxed">Mezuniyet sonrası kariyer hedeflerinizi ve başvuru stratejinizi güçlendirin.</p>
+              <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">Öğrenci & Ulusal Staj</h3>
+              <p className="text-gray-500 dark:text-slate-400 text-[13px] font-medium leading-relaxed">USP, zorunlu/isteğe bağlı staj, SGK ve KGB süreçlerinizi tek portaldan yönetin.</p>
             </SpotlightCard>
 
             {/* Bento 3: Mezun Mentörlük Ağı */}
@@ -495,29 +506,29 @@ export default function LandingPage({ setView, currentUser, userRole }) {
               </div>
             </SpotlightCard>
 
-            {/* Bento 4: Kurumsal İşveren İşbirlikleri */}
+            {/* Bento 4: Kurumsal İşveren & Üniversite Protokolü */}
             <SpotlightCard 
               spotlightColor="rgba(10,35,66,0.05)" 
               className="col-span-1 row-span-1 md:col-start-3 md:row-start-2 p-6 md:p-8 flex flex-col justify-center items-center text-center !bg-white dark:!bg-slate-900 cursor-pointer hover:-translate-y-1 transition-transform border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl"
               onClick={() => setSelectedPillModal({
                 id: 'bento_isbirlikleri',
-                title: 'Kurumsal İşveren İşbirlikleri & İlanlar',
-                badge: '🏢 İşveren Protokolleri',
+                title: 'Kurumsal İşveren & Üniversite İş Birliği Protokolü',
+                badge: '🏢 İşveren & Protokol Masası',
                 imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&auto=format&fit=crop&q=60',
-                desc: 'Üniversitemizle protokol anlaşmalı kurumsal firmalar, İESÜ mezunlarına özel istihdam ilanlarını ve kariyer fırsatlarını doğrudan portal üzerinden yayımlar.',
+                desc: 'İşletmeniz için üniversitemizle resmî staj ve istihdam protokolü oluşturun, onay sürecini canlı takip edin ve ATS aday havuzundan doğrudan işe alım yapın.',
                 features: [
-                  'Mezunlara Özel Tam Zamanlı İş İlanları',
+                  'Resmî Üniversite–İşletme Protokol Başvurusu & Taslak PDF',
                   'Kurumsal Firma & ATS İşe Alım Entegrasyonu',
-                  'Sektör Buluşmaları ve İşveren Zirveleri'
+                  'Stajyer Kontenjanı ve Mezun İstihdamı Yönetimi'
                 ],
-                targetView: 'jobs'
+                targetView: 'company'
               })}
             >
-              <div className="w-14 h-14 bg-red-50/80 dark:bg-red-950/50 rounded-2xl flex items-center justify-center text-[#990000] dark:text-red-400 mb-4 border border-red-100/50 dark:border-red-900/40">
+              <div className="w-14 h-14 bg-blue-50/80 dark:bg-blue-950/50 rounded-2xl flex items-center justify-center text-[#0A2342] dark:text-blue-400 mb-4 border border-blue-100/50 dark:border-blue-900/40">
                 <Handshake size={28} />
               </div>
-              <h3 className="text-lg font-black text-gray-900 dark:text-white mb-1 tracking-tight">İşveren Ağı</h3>
-              <p className="text-gray-500 dark:text-slate-400 text-[12px] font-medium leading-relaxed">Kurumsal iş ortaklarımızın mezunlara özel istihdam fırsatlarını inceleyin.</p>
+              <h3 className="text-lg font-black text-gray-900 dark:text-white mb-1 tracking-tight">Kurumsal Protokol</h3>
+              <p className="text-gray-500 dark:text-slate-400 text-[12px] font-medium leading-relaxed">Üniversitemizle resmî iş birliği protokolü imzalayın ve yetenek havuzuna erişin.</p>
             </SpotlightCard>
 
             {/* Bento 5: Küresel Mezun Haritası */}
@@ -681,63 +692,6 @@ export default function LandingPage({ setView, currentUser, userRole }) {
               </div>
             )}
           </div>
-
-          {/* GÜNCEL ETKİNLİK AFİŞLERİ VİTRİNİ */}
-          {events.length > 0 && (
-            <div className="mt-14" data-testid="landing-event-posters-showcase">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                <div>
-                  <span className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-[#990000] dark:text-red-400 bg-red-50 dark:bg-red-950/50 px-3.5 py-1 rounded-full border border-red-100 dark:border-red-900/50 mb-2">
-                    <Sparkles size={13} /> Resmî Kampüs Takvimi
-                  </span>
-                  <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                    Güncel Etkinlik Afişleri
-                  </h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setView && setView('etkinlikler')}
-                  className="inline-flex items-center gap-2 text-xs font-black text-white bg-[#990000] hover:bg-red-800 px-5 py-2.5 rounded-xl shadow-sm transition-all cursor-pointer self-start sm:self-auto"
-                >
-                  Tüm Etkinlik Afişlerini Gör <ArrowRight size={15} />
-                </button>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                {events.slice(0, 6).map((evt, idx) => (
-                  <div
-                    key={evt.id || idx}
-                    onClick={() => setSelectedItem(evt)}
-                    className="group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col"
-                    data-testid={`landing-event-poster-${idx}`}
-                  >
-                    <div className="aspect-[4/5] w-full relative overflow-hidden bg-slate-100">
-                      <SafeEventImage
-                        src={evt.imageUrl}
-                        alt={evt.title}
-                        fallbackType="event"
-                        mode="poster"
-                        className="w-full h-full"
-                      />
-                      <div className="absolute top-2.5 left-2.5 z-20">
-                        <span className="bg-[#990000]/95 backdrop-blur-xs text-white text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-xs">
-                          {evt.date || 'Etkinlik'}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="p-3 flex-1 flex flex-col justify-between">
-                      <h4 className="text-xs font-black text-slate-800 dark:text-slate-100 group-hover:text-[#990000] dark:group-hover:text-red-400 transition-colors line-clamp-2 leading-snug">
-                        {cleanFeedText(evt.title)}
-                      </h4>
-                      <span className="mt-2 inline-flex items-center gap-1 text-[10px] font-bold text-[#990000] dark:text-red-400">
-                        Afişi İncele <ChevronRight size={12} />
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
@@ -876,8 +830,8 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                       </h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {[
-                          { name: "Kariyer Geliştirme Koordinatörlüğü", title: "Müdür", phone: "444 9 123", email: "kgm@iesu.edu.tr", img: "https://www.esenyurt.edu.tr/uploads/staffs/278.jpg" },
-                          { name: "Kariyer Geliştirme Koordinatörlüğü", title: "Memur", email: "zuhalsahin@esenyurt.edu.tr", img: "https://www.esenyurt.edu.tr/uploads/staffs/405.jpg" }
+                          { name: "Kariyer Geliştirme Koordinatörlüğü", title: "Koordinatörlük Yönetimi", phone: "444 9 123", email: "kariyer@esenyurt.edu.tr", img: "/iesu-logo.svg" },
+                          { name: "Kariyer Geliştirme Merkezi", title: "Staj, Mezun & Kurumsal İş Birliği Birimi", phone: "444 9 123", email: "kgm@esenyurt.edu.tr", img: "/iesu-logo.svg" }
                         ].map((member, idx) => (
                           <div key={idx} className="bg-slate-50 dark:bg-slate-800/80 rounded-2xl p-5 flex items-center gap-5 border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all group hover:-translate-y-1">
                             <div className="w-20 h-20 rounded-full bg-gray-200 overflow-hidden shrink-0 border-4 border-white dark:border-slate-700 shadow-md group-hover:scale-105 transition-transform">
@@ -967,7 +921,7 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                   onClick={() => {
                     const target = selectedPillModal.targetView;
                     setSelectedPillModal(null);
-                    const protectedViews = ['mbs', 'alumni_card', 'birlik_agi', 'alumni', 'cvbuilder', 'global_map'];
+                    const protectedViews = ['student', 'staj', 'student_kgb', 'mbs', 'alumni_card', 'birlik_agi', 'alumni', 'company', 'cvbuilder', 'global_map'];
                     if (protectedViews.includes(target)) {
                       if (currentUser) { setView && setView(target); }
                       else { setView && setView('login'); }

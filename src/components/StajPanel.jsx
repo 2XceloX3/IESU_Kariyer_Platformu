@@ -106,6 +106,9 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
     if (setStoreInternships) {
       setStoreInternships(updatedList);
     }
+    try {
+      localStorage.setItem('iesu_form1_internships_v1', JSON.stringify(updatedList));
+    } catch { /* intentional */ }
     // Update active status for panel
     import('../services/internshipMap').then(({ mapInternshipToPanelStatus }) => {
       setInternshipStatus(mapInternshipToPanelStatus(newInternship));
@@ -119,6 +122,9 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
     if (setStoreInternships) {
       setStoreInternships(updatedList);
     }
+    try {
+      localStorage.setItem('iesu_form1_internships_v1', JSON.stringify(updatedList));
+    } catch { /* intentional */ }
     if (internshipStatus && internshipStatus.id === updatedItem.id) {
       import('../services/internshipMap').then(({ mapInternshipToPanelStatus }) => {
         setInternshipStatus(mapInternshipToPanelStatus(updatedItem));
@@ -208,15 +214,15 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
   ];
 
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
-  const backTarget = previousView || (
+  const backTarget = (previousView && ['student', 'alumni', 'company', 'staff', 'admin'].includes(previousView)) ? previousView : (
     activePortalBranch === 'student' ? 'student' :
     activePortalBranch === 'alumni' ? 'alumni' :
-    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'staff' ? 'staff' :
     activePortalBranch === 'company' ? 'company' :
-    (userRole === 'admin' ? 'admin' : 'student')
+    (userRole === 'admin' ? 'admin' : userRole === 'staff' ? 'staff' : 'student')
   );
 
-  const isStaffOrAdmin = userRole === 'admin' || userRole === 'academic';
+  const isStaffOrAdmin = userRole === 'admin' || userRole === 'staff' || effectiveCurrentUser?.role === 'admin' || effectiveCurrentUser?.role === 'staff';
 
   return (
     <div className="min-h-screen bg-[#f8f9fc] font-sans flex flex-col justify-between">

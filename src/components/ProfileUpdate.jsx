@@ -106,6 +106,29 @@ export const BRANCH_CONFIGS = {
     backView: 'company',
     backLabel: 'Firma Portalı',
   },
+  staff: {
+    name: 'Kurumsal Personel Portalı',
+    subHeader: 'Kariyer Geliştirme Merkezi • Kurumsal Personel Profili',
+    badgeLabel: 'PERSONEL PORTALI (BİLGİLERİMİ DÜZENLE)',
+    badgeGradient: 'from-slate-900 via-indigo-900 to-slate-900',
+    badgeBorder: 'border-indigo-400/50',
+    badgePulse: 'bg-emerald-300',
+    logoColor: 'indigo',
+    logoTextClass: 'text-indigo-900',
+    themeColor: '#4338CA',
+    primaryBg: 'bg-indigo-700 hover:bg-indigo-800',
+    primaryBorder: 'border-indigo-700',
+    primaryFocusRing: 'focus:ring-indigo-500/20 focus:border-indigo-600',
+    accentBgLight: 'bg-gradient-to-r from-indigo-50/70 via-white to-slate-50',
+    accentBorderLight: 'border-indigo-200',
+    accentText: 'text-indigo-800',
+    tabActiveStyle: 'bg-indigo-700 text-white shadow-sm shadow-indigo-950/20',
+    pillText: '🏛️ KGM Kurumsal Personel Profil Yönetimi',
+    pillStyle: 'bg-indigo-50 text-indigo-900 border border-indigo-200',
+    subText: 'Kariyer Geliştirme Merkezi çalışan bilgilerinizi, görev biriminizi ve kurumsal iletişim detaylarınızı güncelleyin.',
+    backView: 'staff',
+    backLabel: 'Personel Portalı',
+  },
   admin: {
     name: 'Süper Admin',
     subHeader: 'Kariyer Geliştirme Merkezi • Üst Yönetici Konsolu',
@@ -161,27 +184,27 @@ export default function ProfileUpdate({
 
   // Compute effective branch strictly adhering to user's active portal location
   const effectiveBranch = useMemo(() => {
-    // 0. Explicit userRole prop has top priority
-    if (userRole && ['alumni', 'student', 'academic', 'company', 'admin'].includes(userRole)) {
+    // 0. Explicit userRole prop has top priority (academic portal is closed)
+    if (userRole && ['alumni', 'student', 'company', 'staff', 'admin'].includes(userRole)) {
       return userRole;
     }
 
     // 1. If activePortalBranch is set and valid, prioritize it:
-    if (activePortalBranch && ['alumni', 'student', 'academic', 'company', 'admin'].includes(activePortalBranch)) {
+    if (activePortalBranch && ['alumni', 'student', 'company', 'staff', 'admin'].includes(activePortalBranch)) {
       return activePortalBranch;
     }
 
     // 2. Check previousView
     if (['alumni', 'mbs', 'mezun_dernek', 'alumni_assoc_portal', 'alumni_card', 'alumni_dao'].includes(previousView)) return 'alumni';
-    if (['academic', 'research_hub', 'academic_onboarding'].includes(previousView)) return 'academic';
+    if (['staff', 'personel'].includes(previousView)) return 'staff';
     if (['company', 'company_ats', 'create_job'].includes(previousView)) return 'company';
-    if (['student', 'feed', 'club_portal', 'student_analytics', 'virtual_fair', 'career_roadmap', 'sem', 'staj'].includes(previousView)) return 'student';
+    if (['student', 'feed', 'student_analytics', 'virtual_fair', 'career_roadmap', 'sem', 'staj', 'student_kgb'].includes(previousView)) return 'student';
     if (['admin', 'admin_cms', 'yonetim_konsolu', 'admin_console', 'audit_logs'].includes(previousView)) return 'admin';
 
     // 3. Fallback to userRole or currentUser.role
     const role = userRole || currentUser?.role;
     if (role === 'alumni') return 'alumni';
-    if (role === 'academic' || role === 'academic_staff') return 'academic';
+    if (role === 'staff') return 'staff';
     if (role === 'company' || role === 'employer') return 'company';
     if (role === 'admin') return 'admin';
 
@@ -259,29 +282,47 @@ export default function ProfileUpdate({
     }
   }, [currentUser]);
 
-  // Profile Completeness Calculation
+  // Role-Aware Profile Completeness Calculation
   const completeness = useMemo(() => {
     let score = 0;
+    if (effectiveBranch === 'company') {
+      if (formData.name) score += 15;
+      if (formData.email) score += 15;
+      if (formData.phone) score += 10;
+      if (formData.sector) score += 15;
+      if (formData.taxNo || formData.mersisNo) score += 15;
+      if (formData.authorizedSignatory || formData.authorizedPerson) score += 10;
+      if (formData.location || formData.city) score += 10;
+      if (formData.description || formData.bio || formData.summary) score += 10;
+      return Math.min(score, 100);
+    }
+    if (effectiveBranch === 'staff' || effectiveBranch === 'admin') {
+      if (formData.name) score += 25;
+      if (formData.email) score += 25;
+      if (formData.phone) score += 20;
+      if (formData.department || formData.staffTitle || formData.title) score += 20;
+      if (formData.bio || formData.summary) score += 10;
+      return Math.min(score, 100);
+    }
     if (formData.email) score += 15;
     if (formData.phone) score += 15;
-    if (formData.faculty || formData.sector) score += 10;
-    if (formData.experiences?.length > 0) score += 20;
+    if (formData.faculty || formData.department) score += 15;
+    if (formData.experiences?.length > 0 || formData.company) score += 15;
     if (formData.skills?.length > 0) score += 10;
     if (formData.languages?.length > 0) score += 10;
     if (formData.certificates?.length > 0) score += 10;
-    if (formData.attachmentName || formData.checkupAnswers?.[1]) score += 10;
+    if (formData.attachmentName || formData.checkupAnswers?.[1] || formData.gpa) score += 10;
     return Math.min(score, 100);
-  }, [formData]);
+  }, [formData, effectiveBranch]);
 
   const tabs = useMemo(() => {
     if (effectiveBranch === 'company') return [
-      { id: 'personal', label: 'Kurumsal Firma Bilgileri', icon: Building2 },
+      { id: 'personal', label: 'Kurumsal Firma & Resmi Bilgiler', icon: Building2 },
       { id: 'company_preferences', label: 'Stajyer & İstihdam Tercihleri', icon: Target }
     ];
-    if (effectiveBranch === 'academic') return [
-      { id: 'personal', label: 'Kişisel & İletişim', icon: User },
-      { id: 'academic', label: 'Üniversite & Unvan', icon: GraduationCap },
-      { id: 'academic_staff_info', label: 'Dersler, Yayınlar & Ofis Saatleri', icon: BookOpen }
+    if (effectiveBranch === 'staff') return [
+      { id: 'personal', label: 'Personel Kimliği & Görev Bilgileri', icon: User },
+      { id: 'admin_unit', label: 'KGM Birim & İletişim', icon: Shield }
     ];
     if (effectiveBranch === 'admin') return [
       { id: 'personal', label: 'Yönetici Kimliği & İletişim', icon: User },
@@ -369,6 +410,10 @@ export default function ProfileUpdate({
       capDept: selectedCapDept || formData.capDept,
       country: resolvedCountry,
       city: resolvedCity,
+      grade: formData.classLevel || formData.grade || currentUser?.grade,
+      classLevel: formData.classLevel || formData.grade || currentUser?.classLevel,
+      description: formData.description || formData.bio || formData.summary || currentUser?.description || '',
+      bio: formData.bio || formData.description || formData.summary || currentUser?.bio || '',
       showOnGlobalMap: formData.showOnGlobalMap !== false,
       coordinates: formData.coordinates || geocoded.coordinates,
       updatedAt: new Date().toISOString()
@@ -409,6 +454,25 @@ export default function ProfileUpdate({
       setAcademicStaff(prev => (prev || []).map(ac => ac.id === finalData.id ? { ...ac, ...finalData } : ac));
     } else if (effectiveBranch === 'company' && setCompanies) {
       setCompanies(prev => (prev || []).map(c => c.id === finalData.id ? { ...c, ...finalData } : c));
+    } else if (effectiveBranch === 'staff') {
+      try {
+        const rawStaff = localStorage.getItem('iesu_staff_accounts_v1');
+        if (rawStaff) {
+          const parsed = JSON.parse(rawStaff);
+          if (Array.isArray(parsed)) {
+            const updatedStaff = parsed.map(acc => {
+              const matches =
+                (finalData.staffAccountId && String(acc.id) === String(finalData.staffAccountId)) ||
+                (finalData.id === `STAFF-${acc.id}`) ||
+                (finalData.email && acc.email && acc.email.toLowerCase() === finalData.email.toLowerCase());
+              return matches
+                ? { ...acc, name: finalData.name || acc.name, email: finalData.email || acc.email, dept: finalData.department || acc.dept }
+                : acc;
+            });
+            localStorage.setItem('iesu_staff_accounts_v1', JSON.stringify(updatedStaff));
+          }
+        }
+      } catch { /* intentional */ }
     }
 
     // Cross-sync if finalData.id exists in any pool so Super Admin user pool stays 100% updated:
@@ -965,6 +1029,126 @@ export default function ProfileUpdate({
 
                 </div>
 
+                {/* FİRMA ÖZEL RESMÎ KURUMSAL & PROTOKOL ALANLARI */}
+                {effectiveBranch === 'company' && (
+                  <div className="p-5 bg-blue-50/60 border border-blue-200/80 rounded-2xl space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Building2 size={18} className="text-blue-900" />
+                      <h4 className="text-sm font-black text-blue-950">Resmî Ticari & İş Birliği Protokolü Bilgileri</h4>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Faaliyet Sektörü *</label>
+                        <input
+                          type="text"
+                          value={formData.sector || ''}
+                          onChange={(e) => handleInputChange('sector', e.target.value)}
+                          className={`w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing}`}
+                          placeholder="Örn: Savunma Sanayi, Yazılım, Finans..."
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Yetkili İmza Sahibi / İK Yöneticisi *</label>
+                        <input
+                          type="text"
+                          value={formData.authorizedSignatory || formData.authorizedPerson || ''}
+                          onChange={(e) => {
+                            handleInputChange('authorizedSignatory', e.target.value);
+                            handleInputChange('authorizedPerson', e.target.value);
+                          }}
+                          className={`w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing}`}
+                          placeholder="Örn: Ahmet Yılmaz (İK Direktörü)"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Vergi Numarası (VKN - 10 Hane) *</label>
+                        <input
+                          type="text"
+                          maxLength={11}
+                          value={formData.taxNo || ''}
+                          onChange={(e) => handleInputChange('taxNo', e.target.value)}
+                          className={`w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing}`}
+                          placeholder="1234567890"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">MERSİS Numarası (16 Hane)</label>
+                        <input
+                          type="text"
+                          maxLength={16}
+                          value={formData.mersisNo || ''}
+                          onChange={(e) => handleInputChange('mersisNo', e.target.value)}
+                          className={`w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing}`}
+                          placeholder="0123456789000019"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Kuruluş Yılı</label>
+                        <input
+                          type="text"
+                          value={formData.foundingYear || ''}
+                          onChange={(e) => handleInputChange('foundingYear', e.target.value)}
+                          className={`w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing}`}
+                          placeholder="Örn: 2010"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Çalışan Ölçeği</label>
+                        <select
+                          value={formData.employeeCount || ''}
+                          onChange={(e) => handleInputChange('employeeCount', e.target.value)}
+                          className={`w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing}`}
+                        >
+                          <option value="">Seçiniz</option>
+                          <option value="1-50 (KOBİ / Girişim)">1-50 (KOBİ / Girişim)</option>
+                          <option value="51-250 (Orta Ölçekli)">51-250 (Orta Ölçekli)</option>
+                          <option value="251-1000 (Büyük Ölçekli)">251-1000 (Büyük Ölçekli)</option>
+                          <option value="1000+ (Kurumsal / Holding)">1000+ (Kurumsal / Holding)</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* PERSONEL ÖZEL GÖREV BİLGİLERİ */}
+                {effectiveBranch === 'staff' && (
+                  <div className="p-5 bg-indigo-50/60 border border-indigo-200/80 rounded-2xl grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Kullanıcı Adı</label>
+                      <input
+                        type="text"
+                        value={formData.username || ''}
+                        disabled
+                        className="w-full bg-slate-100 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-mono font-bold text-slate-500 cursor-not-allowed"
+                        placeholder="Yönetici tarafından tanımlanır"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Görev Unvanı</label>
+                      <input
+                        type="text"
+                        value={formData.staffTitle || formData.title || ''}
+                        onChange={(e) => {
+                          handleInputChange('staffTitle', e.target.value);
+                          handleInputChange('title', e.target.value);
+                        }}
+                        className={`w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing}`}
+                        placeholder="Örn: Kariyer Uzmanı"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Çalıştığı Birim</label>
+                      <input
+                        type="text"
+                        value={formData.department || ''}
+                        onChange={(e) => handleInputChange('department', e.target.value)}
+                        className={`w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing}`}
+                        placeholder="Kariyer Geliştirme Merkezi"
+                      />
+                    </div>
+                  </div>
+                )}
+
                 {/* ÖZET VE HAKKINDA BÖLÜMÜ */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">
@@ -972,10 +1156,11 @@ export default function ProfileUpdate({
                   </label>
                   <textarea 
                     rows={4} 
-                    value={formData.bio || formData.summary || ''} 
+                    value={formData.description || formData.bio || formData.summary || ''} 
                     onChange={(e) => {
                       handleInputChange('bio', e.target.value);
                       handleInputChange('summary', e.target.value);
+                      handleInputChange('description', e.target.value);
                     }} 
                     className={`w-full bg-gray-50/50 border border-gray-200 rounded-2xl p-4 text-sm font-medium text-gray-700 outline-none ${cfg.primaryFocusRing} transition-all resize-none`} 
                     placeholder={
@@ -1523,19 +1708,6 @@ export default function ProfileUpdate({
                     />
                   </div>
 
-                  {/* Submit Button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleSave(false);
-                      if (window.toast?.success) window.toast.success("🧭 12 soruluk Mezun Kariyer Anketi başarıyla kaydedildi ve sisteme işlendi!");
-                      else console.info("🧭 12 soruluk Mezun Kariyer Anketi başarıyla kaydedildi!");
-                    }}
-                    className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl text-sm uppercase tracking-widest transition shadow-xl cursor-pointer active:scale-98 flex items-center justify-center gap-2"
-                  >
-                    <CheckCircle size={18} /> 12 Soruluk Mezun Anketini Kaydet & Güncelle
-                  </button>
-
                 </div>
 
                 {renderSaveActionBar(false)}
@@ -1997,8 +2169,8 @@ export default function ProfileUpdate({
                         <option>2. Sınıf</option>
                         <option>3. Sınıf</option>
                         <option>4. Sınıf</option>
-                        <option>Mezun</option>
                         <option>Yüksek Lisans</option>
+                        <option>Doktora</option>
                       </select>
                     </div>
 

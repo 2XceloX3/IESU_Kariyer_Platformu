@@ -201,39 +201,22 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
   };
 
   const handleProtocolRequest = async (protocolData) => {
-    const newRequest = {
-      id: 'protocol_' + Date.now(),
-      companyId: effectiveCurrentUser?.uid || effectiveCurrentUser?.id || 'company_default',
-      companyName: effectiveCurrentUser?.name || 'Kurumsal Firma',
-      status: 'Onay Bekliyor',
-      createdAt: new Date().toISOString(),
-      ...protocolData
-    };
     try {
-      const appState = useAppStore.getState();
-      const nextProtocols = [newRequest, ...(appState.corporateProtocols || [])];
-      useAppStore.setState({
-        corporateProtocols: nextProtocols,
-        protocolRequests: [newRequest, ...(appState.protocolRequests || [])]
-      });
       if (typeof setNotifications === 'function') {
         setNotifications([
           {
             id: 'notif_proto_' + Date.now(),
             userId: 'admin',
-            title: `Yeni Üniversite-Sanayi Protokol Talebi: ${newRequest.companyName}`,
-            message: `${newRequest.companyName} kurumsal staj ve istihdam protokolü başvurusu gönderdi.`,
+            title: `Yeni Üniversite-Sanayi Protokol Talebi: ${protocolData?.companyName || effectiveCurrentUser?.name || 'Kurumsal Firma'}`,
+            message: `${protocolData?.companyName || effectiveCurrentUser?.name || 'Kurumsal Firma'} (${protocolData?.protocolCode || 'Taslak'}) kurumsal iş birliği protokolü başvurusu gönderdi.`,
             createdAt: new Date().toISOString(),
             read: false
           },
           ...(notifications || [])
         ]);
       }
-      if (window.toast?.success) {
-        window.toast.success('Üniversite-Sanayi Protokol talebiniz Rektörlük / Kariyer Merkezi onayına iletildi!');
-      }
     } catch (err) {
-      console.warn('Protocol request state update error:', err);
+      console.warn('Protocol notification error:', err);
     }
   };
 
@@ -565,7 +548,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
         {/* PROTOCOLS TAB */}
         {activeTab === 'protocols' && (
           <div className="w-full shrink-0 animate-fade-in mb-6">
-            <CorporateProtocolCRM currentUser={effectiveCurrentUser} onProtocolRequest={handleProtocolRequest} />
+            <CorporateProtocolCRM mode="company" currentUser={effectiveCurrentUser} onProtocolRequest={handleProtocolRequest} />
           </div>
         )}
 
@@ -614,24 +597,24 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
               </div>
             </div>
 
-            {/* Metrik İstatistik Izgarası */}
+            {/* Metrik İstatistik Izgarası — Yalnızca bu firmanın kendi başvuruları */}
             <div className="grid grid-cols-3 gap-2 bg-black/30 backdrop-blur-md border border-white/10 p-2.5 rounded-2xl relative z-10">
               <div className="text-center border-r border-white/10 pr-1">
                 <p className="text-[9px] text-slate-300 font-black uppercase tracking-wider">Başvuru</p>
                 <p className="font-black text-white text-base mt-0.5">
-                  {(applications || []).length}
+                  {allCandidateApps.length}
                 </p>
               </div>
               <div className="text-center border-r border-white/10 px-1">
                 <p className="text-[9px] text-sky-300 font-black uppercase tracking-wider">İletişim</p>
                 <p className="font-black text-sky-300 text-base mt-0.5">
-                  {(applications || []).filter(a => a.companyContacted || a.status === 'İletişime Geçildi' || a.status === 'Kabul Edildi').length}
+                  {allCandidateApps.filter(a => a.status === 'İletişime Geçildi' || a.status === 'Mülakat' || a.status === 'Kabul Edildi').length}
                 </p>
               </div>
               <div className="text-center pl-1">
                 <p className="text-[9px] text-emerald-300 font-black uppercase tracking-wider">Kabul</p>
                 <p className="font-black text-emerald-400 text-base mt-0.5">
-                  {(applications || []).filter(a => a.status === 'Kabul Edildi').length}
+                  {allCandidateApps.filter(a => a.status === 'Kabul Edildi').length}
                 </p>
               </div>
             </div>
@@ -717,74 +700,60 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
             <div className="pt-1 mt-1 space-y-2">
               <button 
                 onClick={() => setView('company_ats')}
-                className="w-full py-3 bg-gradient-to-r from-red-700 via-rose-700 to-red-800 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition-all shadow-lg shadow-red-950/40 flex items-center justify-center gap-2 cursor-pointer border border-red-400/40 hover:scale-[1.02] relative z-10"
+                className="w-full py-3 bg-gradient-to-r from-blue-600 via-[#0A2342] to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition-all shadow-lg shadow-blue-950/40 flex items-center justify-center gap-2 cursor-pointer border border-blue-400/40 hover:scale-[1.02] relative z-10"
               >
                 <Briefcase size={16} /> ATS Aday Takip Panosu (Kanban)
               </button>
               <button 
                 onClick={() => setShowCompanyAppsModal(true)}
-                className="w-full py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-500 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition-all shadow-md shadow-blue-950/40 flex items-center justify-center gap-2 cursor-pointer border border-blue-400/40 hover:scale-[1.02] relative z-10"
+                className="w-full py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer border border-white/20 relative z-10"
               >
                 <Users size={16} /> Hızlı Aday Tablosu
               </button>
             </div>
           </div>
 
-          {/* YÖNETİCİ İLE MUHATAP OLMA BİLGİLENDİRME KARTI */}
-          <div className="bg-white rounded-2xl border border-purple-100 p-5 shadow-sm space-y-4">
+          {/* ÜNİVERSİTE–SANAYİ İŞ BİRLİĞİ & PROTOKOL MASASI KARTI (SAPPHIRE THEME) */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-black text-slate-900 text-sm flex items-center gap-2">
-                <ShieldCheck size={18} className="text-purple-700" /> Kurumsal İş Birliği Süreci
+                <ShieldCheck size={18} className="text-[#0A2342]" /> Üniversite–Sanayi İş Birliği
               </h3>
-              <span className="text-[10px] font-black uppercase tracking-wider bg-purple-50 text-purple-700 px-2 py-0.5 rounded border border-purple-100">
-                Resmî
+              <span className="text-[10px] font-black uppercase tracking-wider bg-blue-50 text-[#0A2342] px-2 py-0.5 rounded border border-blue-200">
+                Resmî Protokol
               </span>
             </div>
             
             <p className="text-xs text-slate-600 font-medium leading-relaxed">
-              Firmamız tarafından oluşturulan tüm ilan ve staj talepleri <strong>Kariyer Geliştirme Merkezi</strong> yönetici onayına sunulur.
+              İESÜ Kariyer Geliştirme Koordinatörlüğü ile resmî staj, istihdam ve kariyer fuarı iş birliği protokolü başlatın; onay sonrası doğrulanmış kurumsal partner rozetinizi kazanın.
             </p>
 
-            <div className="space-y-3 pt-1">
-              <div className="p-3 bg-purple-50/50 border border-purple-100/60 rounded-xl flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-xs font-black shrink-0 mt-0.5">1</div>
-                <div>
-                  <p className="text-xs font-bold text-slate-900">Formu Doldurun</p>
-                  <p className="text-[11px] text-slate-500 font-medium">Pozisyon ve staj detaylarını form ile iletin.</p>
-                </div>
-              </div>
-              <div className="p-3 bg-amber-50/50 border border-amber-100/60 rounded-xl flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-black shrink-0 mt-0.5">2</div>
-                <div>
-                  <p className="text-xs font-bold text-slate-900">Yönetici Onayı</p>
-                  <p className="text-[11px] text-slate-500 font-medium">Talebiniz Kariyer Merkezi tarafından incelenir.</p>
-                </div>
-              </div>
-              <div className="p-3 bg-emerald-50/50 border border-emerald-100/60 rounded-xl flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-black shrink-0 mt-0.5">3</div>
-                <div>
-                  <p className="text-xs font-bold text-slate-900">Yayına Alınma</p>
-                  <p className="text-[11px] text-slate-500 font-medium">Onaylanan ilanlar öğrenci ve mezunlara sunulur.</p>
-                </div>
-              </div>
+            <div className="space-y-2.5 pt-1">
+              <button
+                type="button"
+                onClick={() => setActiveTab('protocols')}
+                className="w-full py-2.5 px-3 bg-[#0A2342] hover:bg-slate-900 text-white rounded-xl text-xs font-black transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <FileText size={15} /> Protokol Başvurusu & Takibi
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowFairModal(true)}
+                className="w-full py-2.5 px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Calendar size={15} /> {hasApplied ? 'Kariyer Fuarı Başvurunuz Alındı ✓' : 'Kariyer Fuarı Stant Başvurusu'}
+              </button>
             </div>
-
-            <button 
-              onClick={() => setIsCreatingJob(true)}
-              className="w-full py-3 bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-xs font-black transition-all shadow-md shadow-purple-900/20 flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <Plus size={16} /> Yeni İlan Talebi Gönder
-            </button>
           </div>
 
           {/* KURUMSAL DESTEK & İLETİŞİM KARTI */}
-          <div className="bg-gradient-to-br from-purple-950 via-indigo-950 to-purple-900 rounded-2xl p-5 shadow-xl text-white space-y-3 relative overflow-hidden border border-purple-800">
+          <div className="bg-gradient-to-br from-slate-950 via-[#0A2342] to-blue-950 rounded-2xl p-5 shadow-xl text-white space-y-3 relative overflow-hidden border border-blue-800/60">
             <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
             <p className="text-[10px] font-black text-amber-300 uppercase tracking-widest flex items-center gap-1">
-              <Crown size={12} className="text-amber-300" /> Kariyer Geliştirme Merkezi
+              <Crown size={12} className="text-amber-300" /> Kariyer Geliştirme Koordinatörlüğü
             </p>
-            <h3 className="font-black text-base text-white leading-tight">Yönetici İletişim Hattı</h3>
-            <p className="text-xs text-purple-200 font-medium leading-relaxed">Özel protokoller, kurumsal iş birlikleri ve staj kontenjanı süreçleri için Kariyer Merkezi uzmanlarımızla iletişime geçin.</p>
+            <h3 className="font-black text-base text-white leading-tight">Kurumsal İlişkiler Hattı</h3>
+            <p className="text-xs text-blue-200 font-medium leading-relaxed">Özel protokoller, staj kontenjanları ve kampüs etkinlikleri için doğrudan KGM uzmanlarımızla iletişime geçin.</p>
             <button 
               onClick={() => {
                 setAdminMsgForm({
@@ -795,22 +764,20 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                 });
                 setShowAdminMsgModal(true);
               }} 
-              className="w-full py-2.5 bg-white text-purple-900 hover:bg-purple-50 rounded-xl text-xs font-black transition-all shadow-md uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-2.5 bg-white text-[#0A2342] hover:bg-blue-50 rounded-xl text-xs font-black transition-all shadow-md uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
             >
-              <MessageCircle size={14} /> Yöneticiye Mesaj Gönder
+              <MessageCircle size={14} /> KGM Yetkilisine Mesaj Gönder
             </button>
           </div>
 
           {/* PROFESSIONAL RIGHT SIDEBAR FOOTER */}
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-6 text-[11px] text-slate-600 font-bold px-4 text-center">
-            <button onClick={() => setFooterModal('privacy')} className="hover:text-[#990000] transition-colors cursor-pointer">Kurumsal Sözleşme & KVKK</button>
-            <button onClick={() => setFooterModal('help')} className="hover:text-[#990000] transition-colors cursor-pointer">Destek & İletişim</button>
-            <button onClick={() => setFooterModal('about')} className="hover:text-[#990000] transition-colors cursor-pointer">Hakkımızda</button>
-            <button onClick={() => setFooterModal('accessibility')} className="hover:text-[#990000] transition-colors cursor-pointer">Erişilebilirlik</button>
-            <button onClick={() => setFooterModal('ads')} className="hover:text-[#990000] transition-colors cursor-pointer">Reklam Seçenekleri</button>
-            <button onClick={() => setFooterModal('careers')} className="hover:text-[#990000] transition-colors cursor-pointer">Kariyer</button>
+            <button onClick={() => setFooterModal('privacy')} className="hover:text-[#0A2342] transition-colors cursor-pointer">Kurumsal Sözleşme & KVKK</button>
+            <button onClick={() => setFooterModal('help')} className="hover:text-[#0A2342] transition-colors cursor-pointer">Destek & İletişim</button>
+            <button onClick={() => setFooterModal('about')} className="hover:text-[#0A2342] transition-colors cursor-pointer">Hakkımızda</button>
+            <button onClick={() => setFooterModal('accessibility')} className="hover:text-[#0A2342] transition-colors cursor-pointer">Erişilebilirlik</button>
             <div className="w-full flex items-center justify-center gap-1 mt-2">
-              <span className="font-black text-[#990000]">İESÜ Kurumsal Portalı</span>
+              <span className="font-black text-[#0A2342]">İESÜ Kurumsal Portalı</span>
               <span>© 2026</span>
             </div>
           </div>

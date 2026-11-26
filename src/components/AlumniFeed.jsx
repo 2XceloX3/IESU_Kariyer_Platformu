@@ -78,9 +78,9 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
   const [selectedNewsItem, setSelectedNewsItem] = useState(null);
   const [stories, setStories] = useState(() => {
     const defaults = [
-      { id: 'st-1', authorName: 'İESÜ Kariyer Merkezi', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: '2026 Bahar Dönemi Zorunlu Staj & KGM Başvuruları Başladı!', createdAt: '1s önce' },
-      { id: 'st-2', authorName: 'Yapay Zeka Kulübü', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: 'Prompt Mühendisliği & CV Atölyesi B-Blok Amfide!', createdAt: '3s önce' },
-      { id: 'st-3', authorName: 'İESÜ Mezunlar Portalı', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: 'Mezun-Öğrenci Mentorluk Eşleşmeleri Açıldı!', createdAt: '5s önce' }
+      { id: 'st-1', authorName: 'İESÜ Mezunlar Portalı', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: '2026 Mezunlar Buluşması ve Sektörel Komite Kayıtları Başladı!', createdAt: '1s önce' },
+      { id: 'st-2', authorName: 'Kariyer Geliştirme Koordinatörlüğü', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: 'Dijital Mezun Kartı & Küresel Mezun Ağı güncellendi!', createdAt: '3s önce' },
+      { id: 'st-3', authorName: 'İESÜ Mezunlar Portalı', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: 'Mezun-Öğrenci Kariyer Mentörlüğü Başvuruları Açıldı!', createdAt: '5s önce' }
     ];
     try {
       const saved = JSON.parse(localStorage.getItem('iesu_campus_stories_v1') || '[]');
@@ -101,19 +101,23 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
   const EMPTY_ARRAY = useMemo(() => [], []);
 
   const allFeedItems = useMemo(() => {
+    const alumniJobs = (jobs || []).filter(j => {
+      const t = String(j?.type || j?.jobType || j?.category || '').toLocaleLowerCase('tr-TR');
+      return !t.includes('staj');
+    });
     return combineFeedItems({
       posts,
-      clubs: clubs || [],
+      clubs: EMPTY_ARRAY,
       events,
       news,
       announcements,
-      jobs,
+      jobs: alumniJobs,
       generalEvents,
       careerOpportunities,
       user: effectiveCurrentUser,
       followedUserIds,
     });
-  }, [posts, clubs, events, news, announcements, jobs, generalEvents, careerOpportunities, effectiveCurrentUser, followedUserIds]);
+  }, [posts, EMPTY_ARRAY, events, news, announcements, jobs, generalEvents, careerOpportunities, effectiveCurrentUser, followedUserIds]);
 
   const filteredFeedItems = useMemo(() => {
     const q = searchQuery ? searchQuery.trim().toLocaleLowerCase('tr-TR') : '';
@@ -299,7 +303,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                 </div>
           </div>
 
-          {/* Mezun KGB — Kariyer Katkı & Mentörlük Karnesi */}
+          {/* Mezun Mentörlük & Kariyer Katkısı */}
           <div className="mt-4 bg-gradient-to-br from-teal-950 via-slate-900 to-emerald-950 rounded-2xl p-4 text-white shadow-sm border border-emerald-800/40 text-left">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
@@ -307,27 +311,27 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                   <BookOpen size={14} />
                 </div>
                 <div>
-                  <h4 className="text-[12px] font-black leading-tight text-white">Mezun KGB Karnem</h4>
-                  <p className="text-[9px] text-emerald-200/70">Kariyer & Mentörlük Katkısı</p>
+                  <h4 className="text-[12px] font-black leading-tight text-white">Mezun Katkı & Mentörlük</h4>
+                  <p className="text-[9px] text-emerald-200/70">Mezun Ağı & Kariyer Etkisi</p>
                 </div>
               </div>
               <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[9px] font-black">
-                Güçlü Ağ
+                Aktif Ağ
               </span>
             </div>
 
             <div className="grid grid-cols-3 gap-2 py-2.5 border-y border-white/10 mb-3 text-center">
               <div className="bg-white/5 rounded-xl p-2">
-                <span className="block text-base font-black text-emerald-300">{effectiveCurrentUser?.mentoringSessions ?? 8}</span>
+                <span className="block text-base font-black text-emerald-300">{effectiveCurrentUser?.mentoringSessions ?? (mentorships || []).filter(m => m.mentorId === alumniId).length}</span>
                 <span className="block text-[8px] font-bold text-emerald-200 uppercase tracking-wider">Mentörlük</span>
               </div>
               <div className="bg-white/5 rounded-xl p-2">
-                <span className="block text-base font-black text-teal-300">{effectiveCurrentUser?.jobsShared ?? 15}</span>
-                <span className="block text-[8px] font-bold text-teal-200 uppercase tracking-wider">İş İlanı</span>
+                <span className="block text-base font-black text-teal-300">{(posts || []).filter(p => p.author?.id === alumniId).length}</span>
+                <span className="block text-[8px] font-bold text-teal-200 uppercase tracking-wider">Paylaşım</span>
               </div>
               <div className="bg-white/5 rounded-xl p-2">
-                <span className="block text-base font-black text-cyan-300">{effectiveCurrentUser?.eventsAttended ?? 4}</span>
-                <span className="block text-[8px] font-bold text-cyan-200 uppercase tracking-wider">Etkinlik</span>
+                <span className="block text-base font-black text-cyan-300">{(coffeeChats || []).filter(c => c.alumniId === alumniId).length}</span>
+                <span className="block text-[8px] font-bold text-cyan-200 uppercase tracking-wider">Görüşme</span>
               </div>
             </div>
 
@@ -339,7 +343,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               }}
               className="w-full py-2 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 hover:text-white rounded-xl text-[11px] font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <BookOpen size={12} /> KGB Katkı Profilimi Gör
+              <BookOpen size={12} /> Mezun Katkı Profilimi Gör
             </button>
           </div>
         </div>
@@ -417,7 +421,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               <span className="text-xs font-medium text-emerald-600 font-semibold">İESÜ Ağı</span>
             </div>
             
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               <button
                 onClick={() => {
                   const store = useAppStore.getState();
@@ -595,12 +599,6 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
           </div>
         )}
 
-        {featureClubsShowcase && activeTab === 'clubs' && (
-          <div className="w-full shrink-0 animate-fade-in mb-6">
-            <ClubsDirectory clubs={clubs} setClubs={setClubs} clubApplications={clubApplications} setClubApplications={setClubApplications} currentUser={effectiveCurrentUser} featureClubApplications={featureClubApplications} />
-          </div>
-        )}
-
         </div>
 
         <div className="hidden xl:block w-[300px] shrink-0 space-y-6">
@@ -764,8 +762,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
             <button onClick={() => setFooterModal('about')} className="hover:text-emerald-700 transition-colors cursor-pointer">Hakkımızda</button>
             <button onClick={() => setFooterModal('accessibility')} className="hover:text-emerald-700 transition-colors cursor-pointer">Erişilebilirlik</button>
             <button onClick={() => setFooterModal('help')} className="hover:text-emerald-700 transition-colors cursor-pointer">Yardım Merkezi</button>
-            <button onClick={() => setFooterModal('privacy')} className="hover:text-emerald-700 transition-colors cursor-pointer">Gizlilik ve Şartlar</button>
-            <button onClick={() => setFooterModal('ads')} className="hover:text-emerald-700 transition-colors cursor-pointer">Reklam Seçenekleri</button>
+            <button onClick={() => setFooterModal('privacy')} className="hover:text-emerald-700 transition-colors cursor-pointer">Gizlilik ve KVKK</button>
             <button onClick={() => setFooterModal('careers')} className="hover:text-emerald-700 transition-colors cursor-pointer">Kariyer</button>
             <div className="w-full flex items-center justify-center gap-1 mt-2">
               <span className="font-bold text-emerald-700">İESÜ Mezunlar Portalı</span>
@@ -989,7 +986,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
           </button>
           
           {/* JOBS - VIBRANT GRADIENT EMERALD */}
-          <button onClick={() => setView('jobs')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-emerald-800 text-white shadow-lg shadow-emerald-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-emerald-300/40 cursor-pointer" title="İş & Staj Olanakları">
+          <button onClick={() => setView('jobs')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-emerald-800 text-white shadow-lg shadow-emerald-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-emerald-300/40 cursor-pointer" title="İş & Kariyer Fırsatları">
             <Briefcase size={22} strokeWidth={2.5} />
           </button>
           

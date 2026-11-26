@@ -107,6 +107,18 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
 
   const safeCompanies = companies || [];
 
+  const getActiveJobCount = (comp) => {
+    if (!comp) return 0;
+    const compName = (comp.name || '').trim().toLowerCase();
+    const realCount = (jobs || []).filter(j => {
+      const jc = (j.company || j.companyName || '').trim().toLowerCase();
+      const sameCompany = (j.companyId && j.companyId === comp.id) || (compName && jc === compName);
+      const isOpen = j.status !== 'Pasif' && j.status !== 'Kapalı' && j.status !== 'Reddedildi';
+      return sameCompany && isOpen;
+    }).length;
+    return realCount || comp.activeJobs || 0;
+  };
+
   const filtered = safeCompanies.filter(c => {
     const matchQ = (c.name||'').toLowerCase().includes(searchQuery.toLowerCase()) || (c.sector||'').toLowerCase().includes(searchQuery.toLowerCase());
     const matchS = statusFilter === 'all' || (c.status||'').toLowerCase() === statusFilter.toLowerCase();
@@ -176,9 +188,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
               <tr key={c.id} onClick={() => setSelectedCompany(c)} className="cursor-pointer hover:bg-red-50/20 transition group">
                 <td className="py-3 px-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden">
-                      {c.logo ? <img src={c.logo} className="w-full h-full object-cover" /> : <Building2 size={20} className="text-gray-400"/>}
-                    </div>
+                    <SafeAvatar src={c.logo} name={c.name || 'Firma'} size={40} className="w-10 h-10 rounded-xl border border-gray-100 shrink-0" />
                     <div>
                       <p className="text-sm font-bold text-gray-900 group-hover:text-red-600 transition flex items-center gap-1.5">
                         {c.name} <Eye size={13} className="opacity-0 group-hover:opacity-100 transition text-red-600" />
@@ -192,7 +202,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
                   <p className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mt-0.5"><Mail size={10}/> {c.email || '-'}</p>
                 </td>
                 <td className="py-3 px-5">
-                  <span className="text-[11px] font-black bg-red-50 text-red-600 px-2 py-1 rounded-md">{c.activeJobs || 0} Aktif</span>
+                  <span className="text-[11px] font-black bg-red-50 text-red-600 px-2 py-1 rounded-md">{getActiveJobCount(c)} Aktif</span>
                 </td>
                 <td className="py-3 px-5">
                   <span className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-black uppercase ${c.status === 'Onaylı' ? 'bg-emerald-100 text-emerald-700' : 'bg-yellow-100 text-yellow-700'}`}>
@@ -283,12 +293,12 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
   return (
     <AdminCMSLayout 
       title="Firma Bilgi Havuzu" 
-      description="Üniversite ile iş birliği yapan kurumsal firmaların liste ve detay yönetimi."
-      actions={
+      sub="Üniversite ile iş birliği yapan kurumsal firmaların liste, onay ve veri dışa aktarım yönetimi."
+      headerAction={
         !isEditing && (
           <div className="flex items-center gap-2">
-            <button onClick={() => exportToCSV(safeCompanies, 'Firma_Listesi')} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition flex items-center gap-1.5"><Download size={14}/> CSV İndir</button>
-            <button onClick={handleAddNew} className="px-4 py-2 bg-[#990000] hover:bg-red-800 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-red-900/20"><Plus size={14}/> Yeni Firma Ekle</button>
+            <button onClick={() => exportToCSV(safeCompanies.map(c => ({ ...c, activeJobs: getActiveJobCount(c) })), 'IESU_Firma_Listesi.csv')} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition flex items-center gap-1.5 cursor-pointer"><Download size={14}/> Excel / CSV İndir</button>
+            <button onClick={handleAddNew} className="px-4 py-2 bg-[#990000] hover:bg-red-800 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-red-900/20 cursor-pointer"><Plus size={14}/> Yeni Firma Ekle</button>
           </div>
         )
       }

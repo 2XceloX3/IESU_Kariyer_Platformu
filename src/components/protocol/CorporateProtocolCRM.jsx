@@ -20,6 +20,7 @@ import {
   SAMPLE_ISKUR_JOB_CLUB_COHORTS,
   SAMPLE_ESBIM_VACANCIES,
   exportSenateProtocolPdf,
+  exportBilateralProtocolDraftPdf,
   downloadSenateProtocolCsv,
 } from '../../services/protocolWorkflow';
 import {
@@ -45,8 +46,11 @@ import {
   Check,
 } from 'lucide-react';
 
-export default function CorporateProtocolCRM({ currentUser = null, _currentUser = null, onProtocolRequest = null }) {
+export default function CorporateProtocolCRM({ currentUser = null, _currentUser = null, onProtocolRequest = null, mode = null }) {
   const effectiveUser = currentUser || _currentUser;
+  const isAdminOrStaff = mode === 'admin' || (mode !== 'company' && (effectiveUser?.role === 'admin' || effectiveUser?.role === 'staff'));
+  const isCompanyMode = !isAdminOrStaff;
+
   const storeProtocols = useAppStore((state) => state.corporateProtocols);
   const setCorporateProtocols = useAppStore((state) => state.setCorporateProtocols);
   const addCorporateProtocol = useAppStore((state) => state.addCorporateProtocol);
@@ -58,10 +62,45 @@ export default function CorporateProtocolCRM({ currentUser = null, _currentUser 
   const storeEsbimEvents = useAppStore((state) => state.esbimEvents);
   const storeIskurCohorts = useAppStore((state) => state.iskurJobClubCohorts);
 
-  // Active Protocols Pool (store or sample fallback)
-  const protocols = Array.isArray(storeProtocols) && storeProtocols.length > 0
-    ? storeProtocols
-    : SAMPLE_CORPORATE_PROTOCOLS;
+  // Yerel depolama + Zustand senkron protokol listesi
+  const persistedProtocols = useMemo(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('iesu_corporate_protocols_v1') || '[]');
+      if (Array.isArray(saved) && saved.length > 0) return saved;
+    } catch { /* intentional */ }
+    return [];
+  }, [storeProtocols]);
+
+  const allProtocols = useMemo(() => {
+    const base = Array.isArray(storeProtocols) && storeProtocols.length > 0
+      ? storeProtocols
+      : (persistedProtocols.length > 0 ? persistedProtocols : SAMPLE_CORPORATE_PROTOCOLS);
+    // Merge persisted entries not yet in store
+    const map = new Map();
+    [...persistedProtocols, ...base].forEach((p) => {
+      if (p && (p.id || p.protocolCode)) map.set(p.id || p.protocolCode, p);
+    });
+    return Array.from(map.values());
+  }, [storeProtocols, persistedProtocols]);
+
+  const persistProtocolsList = (nextList) => {
+    if (setCorporateProtocols) setCorporateProtocols(nextList);
+    try {
+      localStorage.setItem('iesu_corporate_protocols_v1', JSON.stringify(nextList));
+    } catch { /* intentional */ }
+  };
+
+  // ROL İZOLASYONU: Firma rolünde yalnızca kendi şirketinin protokolleri görünür (rakip firmaların gizli sözleşmeleri asla sızmaz)
+  const protocols = useMemo(() => {
+    if (!isCompanyMode) return allProtocols;
+    const myId = String(effectiveUser?.id || effectiveUser?.uid || '').trim();
+    const myName = String(effectiveUser?.companyName || effectiveUser?.name || '').trim().toLowerCase();
+    return allProtocols.filter((p) => {
+      if (myId && p.companyId && String(p.companyId) === myId) return true;
+      if (myName && p.companyName && String(p.companyName).trim().toLowerCase() === myName) return true;
+      return false;
+    });
+  }, [allProtocols, isCompanyMode, effectiveUser]);
 
   const sectorMentors = Array.isArray(storeSectorMentors) && storeSectorMentors.length > 0
     ? storeSectorMentors
@@ -93,18 +132,23 @@ export default function CorporateProtocolCRM({ currentUser = null, _currentUser 
   // New Protocol Form
   const [newProtocol, setNewProtocol] = useState({
     companyName: effectiveUser?.companyName || effectiveUser?.name || '',
-    sector: PROTOCOL_SECTORS[0],
+    taxNo: effectiveUser?.taxNo || '',
+    mersisNo: effectiveUser?.mersisNo || '',
+    companyAddress: effectiveUser?.address || effectiveUser?.location || '',
+    sector: effectiveUser?.sector || PROTOCOL_SECTORS[0],
     protocolType: PROTOCOL_TYPES.COOPERATION,
-    committedQuota: 20,
+    committedQuota: 15,
     placedCount: 0,
+    durationYears: 2,
     signedDate: new Date().toISOString().split('T')[0],
-    validUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    contactPerson: effectiveUser?.contactPerson || effectiveUser?.name || '',
-    contactTitle: effectiveUser?.title || 'İnsan Kaynakları / Kurumsal İlişkiler',
+    validUntil: new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    contactPerson: effectiveUser?.contactPerson || effectiveUser?.contactName || effectiveUser?.name || '',
+    contactTitle: effectiveUser?.title || 'İnsan Kaynakları / İmza Yetkilisi',
     contactEmail: effectiveUser?.email || '',
     contactPhone: effectiveUser?.phone || '',
     scope: '',
-    assignedFaculty: 'Mühendislik ve Mimarlık Fakültesi',
+    assignedFaculty: 'Tüm Fakülte ve MYO Programları',
+    sgkLawCommitment: true,
     notes: '',
   });
 
@@ -204,34 +248,35 @@ export default function CorporateProtocolCRM({ currentUser = null, _currentUser 
     });
   }, [protocols, searchTerm, selectedStatus, selectedType, selectedSector]);
 
-  // Handler: Add New Protocol
+  // Handler: Add New Protocol (Firma başvurusu ASLA kendini Senato onaylı yapamaz -> PENDING_APPROVAL)
   const handleCreateProtocol = (e) => {
     e.preventDefault();
     if (!newProtocol.companyName || !newProtocol.contactPerson) {
-      if (window.toast?.error) {
-        window.toast.error('Lütfen kurum adı ve yetkili kişi bilgilerini doldurunuz.');
-      }
+      window.toast?.error?.('Lütfen kurum adı ve yetkili kişi bilgilerini doldurunuz.');
+      return;
+    }
+    if (isCompanyMode && !newProtocol.sgkLawCommitment) {
+      window.toast?.error?.('Lütfen 3308 ve 5510 Sayılı Kanun / KVKK yasal taahhüdünü onaylayın.');
       return;
     }
 
-    const nextSeq = protocols.length + 1;
+    const nextSeq = allProtocols.length + 1;
     const protocolCode = generateProtocolCode(nextSeq);
     const createdItem = {
       ...newProtocol,
-      id: `PRT-2026-${String(nextSeq).padStart(3, '0')}`,
+      id: `PRT-${Date.now()}`,
       protocolCode,
+      companyId: isCompanyMode ? (effectiveUser?.id || effectiveUser?.uid || `CMP-${Date.now()}`) : (newProtocol.companyId || `CMP-${nextSeq}`),
       committedQuota: Number(newProtocol.committedQuota || 0),
-      placedCount: Number(newProtocol.placedCount || 0),
-      status: PROTOCOL_STATUS.ACTIVE,
-      isOfficialSenateApproved: true,
-      senateDecisionNo: `2026/${String(nextSeq).padStart(2, '0')}-01`,
+      placedCount: isCompanyMode ? 0 : Number(newProtocol.placedCount || 0),
+      status: isCompanyMode ? PROTOCOL_STATUS.PENDING_APPROVAL : PROTOCOL_STATUS.ACTIVE,
+      isOfficialSenateApproved: !isCompanyMode,
+      senateDecisionNo: isCompanyMode ? '' : `2026/${String(nextSeq).padStart(2, '0')}-01`,
+      createdAt: new Date().toISOString(),
     };
 
-    if (addCorporateProtocol) {
-      addCorporateProtocol(createdItem);
-    }
-    const updatedList = [createdItem, ...protocols];
-    if (setCorporateProtocols) setCorporateProtocols(updatedList);
+    const updatedList = [createdItem, ...allProtocols];
+    persistProtocolsList(updatedList);
     if (typeof onProtocolRequest === 'function') {
       try {
         onProtocolRequest(createdItem);
@@ -239,9 +284,37 @@ export default function CorporateProtocolCRM({ currentUser = null, _currentUser 
     }
 
     setShowAddModal(false);
-    if (window.toast?.success) {
-      window.toast.success(`Resmî protokol oluşturuldu: ${protocolCode}`);
-    }
+    window.toast?.success?.(
+      isCompanyMode
+        ? `İş birliği protokolü başvurunuz (${protocolCode}) Kariyer Geliştirme Koordinatörlüğü onayına iletildi!`
+        : `Resmî protokol oluşturuldu: ${protocolCode}`
+    );
+  };
+
+  // Handler: Admin / Staff Onay, Revizyon ve Ret Kararı
+  const handleAdminProtocolDecision = (protocol, nextStatus, decisionNote = '') => {
+    if (isCompanyMode) return;
+    const updatedList = allProtocols.map((p) => {
+      if (p.id !== protocol.id && p.protocolCode !== protocol.protocolCode) return p;
+      return {
+        ...p,
+        status: nextStatus,
+        isOfficialSenateApproved: nextStatus === PROTOCOL_STATUS.ACTIVE,
+        senateDecisionNo: nextStatus === PROTOCOL_STATUS.ACTIVE
+          ? (p.senateDecisionNo || `2026/KGM-${String(Math.floor(100 + Math.random() * 899))}`)
+          : p.senateDecisionNo,
+        reviewNote: decisionNote || p.reviewNote || '',
+        reviewedBy: effectiveUser?.name || 'Kariyer Geliştirme Koordinatörlüğü',
+        reviewedAt: new Date().toISOString(),
+      };
+    });
+    persistProtocolsList(updatedList);
+    const labelMap = {
+      [PROTOCOL_STATUS.ACTIVE]: 'onaylandı ve yürürlüğe alındı',
+      [PROTOCOL_STATUS.REVISION_REQUESTED]: 'için revizyon talep edildi',
+      [PROTOCOL_STATUS.REJECTED]: 'reddedildi',
+    };
+    window.toast?.success?.(`${protocol.companyName} (${protocol.protocolCode}) ${labelMap[nextStatus] || 'güncellendi'}.`);
   };
 
   // Handler: Renew Protocol
@@ -354,54 +427,59 @@ export default function CorporateProtocolCRM({ currentUser = null, _currentUser 
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              Kurumsal Protokol & Sanayi CRM
+              {isCompanyMode ? 'Üniversite – İşletme İş Birliği Protokolü' : 'Kurumsal Protokol & Sanayi CRM'}
             </h1>
             <p className="text-sm text-slate-300 max-w-2xl font-medium leading-relaxed">
-              Üniversite - sanayi resmî iş birliği protokolleri, taahhüt edilen stajyer & istihdam kontenjanları,
-              İŞKUR İş Kulübü, ESBİM yerel istihdam köprüsü ve Senato raporlama masası.
+              {isCompanyMode
+                ? 'İstanbul Esenyurt Üniversitesi ile resmî staj, istihdam ve kurumsal iş birliği protokolü başvurularınızı oluşturun, taslak sözleşmenizi PDF olarak indirin ve onay sürecini canlı takip edin.'
+                : 'Üniversite - sanayi resmî iş birliği protokolleri, taahhüt edilen stajyer & istihdam kontenjanları, İŞKUR İş Kulübü, ESBİM yerel istihdam köprüsü ve Senato raporlama masası.'}
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5 shrink-0">
-            <button
-              type="button"
-              onClick={() => {
-                exportSenateProtocolPdf({
-                  protocols,
-                  sectorMentors,
-                  esbimEvents,
-                  iskurCohorts,
-                  period: '2025-2026 Akademik Yılı',
-                });
-              }}
-              className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all border border-white/20 flex items-center gap-2 shadow-sm cursor-pointer"
-              title="Resmî Senato PDF Raporunu Yazdır / İndir"
-            >
-              <Printer size={15} />
-              <span>Senato PDF Raporu</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                downloadSenateProtocolCsv({
-                  protocols,
-                  sectorMentors,
-                  period: '2025-2026 Akademik Yılı',
-                });
-              }}
-              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer"
-              title="Excel / CSV Kütüğü İndir"
-            >
-              <Download size={15} />
-              <span>Excel / CSV</span>
-            </button>
+          <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+            {!isCompanyMode && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    exportSenateProtocolPdf({
+                      protocols,
+                      sectorMentors,
+                      esbimEvents,
+                      iskurCohorts,
+                      period: '2025-2026 Akademik Yılı',
+                    });
+                  }}
+                  className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all border border-white/20 flex items-center gap-2 shadow-sm cursor-pointer"
+                  title="Resmî Senato PDF Raporunu Yazdır / İndir"
+                >
+                  <Printer size={15} />
+                  <span>Senato PDF Raporu</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    downloadSenateProtocolCsv({
+                      protocols,
+                      sectorMentors,
+                      period: '2025-2026 Akademik Yılı',
+                    });
+                  }}
+                  className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                  title="Excel / CSV Kütüğü İndir"
+                >
+                  <Download size={15} />
+                  <span>Excel / CSV</span>
+                </button>
+              </>
+            )}
             <button
               type="button"
               onClick={() => setShowAddModal(true)}
               className="px-4 py-2.5 bg-[#990000] hover:bg-[#b30000] text-white font-bold text-xs rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer"
             >
               <Plus size={16} />
-              <span>Yeni Protokol Ekle</span>
+              <span>{isCompanyMode ? 'Yeni Protokol Başvurusu' : 'Yeni Protokol Ekle'}</span>
             </button>
           </div>
         </div>
@@ -477,47 +555,51 @@ export default function CorporateProtocolCRM({ currentUser = null, _currentUser 
           }`}
         >
           <Building2 size={15} />
-          <span>Protokoller & Kontenjan CRM ({protocols.length})</span>
+          <span>{isCompanyMode ? `Kurumumuzun Protokolleri (${visibleProtocols.length})` : `Protokoller & Kontenjan CRM (${visibleProtocols.length})`}</span>
         </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('iskur_esbim')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
-            activeTab === 'iskur_esbim'
-              ? 'bg-slate-900 text-white shadow-sm'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-          }`}
-        >
-          <Users size={15} />
-          <span>İŞKUR & ESBİM Entegrasyon Köprüsü</span>
-        </button>
+        {!isCompanyMode && (
+          <>
+            <button
+              type="button"
+              onClick={() => setActiveTab('iskur_esbim')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
+                activeTab === 'iskur_esbim'
+                  ? 'bg-slate-900 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <Users size={15} />
+              <span>İŞKUR & ESBİM Entegrasyon Köprüsü</span>
+            </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('advisory_board')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
-            activeTab === 'advisory_board'
-              ? 'bg-slate-900 text-white shadow-sm'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-          }`}
-        >
-          <Award size={15} />
-          <span>Sektörel Danışma Kurulu & Hamiler ({sectorMentors.length})</span>
-        </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('advisory_board')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
+                activeTab === 'advisory_board'
+                  ? 'bg-slate-900 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <Award size={15} />
+              <span>Sektörel Danışma Kurulu & Hamiler ({sectorMentors.length})</span>
+            </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('senate_report')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
-            activeTab === 'senate_report'
-              ? 'bg-slate-900 text-white shadow-sm'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-          }`}
-        >
-          <FileText size={15} />
-          <span>Senato & Rektörlük Rapor Masası</span>
-        </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('senate_report')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
+                activeTab === 'senate_report'
+                  ? 'bg-slate-900 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <FileText size={15} />
+              <span>Senato & Rektörlük Rapor Masası</span>
+            </button>
+          </>
+        )}
       </div>
 
       {/* ─── TAB 1: PROTOCOLS & CRM LIST ─── */}
@@ -703,7 +785,7 @@ export default function CorporateProtocolCRM({ currentUser = null, _currentUser 
                           </td>
 
                           <td className="p-3.5 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
+                            <div className="flex items-center justify-end gap-1.5 flex-wrap">
                               <button
                                 type="button"
                                 onClick={() => {
@@ -717,16 +799,54 @@ export default function CorporateProtocolCRM({ currentUser = null, _currentUser 
                               </button>
                               <button
                                 type="button"
-                                onClick={() => {
-                                  setSelectedProtocol(p);
-                                  setShowRenewModal(true);
-                                }}
-                                className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold rounded-lg text-[11px] transition-colors border border-amber-200 cursor-pointer"
-                                title="Süreyi Uzat & Kontenjan Ekle"
+                                onClick={() => exportBilateralProtocolDraftPdf(p)}
+                                className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold rounded-lg text-[11px] transition-colors border border-blue-200 cursor-pointer"
+                                title="İkili Resmî Protokol Taslağı Yazdır / PDF"
                               >
-                                Yenile
+                                Taslak PDF
                               </button>
-                              {st !== PROTOCOL_STATUS.TERMINATED && (
+                              {!isCompanyMode && (st === PROTOCOL_STATUS.PENDING_APPROVAL || st === PROTOCOL_STATUS.UNDER_REVIEW || st === PROTOCOL_STATUS.REVISION_REQUESTED) && (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleAdminProtocolDecision(p, PROTOCOL_STATUS.ACTIVE)}
+                                    className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-[11px] transition-colors cursor-pointer"
+                                    title="Protokolü Onayla ve Yürürlüğe Al"
+                                  >
+                                    Onayla
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleAdminProtocolDecision(p, PROTOCOL_STATUS.REVISION_REQUESTED, 'Lütfen vergi/yetkili bilgilerini ve kontenjan kapsamını güncelleyin.')}
+                                    className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold rounded-lg text-[11px] border border-amber-200 transition-colors cursor-pointer"
+                                    title="Revizyon Talep Et"
+                                  >
+                                    Revizyon
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleAdminProtocolDecision(p, PROTOCOL_STATUS.REJECTED, 'Kurumsal değerlendirme kriterlerine uygun bulunmadı.')}
+                                    className="px-2 py-1 text-rose-600 hover:bg-rose-50 font-bold rounded-lg text-[11px] transition-colors cursor-pointer"
+                                    title="Başvuruyu Reddet"
+                                  >
+                                    Reddet
+                                  </button>
+                                </>
+                              )}
+                              {!isCompanyMode && st !== PROTOCOL_STATUS.PENDING_APPROVAL && st !== PROTOCOL_STATUS.REJECTED && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedProtocol(p);
+                                    setShowRenewModal(true);
+                                  }}
+                                  className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold rounded-lg text-[11px] transition-colors border border-amber-200 cursor-pointer"
+                                  title="Süreyi Uzat & Kontenjan Ekle"
+                                >
+                                  Yenile
+                                </button>
+                              )}
+                              {!isCompanyMode && st !== PROTOCOL_STATUS.TERMINATED && st !== PROTOCOL_STATUS.REJECTED && (
                                 <button
                                   type="button"
                                   onClick={() => handleTerminateProtocol(p)}
@@ -1391,6 +1511,42 @@ export default function CorporateProtocolCRM({ currentUser = null, _currentUser 
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
+                  <label className="font-bold text-slate-700 block mb-1">Vergi Numarası *</label>
+                  <input
+                    type="text"
+                    required={isCompanyMode}
+                    value={newProtocol.taxNo}
+                    onChange={(e) => setNewProtocol({ ...newProtocol, taxNo: e.target.value })}
+                    placeholder="10 haneli VKN"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">MERSİS / Ticaret Sicil No</label>
+                  <input
+                    type="text"
+                    value={newProtocol.mersisNo}
+                    onChange={(e) => setNewProtocol({ ...newProtocol, mersisNo: e.target.value })}
+                    placeholder="16 haneli MERSİS No"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Resmî Şirket Adresi *</label>
+                <input
+                  type="text"
+                  required={isCompanyMode}
+                  value={newProtocol.companyAddress}
+                  onChange={(e) => setNewProtocol({ ...newProtocol, companyAddress: e.target.value })}
+                  placeholder="İlçe / İl ve açık merkez adresi"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
                   <label className="font-bold text-slate-700 block mb-1">Taahhüt Kontenjan (Sayı) *</label>
                   <input
                     type="number"
@@ -1403,61 +1559,66 @@ export default function CorporateProtocolCRM({ currentUser = null, _currentUser 
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Yerleşen (Başlangıç)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={newProtocol.placedCount}
-                    onChange={(e) => setNewProtocol({ ...newProtocol, placedCount: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl"
-                  />
+                  <label className="font-bold text-slate-700 block mb-1">Hedef Fakülte / Birim *</label>
+                  <select
+                    value={newProtocol.assignedFaculty}
+                    onChange={(e) => setNewProtocol({ ...newProtocol, assignedFaculty: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white"
+                  >
+                    <option value="Tüm Fakülte ve MYO Programları">Tüm Fakülte ve MYO Programları</option>
+                    <option value="Mühendislik ve Mimarlık Fakültesi">Mühendislik ve Mimarlık Fakültesi</option>
+                    <option value="İşletme ve Yönetim Bilimleri Fakültesi">İşletme ve Yönetim Bilimleri Fakültesi</option>
+                    <option value="Sağlık Bilimleri Fakültesi">Sağlık Bilimleri Fakültesi</option>
+                    <option value="Meslek Yüksekokulu (MYO)">Meslek Yüksekokulu (MYO)</option>
+                  </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">İmza Tarihi *</label>
-                  <input
-                    type="date"
-                    required
-                    value={newProtocol.signedDate}
-                    onChange={(e) => setNewProtocol({ ...newProtocol, signedDate: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl"
-                  />
-                </div>
-
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">Geçerlilik Bitiş Tarihi *</label>
-                  <input
-                    type="date"
-                    required
-                    value={newProtocol.validUntil}
-                    onChange={(e) => setNewProtocol({ ...newProtocol, validUntil: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">Yetkili Adı Soyadı *</label>
+                  <label className="font-bold text-slate-700 block mb-1">İmza Yetkilisi Adı Soyadı *</label>
                   <input
                     type="text"
                     required
                     value={newProtocol.contactPerson}
                     onChange={(e) => setNewProtocol({ ...newProtocol, contactPerson: e.target.value })}
-                    placeholder="Örn: Dr. Mehmet Yılmaz"
+                    placeholder="Örn: Mehmet Yılmaz"
                     className="w-full px-3 py-2 border border-slate-200 rounded-xl"
                   />
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Yetkili E-posta</label>
+                  <label className="font-bold text-slate-700 block mb-1">Yetkili Unvanı</label>
+                  <input
+                    type="text"
+                    value={newProtocol.contactTitle}
+                    onChange={(e) => setNewProtocol({ ...newProtocol, contactTitle: e.target.value })}
+                    placeholder="İK Direktörü / Genel Müdür"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Yetkili E-posta *</label>
                   <input
                     type="email"
+                    required
                     value={newProtocol.contactEmail}
                     onChange={(e) => setNewProtocol({ ...newProtocol, contactEmail: e.target.value })}
                     placeholder="ornek@firma.com"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Yetkili Telefon</label>
+                  <input
+                    type="tel"
+                    value={newProtocol.contactPhone}
+                    onChange={(e) => setNewProtocol({ ...newProtocol, contactPhone: e.target.value })}
+                    placeholder="+90 212 000 00 00"
                     className="w-full px-3 py-2 border border-slate-200 rounded-xl"
                   />
                 </div>
@@ -1469,10 +1630,24 @@ export default function CorporateProtocolCRM({ currentUser = null, _currentUser 
                   rows={2}
                   value={newProtocol.scope}
                   onChange={(e) => setNewProtocol({ ...newProtocol, scope: e.target.value })}
-                  placeholder="Staj ve istihdam kapsamı, burs imkanları ve akademik iş birliği maddeleri..."
+                  placeholder="Staj kontenjanı, mezun istihdam önceliği, kariyer fuarı katılımı ve Ar-Ge iş birliği maddeleri..."
                   className="w-full px-3 py-2 border border-slate-200 rounded-xl"
                 />
               </div>
+
+              {isCompanyMode && (
+                <label className="flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(newProtocol.sgkLawCommitment)}
+                    onChange={(e) => setNewProtocol({ ...newProtocol, sgkLawCommitment: e.target.checked })}
+                    className="mt-0.5 rounded border-slate-300 text-[#0A2342]"
+                  />
+                  <span className="text-[11px] text-slate-600 font-medium leading-snug">
+                    3308 Sayılı Mesleki Eğitim Kanunu, 5510 Sayılı Kanun (5/b) SGK staj hükümleri ve 6698 Sayılı KVKK ilkelerine uygun iş birliği yapacağımızı beyan ederim. Başvurumuz <strong>Kariyer Geliştirme Koordinatörlüğü</strong> incelemesi sonrası yürürlüğe girecektir.
+                  </span>
+                </label>
+              )}
 
               <div className="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
                 <button

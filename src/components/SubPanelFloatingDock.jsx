@@ -40,78 +40,87 @@ export default function SubPanelFloatingDock({
 
   // Kovan Dalı Egemenliği (Her kovan kendi temasını ve geri dönüş hedefini mutlak korur)
   const currentHive = (
-    (safeBranch && ['alumni', 'company', 'staff', 'admin'].includes(safeBranch)) ? safeBranch :
-    (safePropRole && ['alumni', 'company', 'staff', 'admin'].includes(safePropRole)) ? safePropRole :
-    (effectiveCurrentUser?.role && ['alumni', 'company', 'staff', 'admin', 'employer'].includes(effectiveCurrentUser.role))
+    (safeBranch && ['student', 'alumni', 'company', 'staff', 'admin'].includes(safeBranch)) ? safeBranch :
+    (safePropRole && ['student', 'alumni', 'company', 'staff', 'admin'].includes(safePropRole)) ? safePropRole :
+    (effectiveCurrentUser?.role && ['student', 'alumni', 'company', 'staff', 'admin', 'employer'].includes(effectiveCurrentUser.role))
       ? (effectiveCurrentUser.role === 'employer' ? 'company' : effectiveCurrentUser.role)
       : 'alumni'
   );
 
+  const isStudent = currentHive === 'student';
   const isAlumni = currentHive === 'alumni';
   const isStaff = currentHive === 'staff';
   const isCompany = currentHive === 'company' || currentHive === 'employer';
   const isAdmin = currentHive === 'admin';
 
-  const userName = effectiveCurrentUser?.name || (isAlumni ? 'Mezun' : isStaff ? 'Kurumsal Personel' : isCompany ? 'Kurumsal Firma' : isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : 'Mezun');
+  const userName = effectiveCurrentUser?.name || (isStudent ? 'Öğrenci' : isAlumni ? 'Mezun' : isStaff ? 'Kurumsal Personel' : isCompany ? 'Kurumsal Firma' : isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : 'Kullanıcı');
   const userAvatar = effectiveCurrentUser?.avatar || effectiveCurrentUser?.logo || '/iesu-logo.svg';
 
   const userId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
 
-  const homeView = isAlumni ? 'alumni' : isStaff ? 'staff' : isCompany ? 'company' : isAdmin ? 'admin' : 'alumni';
+  const homeView = isStudent ? 'student' : isAlumni ? 'alumni' : isStaff ? 'staff' : isCompany ? 'company' : isAdmin ? 'admin' : 'alumni';
 
   // Tema Renkleri
   const borderColor = 
+    isStudent ? 'border-red-100 dark:border-rose-500/40' :
     isAlumni ? 'border-emerald-100 dark:border-emerald-500/40' :
     isStaff ? 'border-indigo-200 dark:border-indigo-500/40' :
     isCompany ? 'border-blue-200 dark:border-blue-500/40' :
     'border-amber-200 dark:border-amber-500/40';
 
   const shadowColor = 
+    isStudent ? 'shadow-[0_15px_40px_rgba(153,0,0,0.18)]' :
     isAlumni ? 'shadow-[0_15px_40px_rgba(5,150,105,0.18)]' :
     isStaff ? 'shadow-[0_15px_40px_rgba(67,56,202,0.18)]' :
     isCompany ? 'shadow-[0_15px_40px_rgba(30,58,95,0.18)]' :
     'shadow-[0_15px_40px_rgba(180,83,9,0.18)]';
 
   const primaryBg = 
+    isStudent ? 'bg-[#990000]' :
     isAlumni ? 'bg-[#059669]' :
     isStaff ? 'bg-[#4338ca]' :
     isCompany ? 'bg-[#1e3a5f]' :
     'bg-[#b45309]';
 
   const primaryText = 
+    isStudent ? 'text-[#990000] dark:text-rose-300' :
     isAlumni ? 'text-[#059669] dark:text-emerald-300' :
     isStaff ? 'text-[#4338ca] dark:text-indigo-300' :
     isCompany ? 'text-[#1e3a5f] dark:text-sky-300' :
     'text-[#b45309] dark:text-amber-300';
 
   const hoverBg = 
+    isStudent ? 'hover:bg-red-50 dark:hover:bg-slate-800' :
     isAlumni ? 'hover:bg-emerald-50 dark:hover:bg-slate-800' :
     isStaff ? 'hover:bg-indigo-50 dark:hover:bg-slate-800' :
     isCompany ? 'hover:bg-blue-50 dark:hover:bg-slate-800' :
     'hover:bg-amber-50 dark:hover:bg-slate-800';
 
   const gradientAction1 = 
+    isStudent ? 'bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 shadow-red-900/40 border-red-300/40' :
     isAlumni ? 'bg-gradient-to-tr from-emerald-800 via-[#059669] to-teal-600 shadow-emerald-900/40 border-emerald-300/40' :
     isStaff ? 'bg-gradient-to-tr from-indigo-900 via-[#4338ca] to-indigo-600 shadow-indigo-950/40 border-indigo-300/40' :
     isCompany ? 'bg-gradient-to-tr from-indigo-700 via-[#1e3a5f] to-slate-900 shadow-blue-950/40 border-blue-300/40' :
     'bg-gradient-to-tr from-amber-700 via-[#b45309] to-yellow-600 shadow-amber-900/40 border-amber-300/40';
 
   const gradientAction2 = 
+    isStudent ? 'bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 shadow-red-900/40 border-red-300/40' :
     isAlumni ? 'bg-gradient-to-tr from-emerald-800 via-[#059669] to-teal-600 shadow-emerald-900/40 border-emerald-300/40' :
     isStaff ? 'bg-gradient-to-tr from-slate-800 via-[#4338ca] to-indigo-700 shadow-indigo-900/40 border-indigo-300/40' :
     isCompany ? 'bg-gradient-to-tr from-blue-700 via-[#1e3a5f] to-indigo-800 shadow-blue-950/40 border-blue-300/40' :
     'bg-gradient-to-tr from-amber-700 via-[#b45309] to-yellow-600 shadow-amber-900/40 border-amber-300/40';
 
   const profileBorder = 
+    isStudent ? 'border-[#990000]' :
     isAlumni ? 'border-[#059669]' :
     isStaff ? 'border-[#4338ca]' :
     isCompany ? 'border-[#1e3a5f]' :
     'border-[#b45309]';
 
   // 2. Buton Hedefi ve Başlığı (Her Kovana Özgü Kimlik ve Eylem)
-  const action1View = isCompany ? 'company_ats' : isStaff ? 'admin_cms' : isAlumni ? 'global_map' : 'admin_cms';
-  const action1Title = isCompany ? 'ATS Aday Takip Panosu' : isStaff ? 'Personel Çalışma Paneli (CMS)' : isAlumni ? 'Küresel Mezun Haritası' : 'Yönetim Konsolu (CMS)';
-  const Action1Icon = isCompany ? Briefcase : (isStaff || isAdmin) ? LayoutDashboard : Globe;
+  const action1View = isStudent ? 'staj' : isCompany ? 'company_ats' : isStaff ? 'admin_cms' : isAlumni ? 'global_map' : 'admin_cms';
+  const action1Title = isStudent ? 'Staj & Ulusal Staj Masası' : isCompany ? 'ATS Aday Takip Panosu' : isStaff ? 'Personel Çalışma Paneli (CMS)' : isAlumni ? 'Küresel Mezun Haritası' : 'Yönetim Konsolu (CMS)';
+  const Action1Icon = (isStudent || isCompany) ? Briefcase : (isStaff || isAdmin) ? LayoutDashboard : Globe;
 
   // 3. İkinci Buton Hedefi ve Başlığı
   const action2View = isCompany ? 'create_job' : 'explore';

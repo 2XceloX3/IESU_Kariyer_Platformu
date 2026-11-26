@@ -44,22 +44,27 @@ export default function UserProfile({
   const careerFairApplications = useAppStore(state => state.careerFairApplications) || [];
   const adminMessages = useAppStore(state => state.adminMessages) || [];
 
+  const corporateProtocols = useAppStore(state => state.corporateProtocols) || [];
+
   // Aktif Portal Dalı (CRITICAL INVARIANT: Follows VIEWER, never profile subject)
   const isViewerAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin';
   const isViewerStaff = !isViewerAdmin && (userRole === 'staff' || effectiveCurrentUser?.role === 'staff');
   const currentBranch = 
-    (viewerHive && ['alumni', 'company', 'staff', 'admin'].includes(viewerHive) && (viewerHive !== 'admin' || isViewerAdmin) && (viewerHive !== 'staff' || isViewerAdmin || isViewerStaff)) ? viewerHive :
+    (viewerHive && ['student', 'alumni', 'company', 'staff', 'admin'].includes(viewerHive) && (viewerHive !== 'admin' || isViewerAdmin) && (viewerHive !== 'staff' || isViewerAdmin || isViewerStaff)) ? viewerHive :
     ((isViewerAdmin || isViewerStaff) && (previousView === 'staff' || previousView === 'personel' || activePortalBranch === 'staff')) ? 'staff' :
+    (previousView === 'student' || previousView === 'staj' || previousView === 'student_kgb' || activePortalBranch === 'student') ? 'student' :
     (previousView === 'alumni' || previousView === 'mbs' || previousView === 'mezun_dernek' || activePortalBranch === 'alumni') ? 'alumni' :
     (previousView === 'company' || previousView === 'company_ats' || previousView === 'create_job' || activePortalBranch === 'company') ? 'company' :
     (isViewerAdmin && (previousView === 'admin' || previousView === 'admin_cms' || previousView === 'yonetim_konsolu' || activePortalBranch === 'admin')) ? 'admin' :
     (isViewerStaff ? 'staff' :
-    (effectiveCurrentUser?.hive && ['alumni', 'company', 'staff', 'admin'].includes(effectiveCurrentUser.hive) && (effectiveCurrentUser.hive !== 'admin' || isViewerAdmin) ? effectiveCurrentUser.hive :
-    (effectiveCurrentUser?.role && ['alumni', 'company', 'staff', 'admin', 'employer'].includes(effectiveCurrentUser.role) ? (effectiveCurrentUser.role === 'employer' ? 'company' : effectiveCurrentUser.role) :
-    (['alumni', 'company', 'staff'].includes(userRole) ? userRole : 'alumni'))));
+    (effectiveCurrentUser?.hive && ['student', 'alumni', 'company', 'staff', 'admin'].includes(effectiveCurrentUser.hive) && (effectiveCurrentUser.hive !== 'admin' || isViewerAdmin) ? effectiveCurrentUser.hive :
+    (effectiveCurrentUser?.role && ['student', 'alumni', 'company', 'staff', 'admin', 'employer'].includes(effectiveCurrentUser.role) ? (effectiveCurrentUser.role === 'employer' ? 'company' : effectiveCurrentUser.role) :
+    (['student', 'alumni', 'company', 'staff'].includes(userRole) ? userRole : 'alumni'))));
 
   const getViewerActionBtnClass = () => {
     switch (currentBranch) {
+      case 'student':
+        return 'bg-[#990000] hover:bg-red-800 text-white shadow-red-900/20';
       case 'alumni':
         return 'bg-[#059669] hover:bg-emerald-700 text-white shadow-emerald-900/20';
       case 'staff':
@@ -74,7 +79,7 @@ export default function UserProfile({
   };
 
   // ─── KENDİ PROFİLİM vs ZİYARETÇİ KONTROLÜ (DAL BAZLI İZOLASYON) ───
-  const isStudentBranch = false;
+  const isStudentBranch = currentBranch === 'student';
   const isAlumniBranch = currentBranch === 'alumni';
   const isAcademicBranch = false;
   const isStaffBranch = currentBranch === 'staff';
@@ -891,7 +896,7 @@ export default function UserProfile({
                 </p>
 
                 <div className="flex items-center gap-4 mt-3 text-xs text-gray-500 font-semibold flex-wrap">
-                  <span>🎓 Sınıf: <b>{user?.grade || user?.year || 'Belirtilmedi'}</b></span>
+                  <span>🎓 Sınıf: <b>{user?.classLevel || user?.grade || user?.year || 'Belirtilmedi'}</b></span>
                   <span> Not ortalaması: <b className="text-emerald-600">{user?.gpa !== '' && user?.gpa != null ? `${user.gpa} / 4.00` : 'Belirtilmedi'}</b></span>
                   {user?.doubleMajor && <span>• ÇAP: <b className="text-purple-600">{user.doubleMajor}</b></span>}
                   {(user?.obsVerified || user?.yoksisVerified || (user?.badges && user.badges.includes(OBS_STANDARDS.BADGE_LABEL))) && (
@@ -1120,28 +1125,19 @@ export default function UserProfile({
                   <Briefcase size={18} className="text-[#990000]" /> İş & Staj Deneyimleri
                 </h3>
                 <span className="bg-red-50 text-[#990000] text-xs font-bold px-2.5 py-0.5 rounded-full">
-                  {((user?.experiences || currentUser?.experiences) || [1]).length} Deneyim
+                  {(Array.isArray(user?.experiences) ? user.experiences : (isSelf && Array.isArray(currentUser?.experiences) ? currentUser.experiences : [])).length} Deneyim
                 </span>
               </div>
 
               {(() => {
-                const rawExp = user?.experiences || currentUser?.experiences;
-                const expList = Array.isArray(rawExp) && rawExp.length > 0 ? rawExp : [
-                  {
-                    id: 'exp-mock-1',
-                    company: 'Teknopark İstanbul Bilişim A.Ş.',
-                    role: 'Stajyer Yazılım Geliştirici (Frontend)',
-                    type: 'Staj',
-                    location: 'İstanbul (Hibrit)',
-                    startDate: '2025-06-15',
-                    endDate: '2025-08-30',
-                    isCurrent: false,
-                    description: 'React ve Tailwind CSS ile kurumsal dashboard arayüzlerinin geliştirilmesi, REST API entegrasyonu ve Git sürüm kontrolü süreçlerine aktif katılım.',
-                    skills: ['React', 'JavaScript', 'Tailwind CSS', 'Git']
-                  }
-                ];
+                const rawExp = Array.isArray(user?.experiences) && user.experiences.length > 0
+                  ? user.experiences
+                  : (isSelf && Array.isArray(currentUser?.experiences) ? currentUser.experiences : []);
+                const expList = rawExp;
 
-                return (
+                return expList.length === 0 ? (
+                  <p className="text-xs text-gray-500 py-2">Henüz iş veya staj deneyimi eklenmedi.</p>
+                ) : (
                   <div className="space-y-4">
                     {expList.map((exp, idx) => (
                       <div key={exp.id || idx} className="flex items-start gap-3.5 pb-4 last:pb-0 border-b last:border-0 border-gray-100">
@@ -1150,7 +1146,7 @@ export default function UserProfile({
                         </div>
                         <div className="min-w-0 flex-1 space-y-1">
                           <div className="flex items-center justify-between gap-2 flex-wrap">
-                            <h4 className="font-black text-sm text-gray-900">{exp.role}</h4>
+                            <h4 className="font-black text-sm text-gray-900">{exp.role || exp.title || 'Pozisyon'}</h4>
                             <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
                               {exp.type || 'Staj'}
                             </span>
@@ -1187,26 +1183,19 @@ export default function UserProfile({
                   <Code2 size={18} className="text-[#990000]" /> Projeler & Portfolyo
                 </h3>
                 <span className="bg-red-50 text-[#990000] text-xs font-bold px-2.5 py-0.5 rounded-full">
-                  {((user?.projects || currentUser?.projects) || [1]).length} Proje
+                  {(Array.isArray(user?.projects) ? user.projects : (isSelf && Array.isArray(currentUser?.projects) ? currentUser.projects : [])).length} Proje
                 </span>
               </div>
 
               {(() => {
-                const rawProj = user?.projects || currentUser?.projects;
-                const projList = Array.isArray(rawProj) && rawProj.length > 0 ? rawProj : [
-                  {
-                    id: 'proj-mock-1',
-                    title: 'İESÜ Akıllı Kampüs ve Kariyer Portalı',
-                    role: 'Proje Lideri & Frontend Geliştirici',
-                    date: '2025 - 2026',
-                    liveUrl: 'https://kariyer.esenyurt.edu.tr',
-                    githubUrl: 'https://github.com/ogrenci/iesu-kariyer-portal',
-                    description: 'Öğrencilerin staj bulmasını ve mezun ağını güçlendirmeyi hedefleyen web uygulaması. Gerçek zamanlı mesajlaşma ve yapay zeka destekli CV oluşturucu içerir.',
-                    technologies: ['React', 'Tailwind CSS', 'Vite', 'Firebase']
-                  }
-                ];
+                const rawProj = Array.isArray(user?.projects) && user.projects.length > 0
+                  ? user.projects
+                  : (isSelf && Array.isArray(currentUser?.projects) ? currentUser.projects : []);
+                const projList = Array.isArray(rawProj) && rawProj.length > 0 ? rawProj : [];
 
-                return (
+                return projList.length === 0 ? (
+                  <p className="text-xs text-gray-500 py-2">Henüz proje veya portfolyo çalışması eklenmedi.</p>
+                ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                     {projList.map((proj, idx) => (
                       <div key={proj.id || idx} className="p-4 bg-slate-50/70 rounded-2xl border border-slate-100 flex flex-col justify-between space-y-3">
@@ -1291,21 +1280,22 @@ export default function UserProfile({
                 <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
                   <span className="text-gray-500 font-bold">Askerlik:</span>
                   <span className="font-black text-gray-900">
-                    {user?.militaryStatus || currentUser?.militaryStatus || 'Belirtilmedi'}
+                    {user?.militaryStatus || (isSelf ? currentUser?.militaryStatus : null) || 'Belirtilmedi'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
                   <span className="text-gray-500 font-bold">Sürücü Belgesi:</span>
                   <span className="font-black text-emerald-700">
-                    {Array.isArray(user?.drivingLicenseClasses || currentUser?.drivingLicenseClasses) && (user?.drivingLicenseClasses || currentUser?.drivingLicenseClasses).length > 0
-                      ? (user?.drivingLicenseClasses || currentUser?.drivingLicenseClasses || []).join(', ')
-                      : 'Belirtilmedi'}
+                    {(() => {
+                      const dl = user?.drivingLicenseClasses || (isSelf ? currentUser?.drivingLicenseClasses : null);
+                      return Array.isArray(dl) && dl.length > 0 ? dl.join(', ') : 'Belirtilmedi';
+                    })()}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
                   <span className="text-gray-500 font-bold">Çalışma Tercihi:</span>
                   <span className="font-black text-[#990000]">
-                    {user?.workModelPreference || currentUser?.workModelPreference || 'Belirtilmedi'}
+                    {user?.workModelPreference || (isSelf ? currentUser?.workModelPreference : null) || 'Belirtilmedi'}
                   </span>
                 </div>
               </div>
@@ -1318,7 +1308,7 @@ export default function UserProfile({
               </h3>
               <div className="space-y-2">
                 {(() => {
-                  const rawExams = user?.languageExams || currentUser?.languageExams;
+                  const rawExams = user?.languageExams || (isSelf ? currentUser?.languageExams : null);
                   const examList = Array.isArray(rawExams) ? rawExams : [];
 
                   return examList.length ? examList.map((exam, idx) => (
@@ -1343,13 +1333,13 @@ export default function UserProfile({
               </h3>
               <div className="space-y-2">
                 {(() => {
-                  const rawCerts = user?.certificates || currentUser?.certificates;
+                  const rawCerts = user?.certificates || (isSelf ? currentUser?.certificates : null);
                   const certList = Array.isArray(rawCerts) ? rawCerts : [];
 
                   return certList.length ? certList.map((cert, idx) => (
                     <div key={cert.id || idx} className="p-2.5 bg-amber-50/40 border border-amber-100/70 rounded-xl">
-                      <p className="text-xs font-black text-gray-900 leading-snug">{cert.title}</p>
-                      <p className="text-[11px] text-gray-600 mt-0.5">{cert.issuer} • <span className="text-amber-700 font-bold">{cert.issueDate}</span></p>
+                      <p className="text-xs font-black text-gray-900 leading-snug">{cert.title || cert.name}</p>
+                      <p className="text-[11px] text-gray-600 mt-0.5">{cert.issuer || 'Kurum'}{cert.issueDate ? <> • <span className="text-amber-700 font-bold">{cert.issueDate}</span></> : null}</p>
                     </div>
                   )) : <p className="text-xs text-gray-500">Sertifika eklenmedi.</p>;
                 })()}
@@ -1954,9 +1944,26 @@ export default function UserProfile({
                   <h1 className="text-xl sm:text-2xl font-black text-slate-900 leading-tight">
                     {activeCompanyUser?.name || 'Kurumsal Firma'}
                   </h1>
-                  <span className="bg-gradient-to-r from-[#0A2342] to-blue-900 text-blue-200 border border-blue-400/30 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-sm flex items-center gap-1">
-                    <ShieldCheck size={12} className="text-blue-400" /> İESÜ Akredite Kurumsal Partner
-                  </span>
+                  {(() => {
+                    const compName = (activeCompanyUser?.name || '').trim().toLowerCase();
+                    const hasActiveProto = Boolean(
+                      activeCompanyUser?.isProtocol ||
+                      activeCompanyUser?.isVerified ||
+                      (corporateProtocols || []).some(p =>
+                        ((p.companyName || '').trim().toLowerCase() === compName || p.companyId === activeCompanyUser?.id) &&
+                        p.status === 'ACTIVE'
+                      )
+                    );
+                    return hasActiveProto ? (
+                      <span className="bg-gradient-to-r from-[#0A2342] to-blue-900 text-blue-200 border border-blue-400/30 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-sm flex items-center gap-1">
+                        <ShieldCheck size={12} className="text-blue-400" /> İESÜ Akredite Protokollü Partner
+                      </span>
+                    ) : (
+                      <span className="bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
+                        <Building2 size={12} className="text-slate-500" /> Kayıtlı Kurumsal İşveren
+                      </span>
+                    );
+                  })()}
                 </div>
 
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-2">
@@ -1981,8 +1988,8 @@ export default function UserProfile({
                     </a>
                   )}
                 </div>
-                {activeCompanyUser?.description && (
-                  <p className="text-xs sm:text-sm text-slate-700 mt-3.5 leading-relaxed max-w-2xl font-medium bg-slate-50 p-3.5 rounded-2xl border border-slate-200/70">{activeCompanyUser.description}</p>
+                {(activeCompanyUser?.description || activeCompanyUser?.bio || activeCompanyUser?.summary) && (
+                  <p className="text-xs sm:text-sm text-slate-700 mt-3.5 leading-relaxed max-w-2xl font-medium bg-slate-50 p-3.5 rounded-2xl border border-slate-200/70">{activeCompanyUser.description || activeCompanyUser.bio || activeCompanyUser.summary}</p>
                 )}
               </div>
 
@@ -2587,24 +2594,26 @@ export default function UserProfile({
         <div className="w-full max-w-[1700px] mx-auto px-4 h-16 flex items-center justify-between">
           
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer" onClick={() => {
-            const target = (previousView && ['alumni', 'company', 'staff', 'admin'].includes(previousView))
+            const target = (previousView && ['student', 'alumni', 'company', 'staff', 'admin'].includes(previousView))
               ? (previousView === 'admin' && !isViewerAdmin ? (currentBranch || 'alumni') : previousView === 'staff' && !isViewerAdmin && !isViewerStaff ? (currentBranch || 'alumni') : previousView)
-              : currentBranch || (isViewerAdmin ? 'admin' : isViewerStaff ? 'staff' : (userRole === 'employer' || userRole === 'company') ? 'company' : 'alumni');
+              : currentBranch || (isViewerAdmin ? 'admin' : isViewerStaff ? 'staff' : userRole === 'student' ? 'student' : (userRole === 'employer' || userRole === 'company') ? 'company' : 'alumni');
             setView(target);
           }}>
             <Logo 
-              color={currentBranch === 'alumni' ? 'emerald' : currentBranch === 'staff' ? 'indigo' : currentBranch === 'company' ? 'blue' : 'amber'} 
+              color={currentBranch === 'student' ? 'red' : currentBranch === 'alumni' ? 'emerald' : currentBranch === 'staff' ? 'indigo' : currentBranch === 'company' ? 'blue' : 'amber'} 
               className="h-10 w-auto hover:scale-105 transition-transform shrink-0" 
             />
             <div className="hidden sm:block text-left">
               <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${
+                currentBranch === 'student' ? 'text-[#990000]' :
                 currentBranch === 'alumni' ? 'text-emerald-800' :
                 currentBranch === 'staff' ? 'text-indigo-900' :
                 currentBranch === 'company' ? 'text-blue-900' :
                 'text-amber-900'
               }`}>İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                {currentBranch === 'alumni' ? 'İESÜ Mezunlar Portalı' :
+                {currentBranch === 'student' ? 'Öğrenci Kariyer & Staj Portalı' :
+                 currentBranch === 'alumni' ? 'İESÜ Mezunlar Portalı' :
                  currentBranch === 'staff' ? 'Kurumsal Personel & KGM Portalı' :
                  currentBranch === 'company' ? 'Kurumsal İnsan Kaynakları Portalı' :
                  'Kariyer Geliştirme Koordinatörlüğü (Yönetim)'}
@@ -2722,14 +2731,16 @@ export default function UserProfile({
                     onClick={() => setView?.(user?.role === 'staff' ? 'staff' : 'admin')} 
                     className={`flex-1 md:flex-none flex items-center justify-center gap-2 ${user?.role === 'staff' ? 'bg-gradient-to-r from-indigo-700 via-indigo-800 to-slate-900 hover:from-indigo-600 hover:to-slate-800 border-indigo-400/30' : 'bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 hover:from-amber-500 hover:to-amber-700 border-amber-400/30'} text-white px-5 py-2.5 rounded-xl text-xs font-black transition-all shadow-md active:scale-95 cursor-pointer border`}
                   >
-                    <LayoutDashboard size={16} /> Yönetim Merkezini Aç
+                    <LayoutDashboard size={16} /> {user?.role === 'staff' ? 'Personel Panelini Aç' : 'Yönetim Merkezini Aç'}
                   </button>
-                  <button 
-                    onClick={() => setView?.('cms_export')} 
-                    className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-black transition-all shadow-md active:scale-95 cursor-pointer"
-                  >
-                    <Download size={16} /> Data Pool Export
-                  </button>
+                  {user?.role !== 'staff' && (
+                    <button 
+                      onClick={() => setView?.('cms_export')} 
+                      className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-black transition-all shadow-md active:scale-95 cursor-pointer"
+                    >
+                      <Download size={16} /> Veri Havuzu & Excel
+                    </button>
+                  )}
                   <button 
                     onClick={() => setView?.('profile_update')} 
                     className="flex items-center justify-center p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all cursor-pointer" 
@@ -2749,38 +2760,65 @@ export default function UserProfile({
                 {/* System Privileges Card */}
                 <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                   <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <ShieldCheck size={18} className="text-amber-600" /> Sistem Yetkileri & İdari Lisans
+                    <ShieldCheck size={18} className={user?.role === 'staff' ? 'text-indigo-600' : 'text-amber-600'} />
+                    {user?.role === 'staff' ? 'Görev Yetki Kapsamı (KGM Personel)' : 'Sistem Yetkileri & İdari Lisans'}
                   </h3>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3 p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
-                      <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-xs font-bold text-slate-900">Tüm Sistem Modüllerine Tam Erişim</p>
-                        <p className="text-[11px] text-slate-500">Öğrenci, Mezun, Firma ve Akademik panellerin tamamı erişilebilir.</p>
+                  {user?.role === 'staff' ? (
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3 p-2.5 rounded-xl bg-indigo-50/60 border border-indigo-100">
+                        <CheckCircle2 size={16} className="text-indigo-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-xs font-bold text-slate-900">Operasyonel KGM Çalışma Erişimi</p>
+                          <p className="text-[11px] text-slate-500">Öğrenci stajları, mezun kayıtları, firma ilanları ve içerik operasyonlarını yönetir.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 p-2.5 rounded-xl bg-indigo-50/60 border border-indigo-100">
+                        <CheckCircle2 size={16} className="text-indigo-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-xs font-bold text-slate-900">Protokol & Başvuru Takibi</p>
+                          <p className="text-[11px] text-slate-500">Üniversite-işletme iş birliği taleplerini ve staj/ilan başvurularını inceler.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                        <ShieldCheck size={16} className="text-slate-500 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-xs font-bold text-slate-700">Süper Yönetici Kısıtlaması (RBAC)</p>
+                          <p className="text-[11px] text-slate-500">Personel yetkilendirme, denetim logu ve sistem ayarları yalnızca Süper Yöneticiye açıktır.</p>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-start gap-3 p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
-                      <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-xs font-bold text-slate-900">Kullanıcı & Mezun Onay Yetkisi</p>
-                        <p className="text-[11px] text-slate-500">Diploma doğrulama ve kaydolma taleplerini onaylama yetkisi.</p>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3 p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
+                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-xs font-bold text-slate-900">Tüm Aktif Modüllere Tam Erişim</p>
+                          <p className="text-[11px] text-slate-500">Öğrenci, Mezun, Firma ve Personel panellerinin tamamı üzerinde tam yetki.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
+                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-xs font-bold text-slate-900">Personel & Yetki Yönetimi</p>
+                          <p className="text-[11px] text-slate-500">KGM çalışan hesaplarını oluşturma, kullanıcı adı/şifre tanımlama ve denetleme.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
+                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-xs font-bold text-slate-900">Kurumsal Protokol & İlan Denetimi</p>
+                          <p className="text-[11px] text-slate-500">Üniversite-sanayi protokolleri, şirket onayları ve staj denetimi.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
+                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-xs font-bold text-slate-900">Tam Veri Havuzu & Excel/JSON Çıktısı</p>
+                          <p className="text-[11px] text-slate-500">KVKK maskeli toplu raporlama ve tam veri yedekleme yetkisi.</p>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-start gap-3 p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
-                      <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-xs font-bold text-slate-900">Firma İlan ve Staj Denetimi</p>
-                        <p className="text-[11px] text-slate-500">Kurumsal şirket onayları ve ilan yayın denetimi.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
-                      <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-xs font-bold text-slate-900">Mezun istihdam raporu (önizleme)</p>
-                        <p className="text-[11px] text-slate-500">Mezun istihdam verilerini Excel ve PDF çıktısı alabilme yetkisi.</p>
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Unit Details Card */}

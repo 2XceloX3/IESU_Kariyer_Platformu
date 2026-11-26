@@ -29,6 +29,7 @@ export const DEFAULT_STAFF_ACCOUNTS = [
   {
     id: '101',
     name: 'Kariyer Geliştirme Koordinatörlüğü',
+    username: 'kariyer_admin',
     email: 'kariyer@iesu.edu.tr',
     typeId: '1',
     typeName: 'Süper Admin',
@@ -40,6 +41,7 @@ export const DEFAULT_STAFF_ACCOUNTS = [
   {
     id: '104',
     name: 'Kariyer Geliştirme Merkezi Birim Yöneticisi',
+    username: 'kgm_personel',
     email: 'personel@iesu.edu.tr',
     typeId: '6',
     typeName: 'Birim Yöneticisi',
@@ -52,6 +54,7 @@ export const DEFAULT_STAFF_ACCOUNTS = [
   {
     id: '102',
     name: 'Kurumsal İletişim & İçerik Birimi',
+    username: 'kgm_editor',
     email: 'editor@iesu.edu.tr',
     typeId: '2',
     typeName: 'İçerik Editörü',
@@ -64,6 +67,7 @@ export const DEFAULT_STAFF_ACCOUNTS = [
   {
     id: '103',
     name: 'Mezun İlişkileri Koordinatörlüğü',
+    username: 'mezun_sorumlu',
     email: 'mezun@iesu.edu.tr',
     typeId: '3',
     typeName: 'Mezun İlişkileri Sorumlusu',
@@ -75,12 +79,29 @@ export const DEFAULT_STAFF_ACCOUNTS = [
   }
 ];
 
+export function normalizeStaffUsername(raw = '', fallbackEmail = '') {
+  const cleaned = String(raw || '')
+    .trim()
+    .toLowerCase()
+    .replace(/^@+/, '')
+    .replace(/\s+/g, '_')
+    .replace(/[^a-z0-9._-]/g, '');
+  if (cleaned) return cleaned;
+  const fromEmail = String(fallbackEmail || '').trim().toLowerCase().split('@')[0] || '';
+  return fromEmail.replace(/[^a-z0-9._-]/g, '');
+}
+
 export function loadStaffAccounts() {
   try {
     const raw = typeof window !== 'undefined' ? localStorage.getItem('iesu_staff_accounts_v1') : null;
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.map(acc => ({
+          ...acc,
+          username: acc.username || normalizeStaffUsername('', acc.email)
+        }));
+      }
     }
   } catch { /* intentional */ }
   return DEFAULT_STAFF_ACCOUNTS;
@@ -89,11 +110,12 @@ export function loadStaffAccounts() {
 /**
  * Personel hesabı doğrulama:
  * - Hesap `iesu_staff_accounts_v1` içinde bulunmalıdır (veya varsayılan listede).
+ * - Kullanıcı adı (username) VEYA e-posta + şifre ile doğrulanır.
  * - `typeId === '1'` (Süper Admin) buradan değil, Süper Yönetici akışından doğrulanır.
  * - Pasif hesaplar engellenir.
  */
 export function verifyStaffCredentials(identifier = '', password = '') {
-  const cleanId = String(identifier || '').trim().toLowerCase();
+  const cleanId = String(identifier || '').trim().toLowerCase().replace(/^@+/, '');
   const cleanPass = String(password || '').trim();
   if (!cleanId || !cleanPass) return { ok: false, reason: 'missing' };
 
@@ -101,8 +123,8 @@ export function verifyStaffCredentials(identifier = '', password = '') {
   const matched = accounts.find(a =>
     a.typeId !== '1' &&
     (
-      (a.email && a.email.toLowerCase() === cleanId) ||
-      (a.username && a.username.toLowerCase() === cleanId)
+      (a.username && String(a.username).trim().toLowerCase() === cleanId) ||
+      (a.email && String(a.email).trim().toLowerCase() === cleanId)
     )
   );
 
@@ -133,6 +155,7 @@ export function verifyStaffCredentials(identifier = '', password = '') {
     user: {
       id: `STAFF-${matched.id}`,
       staffAccountId: matched.id,
+      username: matched.username || normalizeStaffUsername('', matched.email),
       name: matched.name,
       email: matched.email,
       role: 'staff',

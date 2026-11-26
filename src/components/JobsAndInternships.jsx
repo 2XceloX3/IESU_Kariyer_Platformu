@@ -351,11 +351,23 @@ export default function JobsAndInternships({
     // Post-apply next step: offer CV builder refresh + applications list
     setPostApplyHint(true);
   };
-  const activeJobs = (jobs||[]).filter(j => 
-    j.status === 'Aktif' || !j.status || 
-    (effectiveRole === 'company' && j.companyId === effectiveCurrentUser?.id) ||
-    isAdminUser
-  );
+  const isAlumniOnly = effectiveRole === 'alumni' && !isAdminUser && effectiveRole !== 'staff';
+  const isStaffOrAdmin = isAdminUser || effectiveRole === 'staff';
+  const isInternshipListing = (job) => {
+    const t = String(job?.type || job?.jobType || job?.category || '').toLocaleLowerCase('tr-TR');
+    const title = String(job?.title || '').toLocaleLowerCase('tr-TR');
+    return t.includes('staj') || title.includes('stajyer') || title.includes('staj ');
+  };
+
+  const activeJobs = (jobs||[]).filter(j => {
+    const visibleByStatus = j.status === 'Aktif' || !j.status ||
+      (effectiveRole === 'company' && j.companyId === effectiveCurrentUser?.id) ||
+      isStaffOrAdmin;
+    if (!visibleByStatus) return false;
+    // Rol Sınırı: Mezun portalında staj/ulusal staj ilanları listelenmez
+    if (isAlumniOnly && isInternshipListing(j)) return false;
+    return true;
+  });
 
   const filteredJobs = (activeJobs || []).filter(job => {
     const q = searchQuery.toLocaleLowerCase('tr-TR');
@@ -363,17 +375,21 @@ export default function JobsAndInternships({
       (job.title || '').toLocaleLowerCase('tr-TR').includes(q) ||
       (job.company || job.companyName || '').toLocaleLowerCase('tr-TR').includes(q) ||
       (job.location || job.city || '').toLocaleLowerCase('tr-TR').includes(q);
-    const matchesType = filterType === 'all' || 
-      (job.type || job.jobType || '').toLocaleLowerCase('tr-TR').includes(filterType);
+    const isStaj = isInternshipListing(job);
+    const matchesType = filterType === 'all' ||
+      (filterType === 'staj' ? isStaj :
+        filterType === 'fulltime' ? !isStaj :
+        (job.type || job.jobType || '').toLocaleLowerCase('tr-TR').includes(filterType));
 
-    const isStaj = (job.type || '').toUpperCase().includes('STAJ') || (job.title || '').toLocaleLowerCase('tr-TR').includes('staj');
     const is3308 = job.isLaw3308Guaranteed !== undefined ? Boolean(job.isLaw3308Guaranteed) : isStaj;
     const hasMeal = job.hasMealAndTransport !== undefined ? Boolean(job.hasMealAndTransport) : isStaj;
     const hasSgk = job.isUniversitySgkApproved !== undefined ? Boolean(job.isUniversitySgkApproved) : isStaj;
 
-    if (guaranteeFilter === 'law3308' && !is3308) return false;
-    if (guaranteeFilter === 'meal_transport' && !hasMeal) return false;
-    if (guaranteeFilter === 'sgk_approved' && !hasSgk) return false;
+    if (!isAlumniOnly) {
+      if (guaranteeFilter === 'law3308' && !is3308) return false;
+      if (guaranteeFilter === 'meal_transport' && !hasMeal) return false;
+      if (guaranteeFilter === 'sgk_approved' && !hasSgk) return false;
+    }
 
     return matchesSearch && matchesType;
   });
@@ -566,15 +582,19 @@ export default function JobsAndInternships({
                 <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-white shrink-0 ${theme.iconBox}`}><Briefcase size={20} strokeWidth={2.5} /></div>
                 <div>
                   <h2 className="text-lg font-black text-gray-900 tracking-tight leading-none">
-                    {effectiveRole === 'admin' ? 'İlan & Staj Denetim Masası' : effectiveRole==='academic'?'İlanlar (Akademik Görünüm)':'İş ve Staj Olanakları'}
+                    {isStaffOrAdmin
+                      ? 'İlan & Staj Denetim Masası'
+                      : isAlumniOnly
+                        ? 'Mezun İş & Kariyer Fırsatları'
+                        : 'İş, Staj & Ulusal Staj Olanakları'}
                   </h2>
                   <p className="text-[12px] text-gray-500 font-medium mt-0.5">
-                    {effectiveRole === 'admin' ? `${activeJobs.length} aktif ilan • ${pendingJobs.length} onay bekleyen` : `${activeJobs.length} aktif ilan - ${myApplicationsCount} başvurum`}
+                    {isStaffOrAdmin ? `${activeJobs.length} aktif ilan • ${pendingJobs.length} onay bekleyen` : `${activeJobs.length} aktif ilan • ${myApplicationsCount} başvurum`}
                   </p>
                 </div>
               </div>
-              {(effectiveRole==='employer' || effectiveRole === 'admin') && (
-                <button onClick={()=>setIsCreatingJob(true)} className={`text-white px-4 py-2 rounded-xl font-black text-[13px] shadow-md hover:shadow-lg flex items-center gap-1.5 shrink-0 hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer ${effectiveRole === 'admin' ? 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700' : 'bg-blue-950 hover:bg-slate-900'}`}>
+              {(effectiveRole === 'employer' || effectiveRole === 'company' || isStaffOrAdmin) && (
+                <button onClick={()=>setIsCreatingJob(true)} className={`text-white px-4 py-2 rounded-xl font-black text-[13px] shadow-md hover:shadow-lg flex items-center gap-1.5 shrink-0 hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer ${isStaffOrAdmin ? 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700' : 'bg-blue-950 hover:bg-slate-900'}`}>
                   <span className="text-lg leading-none">+</span> <span className="hidden sm:inline">Yeni İlan Oluştur</span>
                 </button>
               )}
@@ -582,7 +602,11 @@ export default function JobsAndInternships({
                 <button
                   type="button"
                   onClick={() => setView?.('applications')}
-                  className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs font-black text-[#990000] transition hover:bg-red-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#990000]"
+                  className={`inline-flex min-h-10 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-black transition focus-visible:outline-none focus-visible:ring-2 cursor-pointer ${
+                    isAlumniOnly
+                      ? 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 focus-visible:ring-emerald-600'
+                      : 'border-red-100 bg-red-50 text-[#990000] hover:bg-red-100 focus-visible:ring-[#990000]'
+                  }`}
                 >
                   Başvurularım <span className="rounded-full bg-white px-2 py-0.5">{myApplicationsCount}</span>
                 </button>
@@ -590,40 +614,78 @@ export default function JobsAndInternships({
             </div>
             <div className="px-5 pb-4 flex items-center gap-2 overflow-x-auto">
               {[
-                {id:'ilanlar',label:'Aktif İlanlar',icon:<Briefcase size={14}/>},
-                ...(effectiveRole === 'admin' ? [{id:'onay_bekleyen',label:`Onay Bekleyenler (${pendingJobs.length})`,icon:<Clock size={14}/>}] : []),
-                {id:'ulusal',label:'Ulusal Staj',icon:<Target size={14}/>},
-                {id:'gonullu',label:'İsteğe Bağlı Staj',icon:<Heart size={14}/>}
+                {id:'ilanlar',label: isAlumniOnly ? 'Aktif Kariyer İlanları' : 'Aktif İlanlar',icon:<Briefcase size={14}/>},
+                ...(isStaffOrAdmin ? [{id:'onay_bekleyen',label:`Onay Bekleyenler (${pendingJobs.length})`,icon:<Clock size={14}/>}] : []),
+                ...(!isAlumniOnly ? [
+                  {id:'ulusal',label:'Ulusal Staj (USP)',icon:<Target size={14}/>},
+                  {id:'gonullu',label:'İsteğe Bağlı Staj',icon:<Heart size={14}/>}
+                ] : [])
               ].map(tab=>(
-                <button key={tab.id} onClick={()=>setActiveTab(tab.id)} className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold transition-all whitespace-nowrap active:scale-95 ${activeTab===tab.id?theme.activeTab:'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                <button key={tab.id} onClick={()=>setActiveTab(tab.id)} className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold transition-all whitespace-nowrap active:scale-95 cursor-pointer ${activeTab===tab.id?theme.activeTab:'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
                   {tab.icon} {tab.label}
                 </button>
               ))}
 
-              <button 
-                onClick={() => setShowDocSubmitModal(true)} 
-                className={`px-4 py-2 bg-gradient-to-r ${theme.accentLine} text-white rounded-full text-[12px] font-black shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ml-auto border border-white/30`}
-              >
-                <FileText size={14} /> Staj & Evrak Yükle (Havuz)
-              </button>
+              {!isAlumniOnly && (
+                <button 
+                  onClick={() => setShowDocSubmitModal(true)} 
+                  className={`px-4 py-2 bg-gradient-to-r ${theme.accentLine} text-white rounded-full text-[12px] font-black shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ml-auto border border-white/30`}
+                >
+                  <FileText size={14} /> Staj & Evrak Yükle (Havuz)
+                </button>
+              )}
             </div>
           </div>
 
           {activeTab==='ilanlar'&&(
             <div className="space-y-4 animate-fade-in">
-              <div className="flex flex-col gap-3 bg-white rounded-xl border border-gray-100 px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-[13px] font-bold text-gray-700 flex items-center gap-1.5"><TrendingUp size={15} className={theme.trendingIcon} />{filteredJobs.length} güncel fırsat listeleniyor</p>
-                <label className="relative w-full sm:max-w-sm">
-                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="search"
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder="Pozisyon, şirket veya şehir ara"
-                    aria-label="Pozisyon, şirket veya şehir ara"
-                    className="w-full rounded-xl border border-gray-200 bg-slate-50 py-2.5 pl-9 pr-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-[#990000] focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-100"
-                  />
-                </label>
+              <div className="flex flex-col gap-3 bg-white rounded-xl border border-gray-100 px-4 py-3 shadow-sm">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-[13px] font-bold text-gray-700 flex items-center gap-1.5"><TrendingUp size={15} className={theme.trendingIcon} />{filteredJobs.length} güncel fırsat listeleniyor</p>
+                  <label className="relative w-full sm:max-w-sm">
+                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="search"
+                      value={searchQuery}
+                      onChange={(event) => setSearchQuery(event.target.value)}
+                      placeholder="Pozisyon, şirket veya şehir ara"
+                      aria-label="Pozisyon, şirket veya şehir ara"
+                      className="w-full rounded-xl border border-gray-200 bg-slate-50 py-2.5 pl-9 pr-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-[#990000] focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-100"
+                    />
+                  </label>
+                </div>
+                {!isAlumniOnly && (
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-100">
+                    {[
+                      { id: 'all', label: 'Tümü' },
+                      { id: 'staj', label: 'Staj İlanları' },
+                      { id: 'fulltime', label: 'Tam / Yarı Zamanlı' },
+                    ].map(f => (
+                      <button
+                        key={f.id}
+                        type="button"
+                        onClick={() => setFilterType(f.id)}
+                        className={`px-3 py-1 rounded-full text-[11px] font-bold transition cursor-pointer ${filterType === f.id ? 'bg-[#990000] text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setGuaranteeFilter(guaranteeFilter === 'law3308' ? 'all' : 'law3308')}
+                      className={`px-3 py-1 rounded-full text-[11px] font-bold transition cursor-pointer ${guaranteeFilter === 'law3308' ? 'bg-emerald-700 text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100'}`}
+                    >
+                      3308 Ücret Güvenceli
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setGuaranteeFilter(guaranteeFilter === 'sgk_approved' ? 'all' : 'sgk_approved')}
+                      className={`px-3 py-1 rounded-full text-[11px] font-bold transition cursor-pointer ${guaranteeFilter === 'sgk_approved' ? 'bg-blue-700 text-white' : 'bg-blue-50 text-blue-800 border border-blue-200 hover:bg-blue-100'}`}
+                    >
+                      SGK Onaylı
+                    </button>
+                  </div>
+                )}
               </div>
               {(()=>{
                 if(filteredJobs.length===0) return(
@@ -802,24 +864,46 @@ export default function JobsAndInternships({
               )}
             </div>
           )}
-          {activeTab==='ulusal'&&(
+          {activeTab==='ulusal' && !isAlumniOnly && (
             <div className="animate-fade-in space-y-4">
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <div className="flex items-center gap-3 mb-5"><div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600"><Target size={20}/></div><div><h3 className="text-xl font-black text-gray-900">T.C. Ulusal Staj Programi</h3><p className="text-[12px] text-gray-500 font-medium">Cumhurbaşkanlığı İnsan Kaynakları Ofisi koordinasyonunda</p></div></div>
-                <ul className="space-y-3 mb-6">
-                  {['Kariyer Kapisi (ulusalstajprogrami.iskur.gov.tr) adresine gidin.','e-Devlet şifrenizle sisteme giriş yapın.','Staj Başvurusu menüsünden güncel yılın programına tıklayın.','Başvuru formunu eksiksiz doldurun.','Başvuru durumunuzu Kariyer Kapısı üzerinden takip edin.'].map((step,i)=>(
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-700"><Target size={20}/></div>
+                    <div>
+                      <h3 className="text-xl font-black text-gray-900">T.C. Ulusal Staj Programı (USP)</h3>
+                      <p className="text-[12px] text-gray-500 font-medium">Cumhurbaşkanlığı İnsan Kaynakları Ofisi & İŞKUR koordinasyonunda</p>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-black">
+                    <CheckCircle2 size={13} /> GANO ≥ 2.00 Şartı (Ön Lisans 1. Sınıf Muaf)
+                  </span>
+                </div>
+                <ul className="space-y-3 mb-5">
+                  {['Kariyer Kapısı (kariyerkapisi.cbiko.gov.tr) veya ulusalstajprogrami.iskur.gov.tr adresine gidin.','e-Devlet şifrenizle sisteme giriş yaparak öğrencilik ve not ortalaması (GANO) doğrulamanızı tamamlayın.','Staj Başvurusu menüsünden güncel yılın Ulusal Staj Programı başvuru formunu doldurun.','Teklif aldığınız kurumun kabul onayını İESÜ Kariyer Geliştirme Koordinatörlüğü evrak havuzuna yükleyin.','SGK 5510/5-b giriş bildirgeniz onaylandıktan sonra stajınıza başlayın.'].map((step,i)=>(
                     <li key={i} className="flex gap-3 items-start bg-gray-50 rounded-xl p-3 border border-gray-100"><span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-black text-[12px] flex-shrink-0">{i+1}</span><span className="text-[13px] text-gray-700 font-medium leading-relaxed">{step}</span></li>
                   ))}
                 </ul>
+                <div className="flex flex-wrap gap-2.5 pt-2">
+                  <a href="https://kariyerkapisi.cbiko.gov.tr" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-black transition">
+                    Kariyer Kapısına Git <ExternalLink size={14} />
+                  </a>
+                  <button type="button" onClick={() => setShowDocSubmitModal(true)} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#990000] hover:bg-red-800 text-white text-xs font-black transition cursor-pointer">
+                    <FileText size={14} /> USP Evraklarını KGM Havuzuna Yükle
+                  </button>
+                  <button type="button" onClick={() => setView?.('staj')} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition cursor-pointer">
+                    Resmî Staj & SGK Masası
+                  </button>
+                </div>
               </div>
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                 <h4 className="font-extrabold text-[15px] text-gray-900 mb-4 flex items-center gap-2"><FileText size={18} className="text-[#990000]" /> İlgili Formlar</h4>
                 <div className="space-y-2.5">
-                  {[{title:'Zorunlu Staj Formu',link:'/docs/zorunlu_staj.pdf'},{title:'Mesleki Eğitim Sözleşmesi (SHMYO-SBF)',link:'/docs/mesleki_egitim.pdf'},{title:'İş Sağlığı ve Güvenliği Belgesi (SHMYO)',link:'/docs/isg_shmyo.pdf'},{title:'İş Sağlığı ve Güvenliği Belgesi (SBF)',link:'/docs/isg_sbf.pdf'},{title:'Ulusal Staj Başvuru Formu',link:'/docs/ulusal_staj.pdf'}].map((doc,i)=>(
+                  {[{title:'Zorunlu Staj Formu (Form-1)'},{title:'Mesleki Eğitim Sözleşmesi (SHMYO-SBF)'},{title:'İş Sağlığı ve Güvenliği Belgesi (SHMYO)'},{title:'İş Sağlığı ve Güvenliği Belgesi (SBF)'},{title:'Ulusal Staj Başvuru & Kabul Formu'}].map((doc,i)=>(
                     <button key={i} type="button" onClick={() => {
                       try {
                         downloadReportPdf('staj_formu_' + (i + 1), doc.title, [
-                          'Kurum: Istanbul Esenyurt Universitesi - Kariyer Koordinatorlugu',
+                          'Kurum: Istanbul Esenyurt Universitesi - Kariyer Gelistirme Koordinatorlugu',
                           'Belge: ' + doc.title,
                           'Tarih: ' + new Date().toLocaleDateString('tr-TR'),
                           'Durum: Resmi Staj ve Uygulamali Egitim Basvuru Formu'
@@ -836,10 +920,21 @@ export default function JobsAndInternships({
             </div>
           )}
 
-          {activeTab==='gonullu'&&(
+          {activeTab==='gonullu' && !isAlumniOnly && (
             <div className="animate-fade-in space-y-4">
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <div className="flex items-center gap-3 mb-4"><div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600"><Heart size={20}/></div><div><h3 className="text-xl font-black text-gray-900">İsteğe Bağlı Staj Başvuru Süreci</h3><p className="text-[12px] text-gray-500 font-medium">Zorunlu stajı olmayan öğrenciler için ek deneyim</p></div></div>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600"><Heart size={20}/></div>
+                    <div>
+                      <h3 className="text-xl font-black text-gray-900">İsteğe Bağlı (Gönüllü) Staj Süreci</h3>
+                      <p className="text-[12px] text-gray-500 font-medium">Zorunlu stajı olmayan öğrenciler için SGK destekli ek sektör deneyimi</p>
+                    </div>
+                  </div>
+                  <button type="button" onClick={() => setShowDocSubmitModal(true)} className="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black transition cursor-pointer shrink-0">
+                    Gönüllü Staj Başvurusu Yap
+                  </button>
+                </div>
                 <div className="relative border-l-2 border-emerald-100 ml-4 space-y-6 pb-4">
                   {[{num:1,title:'Başvuru Formunun Doldurulması',desc:'Uygulamalı Eğitim Başvuru Formu doldurulmalıdır. Öğrenci, kurum yetkilisi ve bölüm staj sorumlusu tarafından ıslak imzalı olmalıdır.'},{num:2,title:'SGK Müstehaklık Belgesi',desc:'e-Devlet sistemi üzerinden barkodlu olarak güncel tarihli temin edilmelidir.',link:{href:'https://www.turkiye.gov.tr/spas-mustahaklik-sorgulama',label:'e-Devlet Sorgulama'}},{num:3,title:'Kimlik Fotokopisi',desc:'Öğrencinin geçerli T.C. Kimlik Kartı fotokopisi dosyaya eklenmelidir.'},{num:4,title:'Evrak Teslimi (3 Suret)',desc:'Tüm belgeler 3 takım halinde hazırlanmalıdır.',done:true}].map((step,i)=>(
                     <div key={i} className="relative pl-8">
@@ -864,9 +959,17 @@ export default function JobsAndInternships({
         <div className="hidden xl:block w-[280px] shrink-0">
           <div className="space-y-4" style={{position:'sticky',top:'88px'}}>
             <div className="bg-white rounded-xl border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] p-5">
-              <h3 className="font-black text-gray-900 text-[14px] mb-4 flex items-center gap-2"><TrendingUp size={16} className="text-purple-600" /> İlan Havuzu</h3>
+              <h3 className="font-black text-gray-900 text-[14px] mb-4 flex items-center gap-2"><TrendingUp size={16} className={isAlumniOnly ? 'text-emerald-600' : 'text-[#990000]'} /> İlan Havuzu</h3>
               <div className="space-y-3">
-                {[{label:'Aktif İlan',value:activeJobs.length,color:'text-purple-700 bg-purple-50',icon:<Briefcase size={16}/>},{label:'Staj Fırsatı',value:activeJobs.filter(j=>j.type==='STAJ').length,color:'text-indigo-700 bg-indigo-50',icon:<Target size={16}/>},{label:'Toplam Başvuru',value:applications.length,color:'text-emerald-700 bg-emerald-50',icon:<Users size={16}/>},{label:'Başvurularım',value:myApplicationsCount,color:'text-amber-700 bg-amber-50',icon:<CheckCircle2 size={16}/>}].map((item,i)=>(
+                {[
+                  {label:'Aktif İlan',value:activeJobs.length,color:'text-slate-700 bg-slate-100',icon:<Briefcase size={16}/>},
+                  ...(isAlumniOnly
+                    ? [{label:'Tam Zamanlı / Uzman',value:activeJobs.length,color:'text-emerald-700 bg-emerald-50',icon:<Target size={16}/>}]
+                    : [{label:'Staj Fırsatı',value:activeJobs.filter(j=>isInternshipListing(j)).length,color:'text-[#990000] bg-red-50',icon:<Target size={16}/>}]
+                  ),
+                  {label:'Toplam Başvuru',value:applications.length,color:'text-emerald-700 bg-emerald-50',icon:<Users size={16}/>},
+                  {label:'Başvurularım',value:myApplicationsCount,color:'text-amber-700 bg-amber-50',icon:<CheckCircle2 size={16}/>}
+                ].map((item,i)=>(
                   <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100">
                     <div className="flex items-center gap-2"><span className={`w-8 h-8 rounded-lg flex items-center justify-center ${item.color}`}>{item.icon}</span><span className="text-[12px] font-semibold text-gray-700">{item.label}</span></div>
                     <span className="text-[16px] font-black text-gray-900">{item.value}</span>

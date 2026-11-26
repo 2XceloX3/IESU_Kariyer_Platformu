@@ -289,16 +289,16 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                   <p className="text-[14px] font-black text-amber-600">{pendingJobs.length}</p>
                 </div>
                 <div className="border-l border-slate-100">
+                  <p className="text-slate-400 text-[9px] font-bold uppercase tracking-wider">Öğrenciler</p>
+                  <p className="text-[14px] font-black text-[#990000]">{(students || []).length}</p>
+                </div>
+                <div className="border-l border-slate-100">
                   <p className="text-slate-400 text-[9px] font-bold uppercase tracking-wider">Mezunlar</p>
                   <p className="text-[14px] font-black text-emerald-600">{(alumni || []).length}</p>
                 </div>
                 <div className="border-l border-slate-100">
-                  <p className="text-slate-400 text-[9px] font-bold uppercase tracking-wider">Firma Talep</p>
-                  <p className="text-[14px] font-black text-blue-600">{pendingFairApps.length}</p>
-                </div>
-                <div className="border-l border-slate-100">
                   <p className="text-slate-400 text-[9px] font-bold uppercase tracking-wider">Başvuru</p>
-                  <p className="text-[14px] font-black text-emerald-600">{(applications || []).length}</p>
+                  <p className="text-[14px] font-black text-blue-600">{(applications || []).length}</p>
                 </div>
               </div>
 
@@ -339,7 +339,24 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                   Portal Geçiş Noktaları
                 </p>
 
-                {/* 1. Mezun Kovanı */}
+                {/* 1. Öğrenci Kovanı */}
+                <button
+                  onClick={() => {
+                    const store = useAppStore.getState();
+                    if (store.setActivePortalBranch) store.setActivePortalBranch('student');
+                    setView('student');
+                  }}
+                  className="w-full flex items-center justify-between p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-rose-50 hover:text-[#990000] transition cursor-pointer group"
+                  title="Öğrenci Portalına Geçiş Yap"
+                >
+                  <span className="flex items-center gap-2">
+                    <GraduationCap size={15} className="text-[#990000] group-hover:scale-110 transition-transform" /> 
+                    Öğrenci Portalı
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-[#990000]">Staj & USP →</span>
+                </button>
+
+                {/* 2. Mezun Kovanı */}
                 <button
                   onClick={() => {
                     const store = useAppStore.getState();
@@ -356,7 +373,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                   <span className="text-[10px] font-bold text-slate-400 group-hover:text-emerald-700">MBS & Harita →</span>
                 </button>
 
-                {/* 2. Firma Kovanı */}
+                {/* 3. Firma Kovanı */}
                 <button
                   onClick={() => {
                     const store = useAppStore.getState();
@@ -370,7 +387,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                     <Briefcase size={15} className="text-blue-600 group-hover:scale-110 transition-transform" /> 
                     Firma Portalı
                   </span>
-                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-blue-700">ATS & İlan →</span>
+                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-blue-700">ATS & Protokol →</span>
                 </button>
               </div>
 
@@ -506,6 +523,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                 <div className="flex items-center gap-1.5 overflow-x-auto pb-1 px-1 scrollbar-none">
                   {[
                     { id: 'all', label: '👑 Tüm Portallar' },
+                    { id: 'student', label: '🎒 Öğrenci & Staj' },
                     { id: 'alumni', label: '🎓 Mezun Portalı' },
                     { id: 'company', label: '🏢 Firma & ATS' },
                   ].map(b => (

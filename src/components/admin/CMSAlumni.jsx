@@ -14,7 +14,9 @@ import useAppStore from '../../store/useAppStore';
 import { SUPPORTED_COUNTRIES, aggregateAlumniHubs, geocodeLocation } from '../../utils/alumniGeoData';
 
 export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys, currentUser, setPosts, posts, setView }) {
-  const { alumniSurveyResponses } = useAppStore();
+  const surveyResponses = useAppStore(state => state.surveyResponses) || [];
+  const checkupRecords = useAppStore(state => state.checkupRecords) || [];
+  const alumniSurveyResponses = useAppStore(state => state.alumniSurveyResponses) || [];
   const [activeTab, setActiveTab] = useState('mezunlar'); // 'mezunlar' | 'kuresel_harita' | 'anketler'
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
@@ -108,14 +110,22 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
   };
 
   const handleSPSSExport = () => {
-    if (!alumniSurveyResponses || alumniSurveyResponses.length === 0) {
-      return (window.toast?.info || console.info)('Dışa aktarılacak anket verisi bulunmuyor.');
+    const rawResponses =
+      (surveyResponses && surveyResponses.length > 0)
+        ? surveyResponses
+        : (alumniSurveyResponses && alumniSurveyResponses.length > 0)
+          ? alumniSurveyResponses
+          : (checkupRecords && checkupRecords.length > 0)
+            ? checkupRecords
+            : [];
+    if (rawResponses.length === 0) {
+      return (window.toast?.info || console.info)('Dışa aktarılacak anket/analiz verisi bulunmuyor.');
     }
-    const exportData = alumniSurveyResponses.map(r => {
+    const exportData = rawResponses.map(r => {
       const { name, tc, phone, email, ...safeData } = r;
       return safeData;
     });
-    exportToCSV(exportData, 'kariyer_checkup_spss_anonim.csv');
+    exportToCSV(exportData, 'iesu_mezun_anket_spss_anonim.csv');
   };
 
   const safeAlumni = alumni || [];

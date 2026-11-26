@@ -36,7 +36,7 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser, setV
   });
   const [search, setSearch] = useState('');
 
-  const assocPosts = (posts || []).filter(p => p.author?.id === 'mezun_dernegi');
+  const assocPosts = (posts || []).filter(p => p.author?.id === 'iesu_mezunlar_portali' || p.author?.id === 'mezun_dernegi');
   const filtered = assocPosts.filter(p => 
     p.title?.toLowerCase().includes(search.toLowerCase()) || 
     p.content?.toLowerCase().includes(search.toLowerCase())
@@ -120,8 +120,8 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser, setV
         <div className="bg-white p-6 rounded-xl border border-red-100 shadow-[0_8px_30px_rgb(185,28,28,0.05)]">
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-50">
             <div>
-              <h3 className="text-xl font-black text-gray-900 tracking-tight">Yeni Dernek İçeriği Oluştur</h3>
-              <p className="text-sm font-medium text-gray-500">Mezunlar ve öğrencilerle paylaşmak üzere yeni bir duyuru veya etkinlik hazırlayın.</p>
+              <h3 className="text-xl font-black text-gray-900 tracking-tight">Yeni Mezunlar Portalı İçeriği Oluştur</h3>
+              <p className="text-sm font-medium text-gray-500">Mezunlarla paylaşmak üzere yeni bir duyuru, buluşma veya etkinlik hazırlayın.</p>
             </div>
             <button onClick={() => setShowForm(false)} className="text-gray-500 hover:text-red-500 transition-colors">
               <EyeOff size={20} />

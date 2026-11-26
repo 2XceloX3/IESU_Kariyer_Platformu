@@ -9,12 +9,14 @@ import { searchKnowledgeBase } from '../utils/searchIndex';
 import useAppStore from '../store/useAppStore';
 
 const PORTAL_LINKS = [
-  { id: 'portal_mbs', title: 'Mezun Bilgi Sistemi (MBS)', category: 'Mezun Portalı', icon: <GraduationCap size={18} className="text-emerald-600" />, view: 'mbs' },
-  { id: 'portal_alumni_card', title: 'Dijital Mezun Kartım', category: 'Mezun Portalı', icon: <ShieldCheck size={18} className="text-teal-600" />, view: 'alumni_card' },
-  { id: 'portal_global_map', title: 'Küresel Mezun Haritası', category: 'Mezun Portalı', icon: <Globe size={18} className="text-cyan-600" />, view: 'global_map' },
-  { id: 'portal_birlik_agi', title: 'İESÜ Mezunlar Portalı & Komiteler', category: 'Mezun Portalı', icon: <Users size={18} className="text-emerald-700" />, view: 'birlik_agi' },
-  { id: 'portal_cv', title: 'Akıllı CV Stüdyosu', category: 'Kariyer Araçları', icon: <FileText size={18} className="text-[#990000]" />, view: 'cvbuilder' },
-  { id: 'portal_edevlet', title: 'e-Devlet Kapısı / Mezuniyet Belgesi', category: 'Resmi Sistemler', icon: <ExternalLink size={18} className="text-red-700" />, externalUrl: 'https://www.turkiye.gov.tr', isExternal: true }
+  { id: 'portal_staj', title: 'Staj & Ulusal Staj Programı (USP) Masası', category: 'Öğrenci & Staj', icon: <Briefcase size={18} className="text-[#990000]" />, view: 'staj', roles: ['student', 'admin', 'staff'] },
+  { id: 'portal_kgb', title: 'KGB Kariyer Karnem', category: 'Öğrenci Portalı', icon: <Trophy size={18} className="text-amber-600" />, view: 'student_kgb', roles: ['student', 'admin', 'staff'] },
+  { id: 'portal_mbs', title: 'Mezun Bilgi Sistemi (MBS)', category: 'Mezun Portalı', icon: <GraduationCap size={18} className="text-emerald-600" />, view: 'mbs', roles: ['alumni', 'admin', 'staff'] },
+  { id: 'portal_alumni_card', title: 'Dijital Mezun Kartım', category: 'Mezun Portalı', icon: <ShieldCheck size={18} className="text-teal-600" />, view: 'alumni_card', roles: ['alumni', 'admin', 'staff'] },
+  { id: 'portal_global_map', title: 'Küresel Mezun Haritası', category: 'Mezun Portalı', icon: <Globe size={18} className="text-cyan-600" />, view: 'global_map', roles: ['alumni', 'company', 'employer', 'admin', 'staff'] },
+  { id: 'portal_birlik_agi', title: 'İESÜ Mezunlar Portalı & Komiteler', category: 'Mezun Portalı', icon: <Users size={18} className="text-emerald-700" />, view: 'birlik_agi', roles: ['alumni', 'admin', 'staff'] },
+  { id: 'portal_cv', title: 'Akıllı CV Stüdyosu', category: 'Kariyer Araçları', icon: <FileText size={18} className="text-[#990000]" />, view: 'cvbuilder', roles: ['student', 'alumni', 'admin', 'staff'] },
+  { id: 'portal_edevlet', title: 'e-Devlet Kapısı / Resmi Belgeler', category: 'Resmi Sistemler', icon: <ExternalLink size={18} className="text-red-700" />, externalUrl: 'https://www.turkiye.gov.tr', isExternal: true, roles: ['student', 'alumni', 'company', 'employer', 'admin', 'staff'] }
 ];
 
 export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser }) {
@@ -51,29 +53,37 @@ export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser
   const role = currentUser?.role || 'landing';
   const isAdmin = role === 'admin' || currentUser?.academicRole === 'super_admin';
   const isStaff = !isAdmin && role === 'staff';
+  const isStudent = role === 'student';
   const isCompany = role === 'employer' || role === 'company';
 
   const baseActions = useMemo(() => [
-    { id: 'home', title: 'Ana Sayfaya Git', category: 'Gezinme', icon: <Home size={18} className="text-blue-600" />, action: () => setView(role === 'admin' ? 'admin' : role === 'staff' ? 'staff' : isCompany ? 'company' : 'alumni') },
+    { id: 'home', title: 'Ana Sayfaya Git', category: 'Gezinme', icon: <Home size={18} className="text-blue-600" />, action: () => setView(role === 'admin' ? 'admin' : role === 'staff' ? 'staff' : isStudent ? 'student' : isCompany ? 'company' : 'alumni') },
     ...(isAdmin ? [
       { id: 'super_admin', title: '🛡️ Süper Admin Kontrol Merkezi', category: 'Yönetim', icon: <ShieldAlert size={18} className="text-[#990000]" />, action: () => setView('admin_cms') },
       { id: 'staff_portal', title: '🏛️ Personel Çalışma Portalı', category: 'Yönetim', icon: <Building2 size={18} className="text-indigo-600" />, action: () => setView('staff') },
+      { id: 'student_portal', title: '🎓 Öğrenci & Staj Portalı', category: 'Yönetim', icon: <GraduationCap size={18} className="text-[#990000]" />, action: () => setView('student') },
       { id: 'site_editor', title: '🎨 Görsel Site Düzenleyici (CMS Pro)', category: 'Yönetim', icon: <Palette size={18} className="text-[#990000]" />, action: () => setView('admin_cms') },
       { id: 'audit_logs', title: '🔒 Denetim Logları & Güvenlik Takibi', category: 'Yönetim', icon: <ShieldCheck size={18} className="text-[#990000]" />, action: () => setView('audit_logs') },
     ] : []),
     ...(isStaff ? [
       { id: 'staff_cms', title: '🏛️ Personel Çalışma Paneli (CMS)', category: 'Personel', icon: <Building2 size={18} className="text-indigo-600" />, action: () => setView('admin_cms') },
       { id: 'staff_home', title: '📋 Personel Akış & Operasyon Merkezi', category: 'Personel', icon: <Home size={18} className="text-indigo-600" />, action: () => setView('staff') },
+      { id: 'student_portal', title: '🎓 Öğrenci & Staj Portalı', category: 'Personel', icon: <GraduationCap size={18} className="text-[#990000]" />, action: () => setView('student') },
+    ] : []),
+    ...(isStudent ? [
+      { id: 'student_staj', title: '📋 Staj & Ulusal Staj Programı (USP)', category: 'Öğrenci & Staj', icon: <Briefcase size={18} className="text-[#990000]" />, action: () => setView('staj') },
+      { id: 'student_kgb', title: '🏆 KGB Kariyer Karnem', category: 'Öğrenci Portalı', icon: <Trophy size={18} className="text-amber-600" />, action: () => setView('student_kgb') },
+      { id: 'student_radar', title: '📡 Canlı Başvuru Radarı', category: 'Öğrenci Portalı', icon: <Sparkles size={18} className="text-rose-600" />, action: () => setView('radar') },
     ] : []),
     ...(isAdmin || isStaff || role === 'alumni' ? [
       { id: 'alumni_home', title: '🎓 İESÜ Mezunlar Portalı', category: 'Mezun Ağı', icon: <GraduationCap size={18} className="text-emerald-600" />, action: () => setView('alumni') },
       { id: 'global_map', title: '🌍 Küresel Mezun Haritası', category: 'Mezun Ağı', icon: <Globe size={18} className="text-cyan-600" />, action: () => setView('global_map') },
     ] : []),
-    { id: 'jobs', title: 'İş & Kariyer Fırsatları', category: 'Kariyer Fırsatları', icon: <Briefcase size={18} className="text-emerald-600" />, action: () => setView('jobs') },
+    { id: 'jobs', title: isStudent ? 'Staj & Kariyer Fırsatları' : 'İş & Kariyer Fırsatları', category: 'Kariyer Fırsatları', icon: <Briefcase size={18} className="text-emerald-600" />, action: () => setView('jobs') },
     ...(isCompany || isAdmin || isStaff ? [
       { id: 'company_ats', title: 'İşe Alım Panosu (ATS)', category: 'Kurumsal', icon: <Briefcase size={18} className="text-purple-600" />, action: () => setView('company_ats') },
     ] : []),
-    { id: 'events', title: 'Mezun Buluşmaları & Etkinlikler', category: 'Etkinlikler', icon: <Calendar size={18} className="text-orange-600" />, action: () => setView('etkinlikler') },
+    { id: 'events', title: isStudent ? 'Kariyer Etkinlikleri & Fuarlar' : 'Mezun Buluşmaları & Etkinlikler', category: 'Etkinlikler', icon: <Calendar size={18} className="text-orange-600" />, action: () => setView('etkinlikler') },
     { id: 'news', title: 'Haberler ve Resmi Duyurular', category: 'Duyuru & Medya', icon: <FileText size={18} className="text-red-600" />, action: () => setView('haberler') },
     { id: 'profile', title: 'Profilimi Görüntüle', category: 'Hesap', icon: <User size={18} className="text-gray-700" />, action: () => {
       const store = useAppStore.getState();
@@ -83,9 +93,9 @@ export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser
     }},
     { id: 'messages', title: 'Doğrudan Mesajlar', category: 'İletişim', icon: <MessageCircle size={18} className="text-sky-600" />, action: () => setView('messaging') },
     { id: 'settings', title: 'Hesap & Güvenlik Ayarları', category: 'Hesap', icon: <Settings size={18} className="text-slate-600" />, action: () => setView('profile_update') },
-  ], [role, isAdmin, isStaff, isCompany, setView, currentUser]);
+  ], [role, isAdmin, isStaff, isStudent, isCompany, setView, currentUser]);
 
-  // Combined Results: Base Actions + Portals + Knowledge Base Search
+  // Combined Results: Base Actions + Role-Filtered Portals + Knowledge Base Search
   const results = useMemo(() => {
     const cleanQ = query.trim().toLowerCase();
     
@@ -94,8 +104,9 @@ export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser
       .filter(action => !cleanQ || action.title.toLowerCase().includes(cleanQ) || action.category.toLowerCase().includes(cleanQ))
       .map(item => ({ ...item, resultType: 'action' }));
 
-    // 2. Matched portal links
+    // 2. Matched role-authorized portal links (Öğrenciye MBS/Mezun Kartı, Mezuna Staj gösterilmez)
     const matchedPortals = PORTAL_LINKS
+      .filter(portal => !portal.roles || portal.roles.includes(role))
       .filter(portal => !cleanQ || portal.title.toLowerCase().includes(cleanQ) || portal.category.toLowerCase().includes(cleanQ))
       .map(portal => ({
         id: portal.id,
@@ -112,10 +123,13 @@ export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser
         }
       }));
 
-    // 3. Matched Knowledge Base items from searchIndex.js
+    // 3. Matched Knowledge Base items from searchIndex.js (rol süzgeçli)
     let matchedKnowledge = [];
     if (cleanQ.length >= 2) {
-      const kbResults = searchKnowledgeBase(cleanQ, { limit: 10 });
+      const kbResults = searchKnowledgeBase(cleanQ, { limit: 10 }).filter(item => {
+        if (role === 'alumni' && (item.type === 'staj' || item.type === 'sem')) return false;
+        return true;
+      });
       matchedKnowledge = kbResults.map(item => {
         const getIconAndAction = () => {
           switch (item.type) {
@@ -124,13 +138,14 @@ export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser
             case 'duyuru':
               return { icon: <FileText size={18} className="text-amber-500" />, action: () => setView('duyurular') };
             case 'staj':
+              return { icon: <Briefcase size={18} className="text-[#990000]" />, action: () => setView(isStudent ? 'staj' : 'jobs') };
             case 'kariyer_hizmet':
               return { icon: <Briefcase size={18} className="text-emerald-500" />, action: () => setView('jobs') };
             case 'fakulte':
             case 'myo':
               return { icon: <GraduationCap size={18} className="text-indigo-500" />, action: () => setView('organization') };
             case 'sem':
-              return { icon: <BookOpen size={18} className="text-teal-500" />, action: () => setView('sem') };
+              return { icon: <BookOpen size={18} className="text-teal-500" />, action: () => setView(isStudent ? 'sem' : 'services') };
             default:
               return { icon: <Sparkles size={18} className="text-[#990000]" />, action: () => setView('explore') };
           }

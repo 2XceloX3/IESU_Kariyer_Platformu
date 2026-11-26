@@ -51,7 +51,6 @@ const CMSAuditTrail = React.lazy(() => import('./admin/CMSAuditTrail'));
 const CMSSiteEditor = React.lazy(() => import('./admin/CMSSiteEditor'));
 const CMSGallery = React.lazy(() => import('./admin/CMSGallery'));
 const CMSPortfolios = React.lazy(() => import('./admin/CMSPortfolios'));
-const CMSClubs = React.lazy(() => import('./admin/CMSClubs'));
 const CMSIncubator = React.lazy(() => import('./admin/CMSIncubator'));
 const CMSWorldMap = React.lazy(() => import('./admin/CMSWorldMap'));
 const AkademikPanel = React.lazy(() => import('./admin/AkademikPanel'));
@@ -96,12 +95,11 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
           <div className="space-y-2.5">
             {[
               { label:'İlan & Staj Başvuru Havuzu', val: (applications || []).filter(a=>a?.status==='Beklemede'||!a?.status).length, color:'purple', tab:'basvuru_havuzu' },
-              { label:'Onay Bekleyen İlan',       val: (jobs || []).filter(j=>j?.status==='Beklemede').length,              color:'amber'   },
-              { label:'Staj Onay Bekliyor',        val: (voluntaryInternships || []).filter(v=>v.status==='Taslak').length, color:'orange' },
-              { label:'Akademik Profil Onayı',    val: (academicApprovals || []).filter(a=>a.status==='Beklemede').length, color:'red' },
-              { label:'Mentor Eşleşme Bekliyor',  val: (mentorships || []).filter(m=>m.status==='Eşleştirme Bekliyor').length, color:'sky'  },
-              { label:'Süresi Yaklaşan Protokol', val: (corporateProtocols || []).filter(p => { const st = calculateProtocolStatus(p); return st === 'EXPIRING_SOON' || st === 'RENEWAL_REQUESTED'; }).length, color:'rose', tab:'cms_corporate_partnerships' },
-              { label:'Aktif Anket',               val: (surveys || []).filter(s=>s?.status==='Aktif').length,                color:'green'  },
+              { label:'Onay Bekleyen İlan',       val: (jobs || []).filter(j=>j?.status==='Beklemede' || j?.status==='Onay Bekliyor').length, color:'amber', tab:'ilan' },
+              { label:'Staj Onay Bekliyor',        val: (voluntaryInternships || []).filter(v=>v.status==='Taslak' || v.status==='Onay Bekliyor').length, color:'orange', tab:'gonullu' },
+              { label:'Mentor Eşleşme Bekliyor',  val: (mentorships || []).filter(m=>m.status==='Eşleştirme Bekliyor').length, color:'sky', tab:'mentorluk' },
+              { label:'Bekleyen / Yaklaşan Protokol', val: (corporateProtocols || []).filter(p => { const st = calculateProtocolStatus(p); return st === 'PENDING_APPROVAL' || st === 'EXPIRING_SOON' || st === 'RENEWAL_REQUESTED'; }).length, color:'rose', tab:'cms_corporate_partnerships' },
+              { label:'Aktif Anket',               val: (surveys || []).filter(s=>s?.status==='Aktif').length, color:'green', tab:'anket' },
             ].map(item => (
               <div 
                 key={item.label} 
@@ -135,7 +133,8 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
         {/* Stats */}
         <Card className="p-6 col-span-1">
           <h3 className="font-black text-gray-900 mb-4">Sistem Özeti</h3>
-          <div className="space-y-4">
+          <div className="space-y-3">
+            <StatCard icon={<GraduationCap size={16}/>} label="Aktif Öğrenci" value={(students || []).length} color="rose" />
             <StatCard icon={<Award size={16}/>} label="Toplam Mezun" value={(alumni || []).length} color="emerald" />
             <StatCard icon={<Building2 size={16}/>} label="Kurumsal İşveren" value={(companies || []).length} color="blue" />
           </div>
@@ -268,9 +267,9 @@ const PANEL_CATEGORIES = [
   },
   { 
     id: 'kullanici', 
-    label: 'Mezun & Firma Yönetimi', 
+    label: 'Öğrenci, Mezun & Firma', 
     icon: <Users size={14}/>, 
-    panels: ['alumni', 'companies', 'cms_staff', 'cms_mezun_dernek', 'kart', 'cms_groups', 'user_types'] 
+    panels: ['students', 'alumni', 'companies', 'cms_staff', 'cms_mezun_dernek', 'kart', 'cms_groups', 'user_types'] 
   },
   { 
     id: 'icerik', 
@@ -280,9 +279,9 @@ const PANEL_CATEGORIES = [
   },
   { 
     id: 'kgm_danismanlik', 
-    label: 'Mentörlük & Sektör', 
+    label: 'Staj, Mentörlük & Protokol', 
     icon: <UserCheck size={14}/>, 
-    panels: ['cms_career_counseling', 'mentorluk', 'cms_ment', 'cms_mentorship_pool', 'cms_corporate_partnerships', 'company_edu_requests', 'company_event_msgs'] 
+    panels: ['gonullu', 'cms_ssp', 'cms_corporate_partnerships', 'cms_career_counseling', 'mentorluk', 'cms_ment', 'cms_mentorship_pool', 'company_edu_requests', 'company_event_msgs'] 
   },
   { 
     id: 'sistem', 
@@ -421,7 +420,8 @@ export default function AdminDashboard({
     currentUser?.role === 'admin'
   );
   const SUPER_ADMIN_ONLY_TABS = new Set(['data_cleanup', 'platform_ayarlari', 'user_types', 'audit_log', 'site_editor', 'cms_sync', 'institutional_stats', 'firestore_backup']);
-  const CLOSED_PORTAL_TABS = new Set(['students', 'academic_staff', 'cms_clubs', 'gonullu', 'academic_catalog', 'academic_approvals', 'akademik', 'akademik_radar', 'cms_ssp', 'cms_incubator', 'sem', 'cms_message_audit']);
+  // Öğrenci (students), Staj (gonullu) ve KGB (cms_ssp) aktif; Akademik Portal ve Öğrenci Kulüpleri (cms_clubs) kalıcı olarak kapalıdır
+  const CLOSED_PORTAL_TABS = new Set(['academic_staff', 'cms_clubs', 'academic_catalog', 'academic_approvals', 'akademik', 'akademik_radar', 'cms_incubator', 'sem', 'cms_message_audit']);
 
   const renderPanel = () => {
     const p = { students, alumni, companies, jobs, setJobs, mentorships, voluntaryInternships, setVoluntaryInternships, surveys, semCourses, newsEvents: news, setNewsEvents: setNews, alumniCards, events, setEvents, academicApprovals, alumniCardApplications, setAlumniCardApplications, alumniCardForms, setAlumniCardForms, posts, setPosts, currentUser, setView, applications, setApplications, setActiveTab };
@@ -480,7 +480,6 @@ export default function AdminDashboard({
       case 'data_cleanup': return <DataCleanup students={students} setStudents={setStudents} alumni={alumni} setAlumni={setAlumni} companies={companies} setCompanies={setCompanies} messages={messages} setMessages={useAppStore.getState().setMessages} posts={posts} setPosts={setPosts} jobs={jobs} setJobs={setJobs} />;
       case 'cms_gallery': return <CMSGallery />;
       case 'cms_portfolios': return <CMSPortfolios />;
-      case 'cms_clubs': return <CMSClubs clubs={clubs || []} setClubs={setClubs} clubApplications={clubApplications || []} setClubApplications={setClubApplications} currentUser={currentUser} />;
       case 'cms_incubator': return <CMSIncubator />;
       case 'site_editor': return <CMSSiteEditor />;
       case 'world_map': return <CMSWorldMap />;
@@ -540,7 +539,6 @@ export default function AdminDashboard({
     { id: 'cms_ment', icon: <Network size={14}/>, label: 'Mentörlük Sistemi' },
     { id: 'cms_portfolios', icon: <FileText size={14}/>, label: 'CV & Portfolyo Onay Havuzu' },
     { id: 'cms_incubator', icon: <Rocket size={14}/>, label: 'Kuluçka & Girişimcilik Projeleri' },
-    { id: 'cms_clubs', icon: <Users size={14}/>, label: 'Öğrenci Kulüpleri & EK-1 Onay' },
     { id: 'cms_gallery', icon: <Camera size={14}/>, label: 'Medya & Etkinlik Galerisi' },
     { id: 'world_map', icon: <Globe size={14}/>, label: 'Dünyadaki Mezunlarımız' },
   ];
@@ -590,7 +588,14 @@ export default function AdminDashboard({
           {PANEL_CATEGORIES.map(cat => (
             <button 
               key={cat.id} 
-              onClick={() => { setActiveCategory(cat.id); setActiveTab(cat.panels[0]); setSearchQuery(''); }}
+              onClick={() => {
+                setActiveCategory(cat.id);
+                const firstAllowed = cat.panels.find(
+                  p => !CLOSED_PORTAL_TABS.has(p) && (isSuperAdmin || !SUPER_ADMIN_ONLY_TABS.has(p))
+                ) || 'overview';
+                setActiveTab(firstAllowed);
+                setSearchQuery('');
+              }}
               className={`group flex items-center gap-1.5 px-4 py-2 text-[12px] font-bold transition-all duration-300 whitespace-nowrap rounded-xl ${
                 activeCategory === cat.id 
                   ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white border border-amber-500 font-black shadow-md shadow-amber-500/25'

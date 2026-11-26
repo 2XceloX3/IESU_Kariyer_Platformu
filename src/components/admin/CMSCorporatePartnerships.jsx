@@ -15,7 +15,7 @@ import CorporateProtocolCRM from '../protocol/CorporateProtocolCRM';
 export default function CMSCorporatePartnerships(props) {
   return (
     <div className="animate-fade-in">
-      <CorporateProtocolCRM {...props} />
+      <CorporateProtocolCRM {...props} mode="admin" />
     </div>
   );
 }

@@ -6,12 +6,12 @@ import useStudentStore from './store/useStudentStore';
 import useAppStore from '../../store/useAppStore';
 
 const PORTAL_ROUTES = new Set([
-  'student', 'alumni', 'company', 'academic', 'admin', 'admin_cms', 
+  'student', 'alumni', 'company', 'staff', 'personel', 'personel_portali', 'admin', 'admin_cms', 
   'yonetim_konsolu', 'admin_console', 'audit_logs', 'login', 'register', 
   'landing', 'forgot_password'
 ]);
 
-// Lazy-loaded feed and subviews
+// Lazy-loaded feed and subviews (Kulüpler Portalı ve Mezun-Özel modüller öğrenci kovanından çıkarıldı)
 const StudentFeed = lazy(() => import('../../components/StudentFeed'));
 const StudentOnboarding = lazy(() => import('../../components/StudentOnboarding'));
 const JobsAndInternships = lazy(() => import('../../components/JobsAndInternships'));
@@ -21,7 +21,6 @@ const StudentProfileUpdate = lazy(() => import('../../components/profile/Student
 const StudentKGBPanel = lazy(() => import('../../components/StudentKGBPanel'));
 const StudentAnalytics = lazy(() => import('../../components/StudentAnalytics'));
 const AICVBuilder = lazy(() => import('../../components/AICVBuilder'));
-const GlobalAlumniMap = lazy(() => import('../../components/GlobalAlumniMap'));
 const InterviewSimulator = lazy(() => import('../../components/InterviewSimulator'));
 const ApplicationsPanel = lazy(() => import('../../components/ApplicationsPanel'));
 const StudentApplicationRadar = lazy(() => import('../../components/student/StudentApplicationRadar'));
@@ -33,8 +32,6 @@ const DigitalPortfolio = lazy(() => import('../../components/DigitalPortfolio'))
 const RewardStore = lazy(() => import('../../components/RewardStore'));
 const MetaverseLibrary = lazy(() => import('../../components/MetaverseLibrary'));
 const HackathonMarket = lazy(() => import('../../components/HackathonMarket'));
-const StudentClubPortal = lazy(() => import('../../components/StudentClubPortal'));
-const ClubAdminPanel = lazy(() => import('../../components/ClubAdminPanel'));
 const SemPanel = lazy(() => import('../../components/SemPanel'));
 const StajPanel = lazy(() => import('../../components/StajPanel'));
 const ExploreFeed = lazy(() => import('../../components/ExploreFeed'));
@@ -51,16 +48,11 @@ const MentorBooking = lazy(() => import('../../components/MentorBooking'));
 const VirtualCareerFair = lazy(() => import('../../components/VirtualCareerFair'));
 const ATSResumeScannerModal = lazy(() => import('../../components/student/ATSResumeScannerModal'));
 const CampusPulseFeed = lazy(() => import('../../components/CampusPulseFeed'));
-const StudentDedicatedHub = lazy(() => import('./StudentDedicatedHub'));
-// AlumniEndowmentFund kaldırıldı (2026-10-25): 2860 Sayılı Yardım Toplama Kanunu gereği
-// gerçek ödeme altyapısı ve Valilik izni hazırlanana kadar askıya alındı.
 const IesuWallet = lazy(() => import('../../components/IesuWallet'));
 const CampusMap = lazy(() => import('../../components/CampusMap'));
 const AnkaChat = lazy(() => import('../../components/AnkaChat'));
 const BMICalculatorModal = lazy(() => import('../../components/BMICalculatorModal'));
 const SKSDBLunchWidget = lazy(() => import('../../components/SKSDBLunchWidget'));
-const SKSDBClubsDirectory = lazy(() => import('../../components/SKSDBClubsDirectory'));
-const BirlikAgiPortal = lazy(() => import('../../components/BirlikAgiPortal'));
 const BIDBSystemStatusCard = lazy(() => import('../../components/BIDBSystemStatusCard'));
 const BIDBHelpdeskModal = lazy(() => import('../../components/BIDBHelpdeskModal'));
 const KariyerJobBoard = lazy(() => import('../../components/KariyerJobBoard'));
@@ -105,13 +97,16 @@ export default function StudentHive({ currentUser, setView }) {
       if (PORTAL_ROUTES.has(clean) && clean !== 'student') {
         const store = useAppStore.getState();
         const isUserAdmin = effectiveCurrentUser?.role === 'admin' || store.userRole === 'admin';
-        if (['alumni', 'company', 'academic'].includes(clean) && isUserAdmin) {
+        const isUserStaff = !isUserAdmin && (effectiveCurrentUser?.role === 'staff' || store.userRole === 'staff');
+        if (['alumni', 'company'].includes(clean) && (isUserAdmin || isUserStaff)) {
           store.setActivePortalBranch?.(clean);
-        } else if ((clean === 'admin' || clean === 'admin_cms' || clean === 'yonetim_konsolu') && isUserAdmin) {
-          store.setActivePortalBranch?.('admin');
+        } else if (['staff', 'personel', 'personel_portali'].includes(clean) && (isUserAdmin || isUserStaff)) {
+          store.setActivePortalBranch?.('staff');
+        } else if ((clean === 'admin' || clean === 'admin_cms' || clean === 'yonetim_konsolu') && (isUserAdmin || isUserStaff)) {
+          store.setActivePortalBranch?.(isUserAdmin ? 'admin' : 'staff');
         } else if (clean === 'login' || clean === 'register' || clean === 'landing' || clean === 'forgot_password') {
           // allow public auth routes
-        } else if (!isUserAdmin) {
+        } else if (!isUserAdmin && !isUserStaff) {
           window.toast?.info?.('Öğrenci Portalı aktif kalmaktadır.');
           setActiveView('feed');
           navigate('/student');
@@ -186,9 +181,6 @@ export default function StudentHive({ currentUser, setView }) {
       case 'campus_pulse':
       case 'pulse':
         return <CampusPulseFeed setView={handleSetView} currentUser={effectiveCurrentUser} onBack={() => handleSetView('feed')} />;
-      case 'student_hub':
-      case 'student_portal':
-        return <StudentDedicatedHub setView={handleSetView} currentUser={effectiveCurrentUser} onBack={() => handleSetView('feed')} />;
       case 'ats_scanner':
       case 'ats_resume_scanner':
       case 'ats_optimizer':
@@ -228,17 +220,6 @@ export default function StudentHive({ currentUser, setView }) {
         return <MetaverseLibrary setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'hackathon_market':
         return <HackathonMarket setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
-      case 'birlik_agi':
-      case 'mezun_dernek':
-        return <BirlikAgiPortal setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} setSelectedGroupId={setSelectedGroupId} academicRole="student" />;
-      case 'clubs_directory':
-      case 'sksdb_clubs':
-        return <SKSDBClubsDirectory setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
-      case 'clubs':
-      case 'club_portal':
-        return <StudentClubPortal setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView={previousView || "student"} setSelectedUserId={setSelectedUserId} />;
-      case 'club_admin':
-        return <ClubAdminPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView="club_portal" />;
       case 'sem':
         return <SemPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView="student" setSelectedUserId={setSelectedUserId} />;
       case 'staj':
@@ -258,8 +239,6 @@ export default function StudentHive({ currentUser, setView }) {
       case 'network':
       case 'career_network':
         return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView={previousView || 'student'} setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;
-      case 'global_map':
-        return <GlobalAlumniMap setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} previousView="student" onBack={() => handleSetView('student')} />;
       case 'groups':
         return <GroupsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'group_profile': {
@@ -313,8 +292,6 @@ export default function StudentHive({ currentUser, setView }) {
         );
       case 'sksdb_lunch':
         return <SKSDBLunchWidget setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
-      case 'sksdb_clubs':
-        return <SKSDBClubsDirectory setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'bidb_status':
         return <BIDBSystemStatusCard setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'bidb_helpdesk':
