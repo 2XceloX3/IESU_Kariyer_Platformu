@@ -35,6 +35,7 @@ import { useAdminStore } from '../brain/useAdminStore';
 const mapRoleToHive = (role) => {
   if (role === 'company' || role === 'employer') return 'company';
   if (role === 'admin') return 'admin';
+  if (role === 'staff' || role === 'personel') return 'staff';
   if (role === 'alumni' || role === 'student' || role === 'academic') return 'alumni';
   return undefined;
 };
@@ -113,8 +114,10 @@ export const coreStore = create(
         set((state) => {
           const currentRole = state.userRole || state.currentUser?.role;
           const normalized = (branch === 'student' || branch === 'academic') ? 'alumni' : branch;
-          // Strict branch isolation: non-admin users can never switch branch to 'admin'
-          const safeBranch = (normalized === 'admin' && currentRole !== 'admin') ? 'alumni' : normalized;
+          // Strict branch isolation: non-admin users can never switch branch to 'admin'; non-staff/non-admin cannot switch to 'staff'
+          let safeBranch = normalized;
+          if (safeBranch === 'admin' && currentRole !== 'admin') safeBranch = currentRole === 'staff' ? 'staff' : 'alumni';
+          if (safeBranch === 'staff' && currentRole !== 'admin' && currentRole !== 'staff') safeBranch = 'alumni';
           try {
             if (typeof window !== 'undefined') localStorage.setItem('iesu_active_portal_branch', safeBranch);
           } catch { /* intentional */ }
@@ -329,10 +332,13 @@ export const coreStore = create(
           safeUser = userRest;
         }
         const isAdminUser = state.userRole === 'admin' || state.currentUser?.role === 'admin';
+        const isStaffUser = !isAdminUser && (state.userRole === 'staff' || state.currentUser?.role === 'staff');
         const rawBranch = (state.activePortalBranch === 'student' || state.activePortalBranch === 'academic') ? 'alumni' : state.activePortalBranch;
         const safeBranch = isAdminUser 
           ? (rawBranch || 'admin')
-          : (rawBranch === 'admin' ? 'alumni' : (rawBranch || 'alumni'));
+          : isStaffUser
+            ? (rawBranch === 'admin' ? 'staff' : (rawBranch || 'staff'))
+            : (rawBranch === 'admin' || rawBranch === 'staff' ? 'alumni' : (rawBranch || 'alumni'));
         return {
           userRole: state.userRole,
           currentUser: safeUser,

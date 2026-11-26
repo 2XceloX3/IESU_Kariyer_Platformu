@@ -5,7 +5,7 @@ import useAlumniStore from './store/useAlumniStore';
 import useAppStore from '../../store/useAppStore';
 
 const PORTAL_ROUTES = new Set([
-  'alumni', 'company', 'admin', 'admin_cms', 
+  'alumni', 'company', 'staff', 'personel', 'personel_portali', 'admin', 'admin_cms', 
   'yonetim_konsolu', 'admin_console', 'audit_logs', 'login', 'register', 
   'landing', 'forgot_password'
 ]);
@@ -74,12 +74,17 @@ export default function AlumniHive({ currentUser, setView }) {
       if (PORTAL_ROUTES.has(clean) && clean !== 'alumni') {
         const store = useAppStore.getState();
         const isUserAdmin = effectiveCurrentUser?.role === 'admin' || store.userRole === 'admin';
-        if (['company'].includes(clean) && isUserAdmin) {
-          store.setActivePortalBranch?.(clean);
-        } else if ((clean === 'admin' || clean === 'admin_cms' || clean === 'yonetim_konsolu') && isUserAdmin) {
-          store.setActivePortalBranch?.('admin');
+        const isUserStaff = !isUserAdmin && (effectiveCurrentUser?.role === 'staff' || store.userRole === 'staff');
+        if (clean === 'company' && (isUserAdmin || isUserStaff)) {
+          store.setActivePortalBranch?.('company');
+        } else if (['staff', 'personel', 'personel_portali'].includes(clean) && (isUserAdmin || isUserStaff)) {
+          store.setActivePortalBranch?.('staff');
+        } else if ((clean === 'admin' || clean === 'admin_cms' || clean === 'yonetim_konsolu') && (isUserAdmin || isUserStaff)) {
+          store.setActivePortalBranch?.(isUserAdmin ? 'admin' : 'staff');
         } else if (clean === 'login' || clean === 'register' || clean === 'landing' || clean === 'forgot_password') {
           // allow public auth routes
+        } else if (!isUserAdmin && !isUserStaff) {
+          return;
         }
         setActiveView('feed');
         if (setView) setView(clean);

@@ -108,10 +108,32 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
       coreStore?.persist?.clearStorage?.();
     } catch { /* intentional */ }
 
-    // 3) TÜM localStorage ve sessionStorage oturum anahtarlarını temizle (iesu_theme tercihini koru)
-    const savedTheme = (() => { try { return localStorage.getItem('iesu_theme'); } catch { return null; } })();
-    const keysToRemove = [ 'iesu_admin_session', 'iesu_coordinator_token', 'iesu_mock_user', 'iesu_user', 'iesu_user_role_v1', 'iesu_remember_me', 'iesu_view_v1', 'iesu_posts', 'iesu_mentorships_v2', 'iesu_company_candidate_chats_v1', 'iesu_audit_log_v1', 'iesu_incubator_projects_v1', 'iesu_mentorship_requests_v1', 'iesu_messages_v2', 'iesu_applications_v1', 'iesu_notifications_v1', 'iesu_app_session_v1', 'iesu_active_portal_branch', 'iesu-career-shared-store', 'iesu-career-admin-store', 'iesu_staff_accounts_v1', 'iesu_academic_radar_v1', 'iesu_document_tracking_v1', 'iesu_candidate_pool_v1', 'iesu_admin_messages_v1', 'iesu_platform_messages_audit_v1' ]; keysToRemove.forEach(k => { try { localStorage.removeItem(k); } catch { /* intentional */ } }); Object.keys(localStorage).filter(k => (k.startsWith('iesu_') || k.startsWith('igu_')) && k !== 'iesu_theme').forEach(k => { try { localStorage.removeItem(k); } catch { /* intentional */ } });
-    if (savedTheme) { try { localStorage.setItem('iesu_theme', savedTheme); } catch { /* intentional */ } }
+    // 3) TÜM oturum ve kullanıcı anahtarlarını temizle (tema ve kurumsal personel/yetki tanımları korunur)
+    const preservedKeys = ['iesu_theme', 'iesu_staff_accounts_v1', 'iesu_user_types_v1', 'iesu_site_config_v1', 'iesu_language'];
+    const savedPreserved = {};
+    preservedKeys.forEach(k => {
+      try {
+        const v = localStorage.getItem(k);
+        if (v !== null) savedPreserved[k] = v;
+      } catch { /* intentional */ }
+    });
+    const keysToRemove = [
+      'iesu_admin_session', 'iesu_coordinator_token', 'iesu_mock_user', 'iesu_user',
+      'iesu_user_role_v1', 'iesu_remember_me', 'iesu_view_v1', 'iesu_posts',
+      'iesu_mentorships_v2', 'iesu_company_candidate_chats_v1', 'iesu_audit_log_v1',
+      'iesu_incubator_projects_v1', 'iesu_mentorship_requests_v1', 'iesu_messages_v2',
+      'iesu_applications_v1', 'iesu_notifications_v1', 'iesu_app_session_v1',
+      'iesu_active_portal_branch', 'iesu-career-shared-store', 'iesu-career-admin-store',
+      'iesu_academic_radar_v1', 'iesu_document_tracking_v1', 'iesu_candidate_pool_v1',
+      'iesu_admin_messages_v1', 'iesu_platform_messages_audit_v1'
+    ];
+    keysToRemove.forEach(k => { try { localStorage.removeItem(k); } catch { /* intentional */ } });
+    Object.keys(localStorage)
+      .filter(k => (k.startsWith('iesu_') || k.startsWith('igu_')) && !preservedKeys.includes(k))
+      .forEach(k => { try { localStorage.removeItem(k); } catch { /* intentional */ } });
+    Object.entries(savedPreserved).forEach(([k, v]) => {
+      try { localStorage.setItem(k, v); } catch { /* intentional */ }
+    });
 
     try { 
       sessionStorage.clear(); 
@@ -125,26 +147,26 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
 
   const getRoleLabel = (role) => {
     switch(role) {
-      case 'student': return 'Öğrenci';
       case 'alumni': return 'Mezun';
-      case 'company': return 'Firma';
-      case 'academic': return 'Akademik Personel';
+      case 'company':
+      case 'employer': return 'Firma';
+      case 'staff':
+      case 'personel': return effectiveCurrentUser?.staffTitle || 'Kurumsal Personel';
       case 'admin':
         if (academicRole === 'super_admin') return 'Süper Yönetici';
         if (academicRole === 'content_admin') return 'İçerik Yöneticisi';
         if (academicRole === 'mentor_admin') return 'Mentor Yönetici';
         return 'Süper Yönetici';
-      default: return 'Kullanıcı';
+      default: return 'Mezun';
     }
   };
 
   const storeCurrentUser = useAppStore(state => state.currentUser);
+  const storeUserRole = useAppStore(state => state.userRole);
   const effectiveCurrentUser = currentUser || storeCurrentUser;
 
-  // Check if current user has alumni assoc management privileges
-  const isAssocAdmin = userRole === 'admin' || (alumniAssocBoard || []).some(m => 
-    m.email === effectiveCurrentUser?.email || m.name === effectiveCurrentUser?.name
-  );
+  const isAdmin = effectiveCurrentUser?.role === 'admin' || storeUserRole === 'admin' || Boolean(effectiveCurrentUser?.isSuperAdmin);
+  const isStaff = !isAdmin && (effectiveCurrentUser?.role === 'staff' || storeUserRole === 'staff' || userRole === 'staff');
 
   const activePortalBranch = useAppStore(state => state?.activePortalBranch);
 
@@ -152,15 +174,16 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
   const effectiveBranch = 
     (currentView === 'alumni') ? 'alumni' :
     (currentView === 'company' || currentView === 'employer') ? 'company' :
-    (currentView === 'admin' || currentView === 'admin_cms' || currentView === 'yonetim_konsolu') ? 'admin' :
-    (userRole && ['alumni', 'company', 'admin'].includes(userRole)) ? userRole :
-    (activePortalBranch && ['alumni', 'company', 'admin'].includes(activePortalBranch) ? activePortalBranch : (effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer' ? 'company' : effectiveCurrentUser?.role === 'admin' ? 'admin' : 'alumni'));
+    (currentView === 'staff' || currentView === 'personel' || currentView === 'personel_portali') ? 'staff' :
+    (currentView === 'admin' || currentView === 'admin_cms' || currentView === 'yonetim_konsolu') ? (isStaff ? 'staff' : 'admin') :
+    (userRole && ['alumni', 'company', 'staff', 'admin'].includes(userRole)) ? userRole :
+    (activePortalBranch && ['alumni', 'company', 'staff', 'admin'].includes(activePortalBranch)
+      ? activePortalBranch
+      : (isAdmin ? 'admin' : isStaff ? 'staff' : (effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer' ? 'company' : 'alumni')));
 
-  const isAdmin = effectiveCurrentUser?.role === 'admin' || userRole === 'admin' || Boolean(effectiveCurrentUser?.isSuperAdmin);
+  const branchUserName = effectiveCurrentUser?.name || (isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : isStaff ? 'Kurumsal Personel' : 'Kullanıcı');
 
-  const branchUserName = effectiveCurrentUser?.name || (isAdmin ? 'KGM Yöneticisi' : 'Kullanıcı');
-
-  const branchUserAvatar = effectiveCurrentUser?.avatar || (isAdmin ? '/iesu-logo.svg' : '/iesu-logo.svg');
+  const branchUserAvatar = effectiveCurrentUser?.avatar || '/iesu-logo.svg';
 
   if (!effectiveCurrentUser) {
     return (
@@ -194,13 +217,12 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
           }`}
         >
           <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full shrink-0 flex items-center justify-center p-0.5 ${isDark ? 'bg-slate-900 border-slate-600' : 'bg-white'} border-2 ${
-            effectiveBranch === 'student' ? (isDark ? 'border-rose-500/60' : 'border-[#990000]/40') :
             effectiveBranch === 'alumni' ? (isDark ? 'border-emerald-500/60' : 'border-emerald-600/40') :
-            effectiveBranch === 'academic' ? (isDark ? 'border-purple-400/60' : 'border-purple-700/40') :
+            effectiveBranch === 'staff' ? (isDark ? 'border-indigo-400/60' : 'border-indigo-700/40') :
             effectiveBranch === 'company' ? (isDark ? 'border-blue-400/60' : 'border-blue-700/40') :
             'border-amber-500/60'
           } shadow-inner ${activeFrame ? activeFrame : ''}`}>
-            {effectiveBranch === 'admin' ? (
+            {effectiveBranch === 'admin' || isAdmin ? (
               <Logo size="sm" variant={isDark ? "white" : "default"} className="w-full h-full justify-center" />
             ) : (
               <SafeAvatar
@@ -217,13 +239,13 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
               {branchUserName}
             </span>
             <span className={`text-[10px] font-bold uppercase tracking-wider ${
-              effectiveBranch === 'student' ? (isDark ? 'text-rose-400' : 'text-[#990000]') :
+              isAdmin ? (isDark ? 'text-amber-400' : 'text-amber-600') :
+              isStaff ? (isDark ? 'text-indigo-300' : 'text-indigo-700') :
               effectiveBranch === 'alumni' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') :
-              effectiveBranch === 'academic' ? (isDark ? 'text-purple-300' : 'text-purple-700') :
               effectiveBranch === 'company' ? (isDark ? 'text-sky-400' : 'text-blue-700') :
               (isDark ? 'text-amber-400' : 'text-amber-600')
             }`}>
-              {isAdmin ? getRoleLabel('admin') : getRoleLabel(effectiveBranch)}
+              {isAdmin ? getRoleLabel('admin') : isStaff ? getRoleLabel('staff') : getRoleLabel(effectiveBranch)}
             </span>
           </div>
 
@@ -340,6 +362,27 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     </div>
                     <span className={`text-[11px] font-bold ${(userRole === 'company' || userRole === 'employer' || currentView === 'company') ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>Firma Portalı</span>
                   </button>
+
+                  {/* 5. Personel Çalışma Portalı */}
+                  <button 
+                    role="menuitem" 
+                    onClick={() => { 
+                      setIsOpen(false); 
+                      const store = useAppStore.getState();
+                      store.setActivePortalBranch?.('staff');
+                      setView?.('staff');
+                    }} 
+                    className={`col-span-2 flex items-center justify-center gap-2 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
+                      currentView === 'staff' || currentView === 'personel'
+                        ? 'bg-gradient-to-r from-indigo-700 via-indigo-800 to-slate-900 text-white font-black border-indigo-500 shadow-indigo-950/30' 
+                        : 'bg-white dark:bg-slate-800/90 hover:bg-indigo-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500/50'
+                    }`}
+                  >
+                    <div className={`p-1 rounded-lg transition-all duration-200 ${(currentView === 'staff' || currentView === 'personel') ? 'bg-white/20 text-white' : 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 group-hover:bg-indigo-700 group-hover:text-white'}`}>
+                      <Briefcase size={15} />
+                    </div>
+                    <span className={`text-[11px] font-bold ${(currentView === 'staff' || currentView === 'personel') ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>Personel Çalışma Portalı</span>
+                  </button>
                 </div>
               </div>
 
@@ -367,8 +410,8 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
             </>
           ) : (
             <>
-              {/* NORMAL USER HEADER */}
-              <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-800">
+              {/* NORMAL / STAFF USER HEADER */}
+              <div className={`px-4 py-3 border-b border-gray-100 dark:border-slate-800 ${isStaff ? 'bg-indigo-50/40 dark:bg-indigo-500/10' : ''}`}>
                 <div className="flex items-center gap-1.5 mb-0.5">
                   <p className="text-sm font-black text-gray-900 dark:text-slate-100 truncate flex items-center gap-1 transition-all duration-200">
                     {branchUserName}
@@ -376,73 +419,73 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   </p>
                 </div>
                 <p className="text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mt-0.5 flex items-center gap-1 transition-all duration-200">
-                  <Shield size={10} /> {getRoleLabel(effectiveBranch)}
+                  <Shield size={10} /> {isStaff ? getRoleLabel('staff') : getRoleLabel(effectiveBranch)}
                 </p>
               </div>
               
-              {/* PANEL SWITCHER GRID (YÖNETİM BAŞTA -> KARİYER MERKEZİ -> MEZUN -> ÖĞRENCİ -> AKADEMİK -> FİRMA) */}
-              <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-                <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2.5">Portallar</p>
-                <div className="flex flex-col gap-1.5">
-                  <div className="grid grid-cols-4 gap-1">
+              {/* PERSONEL ÇALIŞMA PORTALI GEÇİŞİ (YALNIZCA YETKİLİ PERSONEL İÇİN — NORMAL KULLANICILARA KAPALI) */}
+              {isStaff && (
+                <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                  <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2.5">Personel Çalışma Alanı</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button 
+                      role="menuitem" 
+                      onClick={() => { 
+                        setIsOpen(false); 
+                        const store = useAppStore.getState();
+                        store.setActivePortalBranch?.('staff');
+                        setView?.('admin_cms');
+                      }} 
+                      className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
+                        currentView === 'admin_cms'
+                          ? 'bg-indigo-700 text-white font-black border-indigo-500' 
+                          : 'bg-white dark:bg-slate-800/90 hover:bg-indigo-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700'
+                      }`}
+                    >
+                      <div className={`p-1 rounded-lg ${currentView === 'admin_cms' ? 'bg-white/20 text-white' : 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'}`}>
+                        <LayoutDashboard size={16} />
+                      </div>
+                      <span className="text-[11px] font-bold">Personel CMS</span>
+                    </button>
+
+                    <button 
+                      role="menuitem" 
+                      onClick={() => { 
+                        setIsOpen(false); 
+                        const store = useAppStore.getState();
+                        store.setActivePortalBranch?.('staff');
+                        setView?.('staff');
+                      }} 
+                      className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
+                        currentView === 'staff' || currentView === 'personel'
+                          ? 'bg-indigo-700 text-white font-black border-indigo-500' 
+                          : 'bg-white dark:bg-slate-800/90 hover:bg-indigo-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700'
+                      }`}
+                    >
+                      <div className={`p-1 rounded-lg ${currentView === 'staff' || currentView === 'personel' ? 'bg-white/20 text-white' : 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'}`}>
+                        <Briefcase size={16} />
+                      </div>
+                      <span className="text-[11px] font-bold">Personel Akışı</span>
+                    </button>
+
                     <button 
                       role="menuitem" 
                       onClick={() => { 
                         setIsOpen(false); 
                         const store = useAppStore.getState();
                         store.setActivePortalBranch?.('alumni');
-                        setView?.('alumni'); 
+                        setView?.('alumni');
                       }} 
-                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
-                        effectiveBranch === 'alumni' 
-                          ? 'bg-emerald-600 text-white font-black border-emerald-500 shadow-emerald-900/20' 
-                          : 'bg-white dark:bg-slate-800/90 hover:bg-emerald-50 dark:hover:bg-slate-700/90 text-gray-700 dark:text-slate-200 font-bold border-gray-100 dark:border-slate-700 hover:-translate-y-0.5 active:scale-95 hover:border-emerald-200'
+                      className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
+                        currentView === 'alumni'
+                          ? 'bg-emerald-600 text-white font-black border-emerald-500' 
+                          : 'bg-white dark:bg-slate-800/90 hover:bg-emerald-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700'
                       }`}
                     >
-                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'alumni' ? 'bg-white/20 text-white' : 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 group-hover:bg-emerald-600 group-hover:text-white'}`}>
+                      <div className={`p-1 rounded-lg ${currentView === 'alumni' ? 'bg-white/20 text-white' : 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300'}`}>
                         <UsersIcon size={16} />
                       </div>
-                      <span className={`text-[10px] font-bold ${effectiveBranch === 'alumni' ? 'text-white' : 'text-gray-700 dark:text-slate-200'}`}>Mezun</span>
-                    </button>
-
-                    <button 
-                      role="menuitem" 
-                      onClick={() => { 
-                        setIsOpen(false); 
-                        const store = useAppStore.getState();
-                        store.setActivePortalBranch?.('student');
-                        setView?.('student'); 
-                      }} 
-                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
-                        effectiveBranch === 'student' 
-                          ? 'bg-rose-600 text-white font-black border-rose-500 shadow-rose-900/20' 
-                          : 'bg-white dark:bg-slate-800/90 hover:bg-rose-50 dark:hover:bg-slate-700/90 text-gray-700 dark:text-slate-200 font-bold border-gray-100 dark:border-slate-700 hover:-translate-y-0.5 active:scale-95 hover:border-rose-200'
-                      }`}
-                    >
-                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'student' ? 'bg-white/20 text-white' : 'bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300 group-hover:bg-rose-600 group-hover:text-white'}`}>
-                        <GraduationCap size={16} />
-                      </div>
-                      <span className={`text-[10px] font-bold ${effectiveBranch === 'student' ? 'text-white' : 'text-gray-700 dark:text-slate-200'}`}>Öğrenci</span>
-                    </button>
-
-                    <button 
-                      role="menuitem" 
-                      onClick={() => { 
-                        setIsOpen(false); 
-                        const store = useAppStore.getState();
-                        store.setActivePortalBranch?.('academic');
-                        setView?.('academic'); 
-                      }} 
-                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
-                        effectiveBranch === 'academic' 
-                          ? 'bg-indigo-600 text-white font-black border-indigo-500 shadow-indigo-900/20' 
-                          : 'bg-white dark:bg-slate-800/90 hover:bg-indigo-50 dark:hover:bg-slate-700/90 text-gray-700 dark:text-slate-200 font-bold border-gray-100 dark:border-slate-700 hover:-translate-y-0.5 active:scale-95 hover:border-indigo-200'
-                      }`}
-                    >
-                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'academic' ? 'bg-white/20 text-white' : 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 group-hover:bg-indigo-600 group-hover:text-white'}`}>
-                        <BookOpen size={16} />
-                      </div>
-                      <span className={`text-[10px] font-bold ${effectiveBranch === 'academic' ? 'text-white' : 'text-gray-700 dark:text-slate-200'}`}>Akademik</span>
+                      <span className="text-[11px] font-bold">Mezun Portalı</span>
                     </button>
 
                     <button 
@@ -451,22 +494,22 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                         setIsOpen(false); 
                         const store = useAppStore.getState();
                         store.setActivePortalBranch?.('company');
-                        setView?.('company'); 
+                        setView?.('company');
                       }} 
-                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
-                        effectiveBranch === 'company' 
-                          ? 'bg-gradient-to-r from-slate-950 via-[#0A2342] to-blue-950 text-white font-black border-blue-500 shadow-blue-950/20' 
-                          : 'bg-white dark:bg-slate-800/90 hover:bg-blue-50 dark:hover:bg-slate-700/90 text-gray-700 dark:text-slate-200 font-bold border-gray-100 dark:border-slate-700 hover:-translate-y-0.5 active:scale-95 hover:border-blue-200'
+                      className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
+                        currentView === 'company'
+                          ? 'bg-[#0A2342] text-white font-black border-blue-500' 
+                          : 'bg-white dark:bg-slate-800/90 hover:bg-blue-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700'
                       }`}
                     >
-                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'company' ? 'bg-white/20 text-white' : 'bg-blue-100 dark:bg-blue-500/20 text-blue-900 dark:text-blue-300 group-hover:bg-[#0A2342] group-hover:text-white'}`}>
+                      <div className={`p-1 rounded-lg ${currentView === 'company' ? 'bg-white/20 text-white' : 'bg-blue-100 dark:bg-blue-500/20 text-blue-900 dark:text-blue-300'}`}>
                         <Building2 size={16} />
                       </div>
-                      <span className={`text-[10px] font-bold ${effectiveBranch === 'company' ? 'text-white' : 'text-gray-700 dark:text-slate-200'}`}>Firma</span>
+                      <span className="text-[11px] font-bold">Firma Portalı</span>
                     </button>
                   </div>
                 </div>
-              </div>
+              )}
 
               <div className="py-1 border-b border-gray-50 dark:border-slate-800">
                 <button 
@@ -474,7 +517,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   onClick={() => { 
                     setIsOpen(false); 
                     const store = useAppStore.getState();
-                    const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'self';
+                    const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
                     if (setSelectedUserId) setSelectedUserId(selfId);
                     if (store?.setSelectedUserId) store.setSelectedUserId(selfId);
                     setView?.('user_profile'); 
@@ -492,33 +535,25 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   <Settings size={16} className="text-slate-500 dark:text-slate-400" /> Profilimi Düzenle
                 </button>
 
-                {(effectiveBranch === 'student' || userRole === 'student') && (
+                {!isStaff && (
                   <button 
                     role="menuitem"
-                    onClick={() => { setIsOpen(false); setView?.('student_kgb'); }}
-                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-[#990000] dark:text-rose-400 hover:bg-red-50 dark:hover:bg-slate-800 transition-all duration-200 flex items-center gap-3 cursor-pointer"
+                    onClick={() => { 
+                      setIsOpen(false); 
+                      if (effectiveBranch === 'company' || userRole === 'company' || userRole === 'employer') {
+                        setView?.('company_ats');
+                      } else {
+                        setView?.('applications');
+                      }
+                    }}
+                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200 flex items-center gap-3 cursor-pointer"
                   >
-                    <BookOpen size={16} className="text-[#990000] dark:text-rose-400" /> KGB Kariyer Karnem
+                    <Briefcase size={16} className="text-slate-500 dark:text-slate-400" /> 
+                    {effectiveBranch === 'company' || userRole === 'company' || userRole === 'employer' ? 'Aday Takip Panosu (ATS)' : 'Başvurularım'}
                   </button>
                 )}
 
-                <button 
-                  role="menuitem"
-                  onClick={() => { 
-                    setIsOpen(false); 
-                    if (effectiveBranch === 'company' || userRole === 'company' || userRole === 'employer') {
-                      setView?.('company_ats');
-                    } else {
-                      setView?.('applications');
-                    }
-                  }}
-                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200 flex items-center gap-3 cursor-pointer"
-                >
-                  <Briefcase size={16} className="text-slate-500 dark:text-slate-400" /> 
-                  {effectiveBranch === 'company' || userRole === 'company' || userRole === 'employer' ? 'Aday Takip Panosu (ATS)' : 'Başvurularım'}
-                </button>
-
-                {(effectiveBranch === 'alumni' || userRole === 'alumni') && (
+                {(effectiveBranch === 'alumni' || userRole === 'alumni' || isStaff) && (
                   <button 
                     role="menuitem"
                     onClick={() => { setIsOpen(false); setView?.('global_map'); }}

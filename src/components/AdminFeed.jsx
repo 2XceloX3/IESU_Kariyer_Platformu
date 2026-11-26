@@ -26,7 +26,8 @@ import FooterModals from './FooterModals';
 import ConnectionSuggestions from './ConnectionSuggestions';
 import BranchNewsWidget from './BranchNewsWidget';
 
-export default function AdminFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId, initialTab }) {
+export default function AdminFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId, initialTab, portalMode = 'admin' }) {
+  const isStaffPortal = portalMode === 'staff' || userRole === 'staff' || currentUser?.role === 'staff';
   const [footerModal, setFooterModal] = useState(null);
   
   // Zustand Store
@@ -108,11 +109,11 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
 
   const pendingCounselingList = (counselingRequests || []).filter(r => r.status === 'Beklemede' || !r.status);
 
-  // Guarantee Admin branch isolation (only set branch, never auto-relogin)
+  // Guarantee Admin/Staff branch isolation (only set branch, never auto-relogin)
   useEffect(() => {
     const store = useAppStore.getState();
-    if (store.setActivePortalBranch) store.setActivePortalBranch('admin');
-  }, []);
+    if (store.setActivePortalBranch) store.setActivePortalBranch(isStaffPortal ? 'staff' : 'admin');
+  }, [isStaffPortal]);
 
   const handleApproveJob = (jobId) => {
     if (setJobs) {
@@ -200,12 +201,19 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
             </div>
           </div>
 
-          {/* CENTER: Portal Badge (Royal Amber & Gold) */}
+          {/* CENTER: Portal Badge (Royal Amber for Super Admin | Deep Slate-Navy for Staff) */}
           <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center pointer-events-none z-20">
-            <span className="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-white bg-gradient-to-r from-amber-600 via-orange-500 to-amber-600 shadow-lg shadow-amber-500/25 border-2 border-yellow-300/60 flex items-center gap-2 whitespace-nowrap shrink-0">
-              <span className="w-2 h-2 rounded-full bg-yellow-200 animate-pulse shrink-0"></span>
-              👑 SÜPER YÖNETİCİ & KGM KONTROL PORTALI
-            </span>
+            {isStaffPortal ? (
+              <span className="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-white bg-gradient-to-r from-slate-800 via-indigo-900 to-slate-900 shadow-lg shadow-slate-900/25 border-2 border-indigo-300/50 flex items-center gap-2 whitespace-nowrap shrink-0">
+                <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse shrink-0"></span>
+                🏛️ KURUMSAL PERSONEL & KGM ÇALIŞMA PORTALI
+              </span>
+            ) : (
+              <span className="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-white bg-gradient-to-r from-amber-600 via-orange-500 to-amber-600 shadow-lg shadow-amber-500/25 border-2 border-yellow-300/60 flex items-center gap-2 whitespace-nowrap shrink-0">
+                <span className="w-2 h-2 rounded-full bg-yellow-200 animate-pulse shrink-0"></span>
+                👑 SÜPER YÖNETİCİ & KGM KONTROL PORTALI
+              </span>
+            )}
           </div>
 
           {/* RIGHT ACTIONS */}
@@ -224,12 +232,12 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
             </button>
 
             <TopProfileMenu 
-              currentUser={currentUser || { id: 'admin_1513', name: 'Kariyer Geliştirme Koordinatörlüğü', role: 'admin', avatar: '/iesu-logo.svg' }} 
-              userRole="admin" 
+              currentUser={currentUser || { id: 'admin_1513', name: 'Kariyer Geliştirme Koordinatörlüğü', role: isStaffPortal ? 'staff' : 'admin', avatar: '/iesu-logo.svg' }} 
+              userRole={isStaffPortal ? (currentUser?.role === 'admin' ? 'admin' : 'staff') : 'admin'} 
               setView={setView} 
               setSelectedUserId={setSelectedUserId} 
-              academicRole={academicRole} 
-              currentView="admin" 
+              academicRole={isStaffPortal && currentUser?.role !== 'admin' ? 'staff' : academicRole} 
+              currentView={isStaffPortal ? 'staff' : 'admin'} 
             />
           </div>
         </div>
@@ -251,13 +259,20 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
 
             <div className="pt-12 pb-5 px-5 text-center">
               <h2 
-                onClick={() => { if (setSelectedUserId) setSelectedUserId('admin_1513'); useAppStore.getState().setSelectedUserId?.('admin_1513'); setView('user_profile'); }} 
+                onClick={() => { 
+                  const selfId = currentUser?.id || 'admin_1513';
+                  if (setSelectedUserId) setSelectedUserId(selfId); 
+                  useAppStore.getState().setSelectedUserId?.(selfId); 
+                  setView('user_profile'); 
+                }} 
                 className="text-[17px] font-black text-slate-900 leading-tight mb-0.5 cursor-pointer hover:text-amber-600 transition"
               >
                 {currentUser?.name || 'Kariyer Geliştirme Koordinatörlüğü'}
               </h2>
               <p className="text-[11px] font-extrabold text-amber-600 uppercase tracking-wider mb-3">
-                SÜPER YÖNETİCİ & KOORDİNASYON MERKEZİ
+                {isStaffPortal && currentUser?.role !== 'admin'
+                  ? (currentUser?.staffTitle || 'KURUMSAL PERSONEL • KGM')
+                  : 'SÜPER YÖNETİCİ & KOORDİNASYON MERKEZİ'}
               </p>
               
               <div className="grid grid-cols-4 gap-1 border-y border-slate-100 py-3 text-center">
@@ -771,8 +786,8 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
 
             <div className="grid grid-cols-2 gap-2">
               <div className="bg-black/40 p-3 rounded-2xl border border-white/10 text-center">
-                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Kayıtlı Öğrenci</p>
-                <p className="text-base font-black text-white mt-0.5">{(students || []).length || '5.4k+'}</p>
+                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Aktif İş İlanı</p>
+                <p className="text-base font-black text-white mt-0.5">{(jobs || []).length || '24'}</p>
               </div>
               <div className="bg-black/40 p-3 rounded-2xl border border-white/10 text-center">
                 <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Aktif Mezun</p>
@@ -792,9 +807,9 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
             <div className="pt-2 border-t border-white/10 space-y-1.5">
               <button
                 onClick={() => setView('yonetim_konsolu')}
-                className="w-full py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black transition flex items-center justify-center gap-2 shadow-md cursor-pointer"
+                className={`w-full py-2.5 px-3 rounded-xl ${isStaffPortal ? 'bg-indigo-500 hover:bg-indigo-600 text-white' : 'bg-amber-500 hover:bg-amber-600 text-slate-950'} text-xs font-black transition flex items-center justify-center gap-2 shadow-md cursor-pointer`}
               >
-                <Scale size={15} /> Yönetim Konsoluna Git
+                <Scale size={15} /> {isStaffPortal ? 'Personel Çalışma Paneli (CMS)' : 'Yönetim Konsoluna Git'}
               </button>
               <button
                 onClick={() => setView('company_ats')}
@@ -802,14 +817,12 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
               >
                 <Briefcase size={14} /> ATS Panosunu İncele
               </button>
-              {/* Mezun Bağış & Burs Fonu butonu kaldırıldı (2026-10-25).
-                  2860 Sayılı Yardım Toplama Kanunu kapsamında askıya alındı. */}
             </div>
           </div>
 
-          {/* Official Announcements & News Widget (Royal Amber theme) */}
+          {/* Official Announcements & News Widget */}
           <div className="shrink-0">
-            <BranchNewsWidget branch="admin" currentUser={currentUser} setView={setView} />
+            <BranchNewsWidget branch={isStaffPortal ? 'staff' : 'admin'} currentUser={currentUser} setView={setView} />
           </div>
 
           {/* Right Sidebar Footer */}
@@ -818,7 +831,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
             <button onClick={() => setFooterModal('help')} className="hover:text-amber-600 transition cursor-pointer">Destek</button>
             <button onClick={() => setFooterModal('about')} className="hover:text-amber-600 transition cursor-pointer">Hakkımızda</button>
             <div className="w-full flex items-center justify-center gap-1 mt-2 text-slate-400 font-bold">
-              <span>İESÜ KGM Süper Yönetici Portalı</span>
+              <span>{isStaffPortal ? 'İESÜ Kurumsal Personel Portalı' : 'İESÜ KGM Süper Yönetici Portalı'}</span>
               <span>© 2026</span>
             </div>
           </div>
@@ -832,8 +845,8 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
         setView={setView} 
         setSelectedUserId={setSelectedUserId} 
         currentUser={currentUser} 
-        theme="amber" 
-        homeView="admin" 
+        theme={isStaffPortal ? 'indigo' : 'amber'} 
+        homeView={isStaffPortal ? 'staff' : 'admin'} 
       />
 
       <FooterModals activeModal={footerModal} onClose={() => setFooterModal(null)} />

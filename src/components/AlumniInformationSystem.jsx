@@ -49,12 +49,12 @@ const CHECKUP_QUESTIONS = [
 export default function AlumniInformationSystem({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const addCheckupRecord = useAppStore(state => state.addCheckupRecord);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
-  const backTarget = previousView || (
-    activePortalBranch === 'student' ? 'student' :
+  const backTarget = (previousView && ['alumni', 'company', 'staff', 'admin'].includes(previousView)) ? previousView : (
     activePortalBranch === 'alumni' ? 'alumni' :
-    activePortalBranch === 'academic' ? 'academic' :
     activePortalBranch === 'company' ? 'company' :
-    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'student' ? 'student' : userRole === 'academic' ? 'academic' : 'alumni')
+    activePortalBranch === 'staff' ? 'staff' :
+    activePortalBranch === 'admin' ? 'admin' :
+    (userRole === 'admin' ? 'admin' : userRole === 'staff' ? 'staff' : (userRole === 'employer' || userRole === 'company') ? 'company' : 'alumni')
   );
   const [activeTab, setActiveTab] = useState('ozluk');
   const [cvTemplate, setCvTemplate] = useState('modern'); // 'modern' | 'academic' | 'creative'

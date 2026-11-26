@@ -32,7 +32,12 @@ export default function MainHeader({ setView, currentUser, userRole }) {
     if (!currentUser) return 'landing';
     const role = currentUser.role || userRole;
     if (role === 'admin') return 'admin';
-    if (activePortalBranch && ['alumni', 'company', 'admin'].includes(activePortalBranch)) return activePortalBranch;
+    if (role === 'staff') return 'staff';
+    if (activePortalBranch && ['alumni', 'company', 'staff', 'admin'].includes(activePortalBranch)) {
+      if (activePortalBranch === 'admin' && role !== 'admin') return 'alumni';
+      if (activePortalBranch === 'staff' && role !== 'admin' && role !== 'staff') return 'alumni';
+      return activePortalBranch;
+    }
     return (role === 'employer' || role === 'company') ? 'company' : 'alumni';
   };
 

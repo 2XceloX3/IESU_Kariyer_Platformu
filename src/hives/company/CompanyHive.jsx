@@ -5,7 +5,7 @@ import useCompanyStore from './store/useCompanyStore';
 import useAppStore from '../../store/useAppStore';
 
 const PORTAL_ROUTES = new Set([
-  'alumni', 'company', 'admin', 'admin_cms', 
+  'alumni', 'company', 'staff', 'personel', 'personel_portali', 'admin', 'admin_cms', 
   'yonetim_konsolu', 'admin_console', 'audit_logs', 'login', 'register', 
   'landing', 'forgot_password'
 ]);
@@ -62,10 +62,18 @@ export default function CompanyHive({ currentUser, setView }) {
       const clean = v.replace(/^\//, '');
       if (PORTAL_ROUTES.has(clean) && clean !== 'company') {
         const store = useAppStore.getState();
-        if (clean === 'alumni') {
+        const isUserAdmin = effectiveCurrentUser?.role === 'admin' || store.userRole === 'admin';
+        const isUserStaff = !isUserAdmin && (effectiveCurrentUser?.role === 'staff' || store.userRole === 'staff');
+        if (clean === 'alumni' && (isUserAdmin || isUserStaff)) {
           store.setActivePortalBranch?.('alumni');
-        } else if (clean === 'admin' || clean === 'admin_cms' || clean === 'yonetim_konsolu') {
-          store.setActivePortalBranch?.('admin');
+        } else if (['staff', 'personel', 'personel_portali'].includes(clean) && (isUserAdmin || isUserStaff)) {
+          store.setActivePortalBranch?.('staff');
+        } else if ((clean === 'admin' || clean === 'admin_cms' || clean === 'yonetim_konsolu') && (isUserAdmin || isUserStaff)) {
+          store.setActivePortalBranch?.(isUserAdmin ? 'admin' : 'staff');
+        } else if (clean === 'login' || clean === 'register' || clean === 'landing' || clean === 'forgot_password') {
+          // allow public auth routes
+        } else if (!isUserAdmin && !isUserStaff) {
+          return;
         }
         setActiveView('feed');
         if (setView) setView(clean);

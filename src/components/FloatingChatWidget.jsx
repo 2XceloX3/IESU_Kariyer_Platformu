@@ -614,39 +614,10 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
     window.toast?.success?.(`💬 Resmî kararınız ${selectedAdminAcademicMsg.senderName || 'Öğretim Üyesine'} iletildi.`);
   };
 
-  // Record messages to persistent audit log for Super Admin
-  const recordMessageAudit = useCallback((senderId, senderName, senderRole, receiverId, receiverName, receiverRole, text) => {
-    try {
-      const raw = localStorage.getItem('iesu_platform_messages_audit_v1');
-      const logs = raw ? JSON.parse(raw) : [];
-      const entry = {
-        id: 'AUDIT-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
-        senderId: senderId || 'user',
-        senderName: senderName || 'Kullanıcı',
-        senderRole: senderRole || 'student',
-        receiverId: receiverId || 'receiver',
-        receiverName: receiverName || 'Kullanıcı',
-        receiverRole: receiverRole || 'company',
-        content: text,
-        timestamp: Date.now()
-      };
-      logs.push(entry);
-      localStorage.setItem('iesu_platform_messages_audit_v1', JSON.stringify(logs));
-
-      // Central admin audit trail synchronization
-      try {
-        const adminStore = useAdminStore.getState();
-        if (typeof adminStore.logAuditAction === 'function') {
-          adminStore.logAuditAction(
-            'MESSAGE_AUDIT',
-            `Mesaj İletişimi: ${senderName || 'Kullanıcı'} (${senderRole || 'user'}) -> ${receiverName || 'Alıcı'} (${receiverRole || 'target'})`,
-            senderId || 'user'
-          );
-        }
-      } catch { /* intentional */ }
-    } catch (e) {
-      console.warn('Audit record error:', e);
-    }
+  // KVKK & Haberleşme Gizliliği: Gizli mesaj izleme sistemi (389834) tamamen kapatıldı;
+  // kullanıcıların özel mesajları artık denetim deposuna kopyalanmaz.
+  const recordMessageAudit = useCallback(() => {
+    try { localStorage.removeItem('iesu_platform_messages_audit_v1'); } catch { /* intentional */ }
   }, []);
 
   // Listen to iesu_open_chat event from ANYWHERE in the app

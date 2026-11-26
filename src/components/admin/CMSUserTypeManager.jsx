@@ -4,27 +4,22 @@ import {
   Plus, Edit2, Shield, Activity, Power, X,
   Save, Search, Filter, ShieldCheck, Key, Check
 } from 'lucide-react';
+import { hashStaffPassword, DEFAULT_STAFF_ACCOUNTS } from '../../utils/staffAuth';
 
 const DEFAULT_USER_TYPES = [
   { id: '1', name: 'Süper Admin', desc: 'Tam yetki, tüm panellere erişim', color: 'bg-amber-500', text: 'text-amber-600', bgSoft: 'bg-amber-50', icon: 'Crown', permissionCount: 30 },
-  { id: '6', name: 'Admin', desc: 'İdari yönetim, onay ve birim yetkileri', color: 'bg-[#990000]', text: 'text-[#990000]', bgSoft: 'bg-red-50', icon: 'ShieldCheck', permissionCount: 25 },
+  { id: '6', name: 'Birim Yöneticisi', desc: 'İdari yönetim, onay ve birim yetkileri', color: 'bg-[#990000]', text: 'text-[#990000]', bgSoft: 'bg-red-50', icon: 'ShieldCheck', permissionCount: 25 },
   { id: '2', name: 'İçerik Editörü', desc: 'Haber/duyuru/etkinlik ekleme ve düzenleme', color: 'bg-emerald-500', text: 'text-emerald-600', bgSoft: 'bg-emerald-50', icon: 'FileText', permissionCount: 12 },
-  { id: '3', name: 'Akademik Koordinatör', desc: 'Staj onayı, danışmanlık, belge inceleme', color: 'bg-purple-500', text: 'text-purple-600', bgSoft: 'bg-purple-50', icon: 'BookOpen', permissionCount: 18 },
-  { id: '4', name: 'İşveren İlişkileri Sorumlusu', desc: 'Firma yönetimi, aday havuzu', color: 'bg-blue-500', text: 'text-blue-600', bgSoft: 'bg-blue-50', icon: 'Building2', permissionCount: 15 },
+  { id: '3', name: 'Mezun İlişkileri Sorumlusu', desc: 'Mezun ağı, MBS, kart ve mentörlük yönetimi', color: 'bg-teal-600', text: 'text-teal-700', bgSoft: 'bg-teal-50', icon: 'BookOpen', permissionCount: 18 },
+  { id: '4', name: 'İşveren İlişkileri Sorumlusu', desc: 'Firma yönetimi, ilan ve aday havuzu', color: 'bg-blue-500', text: 'text-blue-600', bgSoft: 'bg-blue-50', icon: 'Building2', permissionCount: 15 },
   { id: '5', name: 'Gözlemci / Raporcu', desc: 'Sadece okuma ve dışa aktarma', color: 'bg-gray-500', text: 'text-gray-600', bgSoft: 'bg-gray-50', icon: 'Eye', permissionCount: 5 }
 ];
 
-// Personel hesapları (Güvenlik gereği parolalar localStorage'da düz metin tutulmaz)
-const DEFAULT_ACCOUNTS = [
-  { id: '101', name: 'Kariyer Geliştirme Koordinatörlüğü', email: 'kariyer@iesu.edu.tr', typeId: '1', typeName: 'Süper Admin', lastLogin: '2026-10-18 09:30', status: 'Aktif' },
-  { id: '104', name: 'Kariyer Geliştirme Merkezi Birim Yöneticisi', email: 'admin@iesu.edu.tr', typeId: '6', typeName: 'Admin', lastLogin: '2026-10-18 10:15', status: 'Aktif' },
-  { id: '102', name: 'Kurumsal İletişim & İçerik Birimi', email: 'editor@iesu.edu.tr', typeId: '2', typeName: 'İçerik Editörü', lastLogin: '2026-10-18 14:15', status: 'Aktif' },
-  { id: '103', name: 'Akademik Staj Koordinatörlüğü', email: 'staj@iesu.edu.tr', typeId: '3', typeName: 'Akademik Koordinatör', lastLogin: '2026-10-18 11:45', status: 'Aktif' }
-];
+const DEFAULT_ACCOUNTS = DEFAULT_STAFF_ACCOUNTS;
 
 const MODULES = [
-  'İçerik Yönetimi', 'İlan Yönetimi', 'Kullanıcı Yönetimi', 
-  'Akademik İşlemler', 'Sistem Ayarları', 'Analitik & Raporlar'
+  'İçerik Yönetimi', 'İlan Yönetimi', 'Mezun & Firma Yönetimi', 
+  'Mezun İşlemleri', 'Sistem Ayarları', 'Analitik & Raporlar'
 ];
 
 const ACTIONS = ['Okuma', 'Ekleme', 'Düzenleme', 'Silme', 'Onaylama'];
@@ -78,6 +73,8 @@ export default function CMSUserTypeManager() {
       if (a.id === targetStaffForPassChange.id) {
         return { 
           ...a, 
+          passwordHash: hashStaffPassword(a.email, newPasswordInput),
+          hasPassword: true,
           lastPassChange: new Date().toLocaleString('tr-TR')
         };
       }
@@ -85,7 +82,7 @@ export default function CMSUserTypeManager() {
     });
 
     saveAccounts(updated);
-    const msg = `Tebrikler! ${targetStaffForPassChange.name} şifresi başarıyla güncellendi. Yeni şifre anında İdari Yönetici / Admin paneline senkronize edildi.`;
+    const msg = `${targetStaffForPassChange.name} şifresi güncellendi ve Personel Portalı girişine senkronize edildi.`;
     if (window.toast?.success) window.toast.success(msg);
     else console.info(msg);
     setIsChangePassModalOpen(false);
@@ -210,18 +207,25 @@ export default function CMSUserTypeManager() {
   const handleStaffFormSubmit = (e) => {
     e.preventDefault();
     const type = userTypes.find(t => t.id === staffForm.typeId);
+    const initialPass = (staffForm.password || '').trim() || 'iesu2026';
     
     const newStaff = {
       id: Date.now().toString(),
       name: staffForm.name,
       email: staffForm.email,
+      department: staffForm.department || 'Kariyer Geliştirme Merkezi',
       typeId: staffForm.typeId,
-      typeName: type?.name || 'Bilinmiyor',
+      typeName: type?.name || 'Kurumsal Personel',
+      passwordHash: hashStaffPassword(staffForm.email, initialPass),
+      hasPassword: true,
       lastLogin: 'Hiç giriş yapmadı',
       status: 'Aktif'
     };
     
     saveAccounts([newStaff, ...accounts]);
+    if (window.toast?.success) {
+      window.toast.success(`${staffForm.name} personel hesabı oluşturuldu ve Personel Portalı girişi aktif edildi.`);
+    }
     setIsStaffModalOpen(false);
     setStaffForm({ name: '', email: '', password: '', typeId: '', department: '' });
   };

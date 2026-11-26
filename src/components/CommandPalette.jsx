@@ -6,6 +6,7 @@ import {
   Trophy, Globe, Building2
 } from 'lucide-react';
 import { searchKnowledgeBase } from '../utils/searchIndex';
+import useAppStore from '../store/useAppStore';
 
 const PORTAL_LINKS = [
   { id: 'portal_mbs', title: 'Mezun Bilgi Sistemi (MBS)', category: 'Mezun Portalı', icon: <GraduationCap size={18} className="text-emerald-600" />, view: 'mbs' },
@@ -49,19 +50,29 @@ export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser
 
   const role = currentUser?.role || 'landing';
   const isAdmin = role === 'admin' || currentUser?.academicRole === 'super_admin';
+  const isStaff = !isAdmin && role === 'staff';
+  const isCompany = role === 'employer' || role === 'company';
 
   const baseActions = useMemo(() => [
-    { id: 'home', title: 'Ana Sayfaya Git', category: 'Gezinme', icon: <Home size={18} className="text-blue-600" />, action: () => setView(role === 'admin' ? 'admin' : (role === 'employer' || role === 'company') ? 'company' : 'alumni') },
+    { id: 'home', title: 'Ana Sayfaya Git', category: 'Gezinme', icon: <Home size={18} className="text-blue-600" />, action: () => setView(role === 'admin' ? 'admin' : role === 'staff' ? 'staff' : isCompany ? 'company' : 'alumni') },
     ...(isAdmin ? [
       { id: 'super_admin', title: '🛡️ Süper Admin Kontrol Merkezi', category: 'Yönetim', icon: <ShieldAlert size={18} className="text-[#990000]" />, action: () => setView('admin_cms') },
+      { id: 'staff_portal', title: '🏛️ Personel Çalışma Portalı', category: 'Yönetim', icon: <Building2 size={18} className="text-indigo-600" />, action: () => setView('staff') },
       { id: 'site_editor', title: '🎨 Görsel Site Düzenleyici (CMS Pro)', category: 'Yönetim', icon: <Palette size={18} className="text-[#990000]" />, action: () => setView('admin_cms') },
       { id: 'audit_logs', title: '🔒 Denetim Logları & Güvenlik Takibi', category: 'Yönetim', icon: <ShieldCheck size={18} className="text-[#990000]" />, action: () => setView('audit_logs') },
-      { id: 'idari_portal', title: '🏛️ İdari Birimler & Koordinatörlük Portalı', category: 'Yönetim', icon: <Building2 size={18} className="text-slate-700" />, action: () => setView('idari_portal') },
     ] : []),
-    { id: 'alumni_home', title: '🎓 İESÜ Mezunlar Portalı', category: 'Mezun Ağı', icon: <GraduationCap size={18} className="text-emerald-600" />, action: () => setView('alumni') },
-    { id: 'global_map', title: '🌍 Küresel Mezun Haritası', category: 'Mezun Ağı', icon: <Globe size={18} className="text-cyan-600" />, action: () => setView('global_map') },
+    ...(isStaff ? [
+      { id: 'staff_cms', title: '🏛️ Personel Çalışma Paneli (CMS)', category: 'Personel', icon: <Building2 size={18} className="text-indigo-600" />, action: () => setView('admin_cms') },
+      { id: 'staff_home', title: '📋 Personel Akış & Operasyon Merkezi', category: 'Personel', icon: <Home size={18} className="text-indigo-600" />, action: () => setView('staff') },
+    ] : []),
+    ...(isAdmin || isStaff || role === 'alumni' ? [
+      { id: 'alumni_home', title: '🎓 İESÜ Mezunlar Portalı', category: 'Mezun Ağı', icon: <GraduationCap size={18} className="text-emerald-600" />, action: () => setView('alumni') },
+      { id: 'global_map', title: '🌍 Küresel Mezun Haritası', category: 'Mezun Ağı', icon: <Globe size={18} className="text-cyan-600" />, action: () => setView('global_map') },
+    ] : []),
     { id: 'jobs', title: 'İş & Kariyer Fırsatları', category: 'Kariyer Fırsatları', icon: <Briefcase size={18} className="text-emerald-600" />, action: () => setView('jobs') },
-    { id: 'company_ats', title: 'İşe Alım Panosu (ATS)', category: 'Kurumsal', icon: <Briefcase size={18} className="text-purple-600" />, action: () => setView('company_ats') },
+    ...(isCompany || isAdmin || isStaff ? [
+      { id: 'company_ats', title: 'İşe Alım Panosu (ATS)', category: 'Kurumsal', icon: <Briefcase size={18} className="text-purple-600" />, action: () => setView('company_ats') },
+    ] : []),
     { id: 'events', title: 'Mezun Buluşmaları & Etkinlikler', category: 'Etkinlikler', icon: <Calendar size={18} className="text-orange-600" />, action: () => setView('etkinlikler') },
     { id: 'news', title: 'Haberler ve Resmi Duyurular', category: 'Duyuru & Medya', icon: <FileText size={18} className="text-red-600" />, action: () => setView('haberler') },
     { id: 'profile', title: 'Profilimi Görüntüle', category: 'Hesap', icon: <User size={18} className="text-gray-700" />, action: () => {
@@ -72,7 +83,7 @@ export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser
     }},
     { id: 'messages', title: 'Doğrudan Mesajlar', category: 'İletişim', icon: <MessageCircle size={18} className="text-sky-600" />, action: () => setView('messaging') },
     { id: 'settings', title: 'Hesap & Güvenlik Ayarları', category: 'Hesap', icon: <Settings size={18} className="text-slate-600" />, action: () => setView('profile_update') },
-  ], [role, isAdmin, setView, currentUser]);
+  ], [role, isAdmin, isStaff, isCompany, setView, currentUser]);
 
   // Combined Results: Base Actions + Portals + Knowledge Base Search
   const results = useMemo(() => {

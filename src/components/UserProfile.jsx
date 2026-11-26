@@ -46,37 +46,38 @@ export default function UserProfile({
 
   // Aktif Portal Dalı (CRITICAL INVARIANT: Follows VIEWER, never profile subject)
   const isViewerAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin';
+  const isViewerStaff = !isViewerAdmin && (userRole === 'staff' || effectiveCurrentUser?.role === 'staff');
   const currentBranch = 
-    (viewerHive && ['student', 'alumni', 'academic', 'company', 'admin'].includes(viewerHive) && (viewerHive !== 'admin' || isViewerAdmin)) ? viewerHive :
-    (previousView === 'student' || activePortalBranch === 'student') ? 'student' :
+    (viewerHive && ['alumni', 'company', 'staff', 'admin'].includes(viewerHive) && (viewerHive !== 'admin' || isViewerAdmin) && (viewerHive !== 'staff' || isViewerAdmin || isViewerStaff)) ? viewerHive :
+    ((isViewerAdmin || isViewerStaff) && (previousView === 'staff' || previousView === 'personel' || activePortalBranch === 'staff')) ? 'staff' :
     (previousView === 'alumni' || previousView === 'mbs' || previousView === 'mezun_dernek' || activePortalBranch === 'alumni') ? 'alumni' :
-    (previousView === 'academic' || previousView === 'research_hub' || activePortalBranch === 'academic') ? 'academic' :
     (previousView === 'company' || previousView === 'company_ats' || previousView === 'create_job' || activePortalBranch === 'company') ? 'company' :
     (isViewerAdmin && (previousView === 'admin' || previousView === 'admin_cms' || previousView === 'yonetim_konsolu' || activePortalBranch === 'admin')) ? 'admin' :
-    (effectiveCurrentUser?.hive && ['student', 'alumni', 'academic', 'company', 'admin'].includes(effectiveCurrentUser.hive) && (effectiveCurrentUser.hive !== 'admin' || isViewerAdmin) ? effectiveCurrentUser.hive :
-    (effectiveCurrentUser?.role && ['academic', 'alumni', 'student', 'company', 'admin', 'employer'].includes(effectiveCurrentUser.role) ? (effectiveCurrentUser.role === 'employer' ? 'company' : effectiveCurrentUser.role) :
-    (['academic', 'alumni', 'student', 'company'].includes(userRole) ? userRole : 'student')));
+    (isViewerStaff ? 'staff' :
+    (effectiveCurrentUser?.hive && ['alumni', 'company', 'staff', 'admin'].includes(effectiveCurrentUser.hive) && (effectiveCurrentUser.hive !== 'admin' || isViewerAdmin) ? effectiveCurrentUser.hive :
+    (effectiveCurrentUser?.role && ['alumni', 'company', 'staff', 'admin', 'employer'].includes(effectiveCurrentUser.role) ? (effectiveCurrentUser.role === 'employer' ? 'company' : effectiveCurrentUser.role) :
+    (['alumni', 'company', 'staff'].includes(userRole) ? userRole : 'alumni'))));
 
   const getViewerActionBtnClass = () => {
     switch (currentBranch) {
       case 'alumni':
         return 'bg-[#059669] hover:bg-emerald-700 text-white shadow-emerald-900/20';
-      case 'academic':
-        return 'bg-[#7c3aed] hover:bg-violet-800 text-white shadow-violet-900/20';
+      case 'staff':
+        return 'bg-[#4338ca] hover:bg-indigo-800 text-white shadow-indigo-900/20';
       case 'company':
         return 'bg-[#1e3a5f] hover:bg-slate-900 text-white shadow-blue-900/20';
       case 'admin':
         return 'bg-[#b45309] hover:bg-amber-700 text-white shadow-amber-900/20';
-      case 'student':
       default:
-        return 'bg-[#990000] hover:bg-red-800 text-white shadow-red-900/20';
+        return 'bg-[#059669] hover:bg-emerald-700 text-white shadow-emerald-900/20';
     }
   };
 
   // ─── KENDİ PROFİLİM vs ZİYARETÇİ KONTROLÜ (DAL BAZLI İZOLASYON) ───
-  const isStudentBranch = currentBranch === 'student';
+  const isStudentBranch = false;
   const isAlumniBranch = currentBranch === 'alumni';
-  const isAcademicBranch = currentBranch === 'academic';
+  const isAcademicBranch = false;
+  const isStaffBranch = currentBranch === 'staff';
   const isCompanyBranch = currentBranch === 'company';
   const isAdminBranch = currentBranch === 'admin';
 
@@ -339,33 +340,53 @@ export default function UserProfile({
   useEffect(() => {
     setIsLoading(true);
     let targetUserId = userId;
+    const isSelfRequest = !targetUserId || targetUserId === 'self' || targetUserId === 'me' ||
+      (effectiveCurrentUser?.id && String(targetUserId) === String(effectiveCurrentUser.id)) ||
+      (effectiveCurrentUser?.uid && String(targetUserId) === String(effectiveCurrentUser.uid));
 
     if (!targetUserId || targetUserId === 'self' || targetUserId === 'me') {
-      targetUserId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || (currentBranch === 'admin' ? 'admin_1513' : 'self');
+      targetUserId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || (effectiveCurrentUser?.role === 'admin' ? 'admin_1513' : 'self');
     }
 
-    // ─── DAL EGEMENLİĞİ & YABANCI ADMIN ID FİLTRESİ ───
-    // Eğer öğrenci, mezun, akademik veya firma dalındaysak ama targetUserId 'admin_1513' veya 'admin' geldiyse,
-    // o dalın kendi profiline yönlendir! (Süper admin profilinin diğer panelleri yutmasını engeller)
-    if ((targetUserId === 'admin_1513' || targetUserId === 'admin') && currentBranch !== 'admin') {
-      if (currentBranch === 'student') targetUserId = 'STU-001';
-      else if (currentBranch === 'alumni') targetUserId = 'ALU-001';
-      else if (currentBranch === 'academic') targetUserId = 'ACAD-001';
-      else if (currentBranch === 'company') targetUserId = 'CMP-001';
-    }
-
-    // 1. Hedef admin ise (SADECE admin dalındayken veya admin profili istendiğinde)
-    if (targetUserId === 'admin_1513' || targetUserId === 'admin') {
+    // 1. GERÇEK KİMLİK BÜTÜNLÜĞÜ: Süper Yönetici hangi portal dalında gezinirse gezinsin
+    // kendi profiline baktığında ASLA sahte mezun/firma (Caner Öztürk, ALU-001 vb.) profiline dönüştürülmez!
+    if (
+      targetUserId === 'admin_1513' ||
+      targetUserId === 'admin' ||
+      (isSelfRequest && effectiveCurrentUser?.role === 'admin')
+    ) {
       setUser({
-        id: 'admin_1513',
-        name: (effectiveCurrentUser?.name && effectiveCurrentUser.name !== 'Mezun' && effectiveCurrentUser.name !== 'Öğrenci') ? effectiveCurrentUser.name : 'Kariyer Geliştirme Merkezi',
+        id: effectiveCurrentUser?.role === 'admin' ? (effectiveCurrentUser?.id || 'admin_1513') : 'admin_1513',
+        name: (effectiveCurrentUser?.role === 'admin' && effectiveCurrentUser?.name) ? effectiveCurrentUser.name : 'Kariyer Geliştirme Koordinatörlüğü',
         role: 'admin',
         title: 'Süper Yönetici & Koordinatör',
-        department: 'Kariyer Geliştirme Merkezi (KGM)',
-        email: 'kgm@esenyurt.edu.tr',
-        avatar: '/iesu-logo.svg',
+        department: 'Kariyer Geliştirme Koordinatörlüğü (KGM)',
+        email: (effectiveCurrentUser?.role === 'admin' && effectiveCurrentUser?.email) ? effectiveCurrentUser.email : 'kariyer@iesu.edu.tr',
+        avatar: (effectiveCurrentUser?.role === 'admin' && effectiveCurrentUser?.avatar) ? effectiveCurrentUser.avatar : '/iesu-logo.svg',
         badges: ['verified', 'top_voice'],
-        isSelf: true
+        isSelf: effectiveCurrentUser?.role === 'admin'
+      });
+      setUserType('admin');
+      setIsLoading(false);
+      return;
+    }
+
+    // 1b. KURUMSAL PERSONEL PROFİLİ: Çalışan personel kendi profilini gerçek kimliğiyle görür
+    if (
+      (typeof targetUserId === 'string' && targetUserId.startsWith('STAFF-')) ||
+      (isSelfRequest && effectiveCurrentUser?.role === 'staff')
+    ) {
+      setUser({
+        ...effectiveCurrentUser,
+        id: effectiveCurrentUser?.id || targetUserId,
+        name: effectiveCurrentUser?.name || 'Kurumsal Personel',
+        role: 'staff',
+        title: effectiveCurrentUser?.staffTitle || effectiveCurrentUser?.title || 'Kurumsal Personel',
+        department: effectiveCurrentUser?.department || 'Kariyer Geliştirme Merkezi',
+        email: effectiveCurrentUser?.email || 'personel@iesu.edu.tr',
+        avatar: effectiveCurrentUser?.avatar || '/iesu-logo.svg',
+        badges: ['verified'],
+        isSelf: isSelfRequest && effectiveCurrentUser?.role === 'staff'
       });
       setUserType('admin');
       setIsLoading(false);
@@ -419,23 +440,23 @@ export default function UserProfile({
           const allAlumni = generateAlumni ? generateAlumni() : [];
           found = allAlumni.find(a => a.id === targetUserId);
         }
-        const isSelfAlumni = (isAlumniBranch || effectiveCurrentUser?.role === 'alumni') && (
+        const isSelfAlumni = effectiveCurrentUser?.role === 'alumni' && (
           (!userId || userId === 'self' || userId === 'me') ||
           (effectiveCurrentUser?.id && (targetUserId === effectiveCurrentUser.id || targetUserId === 'self')) || 
           (effectiveCurrentUser?.uid && (targetUserId === effectiveCurrentUser.uid))
         );
         const alumniData = isSelfAlumni ? {
-          id: effectiveCurrentUser?.id || targetUserId || 'ALU-001',
-          name: effectiveCurrentUser?.name || found?.name || 'Caner Öztürk',
+          id: effectiveCurrentUser?.id || targetUserId,
+          name: effectiveCurrentUser?.name || found?.name || 'İESÜ Mezunu',
           role: 'alumni',
-          department: effectiveCurrentUser?.department || found?.department || 'Yazılım Mühendisliği',
-          graduationYear: effectiveCurrentUser?.graduationYear || effectiveCurrentUser?.gradYear || found?.graduationYear || found?.gradYear || '2023',
-          gradYear: effectiveCurrentUser?.graduationYear || effectiveCurrentUser?.gradYear || found?.graduationYear || found?.gradYear || '2023',
-          title: effectiveCurrentUser?.title || found?.title || 'Frontend Developer',
-          company: effectiveCurrentUser?.company || (effectiveCurrentUser?.role === 'admin' ? 'İESÜ Kariyer Geliştirme Merkezi' : (found?.company || 'Trendyol')),
-          avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || null)),
-          email: effectiveCurrentUser?.email || found?.email || 'caner@mezun.esenyurt.edu.tr',
-          badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified'])),
+          department: effectiveCurrentUser?.department || found?.department || 'Bölüm Belirtilmedi',
+          graduationYear: effectiveCurrentUser?.graduationYear || effectiveCurrentUser?.gradYear || found?.graduationYear || found?.gradYear || '',
+          gradYear: effectiveCurrentUser?.graduationYear || effectiveCurrentUser?.gradYear || found?.graduationYear || found?.gradYear || '',
+          title: effectiveCurrentUser?.title || found?.title || 'İESÜ Mezunu',
+          company: effectiveCurrentUser?.company || found?.company || '',
+          avatar: effectiveCurrentUser?.avatar || found?.avatar || null,
+          email: effectiveCurrentUser?.email || found?.email || '',
+          badges: effectiveCurrentUser?.badges || found?.badges || ['verified'],
           isSelf: true
         } : (found ? found : (targetUserId === 'ALU-001' ? {
           id: 'ALU-001',
@@ -1732,8 +1753,8 @@ export default function UserProfile({
                   />
                   <div className="min-w-0">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-[#990000]">Seçilen Mentör</p>
-                    <h4 className="font-extrabold text-slate-900 text-xs truncate">{user?.name || 'Caner Öztürk'}</h4>
-                    <p className="text-[11px] text-slate-500 truncate">{user?.title || 'Kıdemli Yazılım Mimarı @ Trendyol Tech'}</p>
+                    <h4 className="font-extrabold text-slate-900 text-xs truncate">{user?.name || 'İESÜ Mentörü'}</h4>
+                    <p className="text-[11px] text-slate-500 truncate">{user?.title || 'Kariyer Mentörü'}</p>
                   </div>
                 </div>
 
@@ -2566,29 +2587,27 @@ export default function UserProfile({
         <div className="w-full max-w-[1700px] mx-auto px-4 h-16 flex items-center justify-between">
           
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer" onClick={() => {
-            const target = (previousView && ['student', 'alumni', 'academic', 'company', 'admin'].includes(previousView))
-              ? (previousView === 'admin' && !isViewerAdmin ? (currentBranch || 'student') : previousView)
-              : currentBranch || (isViewerAdmin ? 'admin' : userRole === 'academic' ? 'academic' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : 'student');
+            const target = (previousView && ['alumni', 'company', 'staff', 'admin'].includes(previousView))
+              ? (previousView === 'admin' && !isViewerAdmin ? (currentBranch || 'alumni') : previousView === 'staff' && !isViewerAdmin && !isViewerStaff ? (currentBranch || 'alumni') : previousView)
+              : currentBranch || (isViewerAdmin ? 'admin' : isViewerStaff ? 'staff' : (userRole === 'employer' || userRole === 'company') ? 'company' : 'alumni');
             setView(target);
           }}>
             <Logo 
-              color={currentBranch === 'alumni' ? 'emerald' : currentBranch === 'academic' ? 'indigo' : currentBranch === 'company' ? 'blue' : currentBranch === 'admin' ? 'amber' : 'red'} 
+              color={currentBranch === 'alumni' ? 'emerald' : currentBranch === 'staff' ? 'indigo' : currentBranch === 'company' ? 'blue' : 'amber'} 
               className="h-10 w-auto hover:scale-105 transition-transform shrink-0" 
             />
             <div className="hidden sm:block text-left">
               <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${
                 currentBranch === 'alumni' ? 'text-emerald-800' :
-                currentBranch === 'academic' ? 'text-violet-900' :
+                currentBranch === 'staff' ? 'text-indigo-900' :
                 currentBranch === 'company' ? 'text-blue-900' :
-                currentBranch === 'admin' ? 'text-amber-900' :
-                'text-[#990000]'
+                'text-amber-900'
               }`}>İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                {currentBranch === 'alumni' ? 'İESÜ Mezun Portalı' :
-                 currentBranch === 'academic' ? 'Akademik Bilgi & Yönetim Portalı' :
+                {currentBranch === 'alumni' ? 'İESÜ Mezunlar Portalı' :
+                 currentBranch === 'staff' ? 'Kurumsal Personel & KGM Portalı' :
                  currentBranch === 'company' ? 'Kurumsal İnsan Kaynakları Portalı' :
-                 currentBranch === 'admin' ? 'Kariyer Geliştirme Merkezi (Yönetim)' :
-                 'ÖĞRENCİ PORTALI'}
+                 'Kariyer Geliştirme Koordinatörlüğü (Yönetim)'}
               </p>
             </div>
           </div>
@@ -2627,11 +2646,11 @@ export default function UserProfile({
               </div>
             </button>
             <TopProfileMenu 
-              currentUser={currentUser || { name: 'Kullanıcı' }} 
-              userRole={userRole || currentUser?.role || 'student'} 
+              currentUser={effectiveCurrentUser || { name: 'Kullanıcı' }} 
+              userRole={effectiveCurrentUser?.role || userRole || 'alumni'} 
               setView={setView} 
               setSelectedUserId={setSelectedUserId} 
-              currentView={userType || currentBranch} 
+              currentView={currentBranch} 
             />
           </div>
           
@@ -2658,8 +2677,9 @@ export default function UserProfile({
                 
                 {/* Badge Overlay */}
                 <div className="absolute top-4 right-4 flex items-center gap-2">
-                  <span className="bg-amber-500/90 text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider flex items-center gap-1.5 backdrop-blur-md shadow-md">
-                    <Crown size={14} className="fill-current" /> SÜPER YÖNETİCİ LİSANSI
+                  <span className={`${user?.role === 'staff' ? 'bg-indigo-600/90' : 'bg-amber-500/90'} text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider flex items-center gap-1.5 backdrop-blur-md shadow-md`}>
+                    {user?.role === 'staff' ? <Briefcase size={14} /> : <Crown size={14} className="fill-current" />}
+                    {user?.role === 'staff' ? 'KURUMSAL PERSONEL HESABI' : 'SÜPER YÖNETİCİ LİSANSI'}
                   </span>
                   <span className="bg-emerald-500/90 text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider flex items-center gap-1.5 backdrop-blur-md shadow-md">
                     <ShieldCheck size={14} /> SİSTEM DOĞRULANDI
@@ -2671,24 +2691,27 @@ export default function UserProfile({
                 <div className="flex flex-col sm:flex-row items-start sm:items-end gap-5">
                   <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl border-4 border-white bg-white shadow-2xl overflow-hidden p-2 flex items-center justify-center shrink-0 relative group -mt-16 sm:-mt-20">
                     <Logo size="xl" className="w-full h-full justify-center" />
-                    <div className="absolute bottom-1 right-1 bg-amber-600 text-white p-1.5 rounded-xl shadow-lg border-2 border-white">
-                      <Crown size={14} />
+                    <div className={`absolute bottom-1 right-1 ${user?.role === 'staff' ? 'bg-indigo-600' : 'bg-amber-600'} text-white p-1.5 rounded-xl shadow-lg border-2 border-white`}>
+                      {user?.role === 'staff' ? <Briefcase size={14} /> : <Crown size={14} />}
                     </div>
                   </div>
 
                   <div className="space-y-1">
                     <div className="flex items-center gap-2.5">
                       <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                        {user?.name || 'Kariyer Geliştirme Merkezi'}
+                        {user?.name || 'Kariyer Geliştirme Koordinatörlüğü'}
                       </h1>
-                      <ShieldCheck size={24} className="text-emerald-500 shrink-0" title="Tam Sistem Yetkilisi" />
+                      <ShieldCheck size={24} className="text-emerald-500 shrink-0" title={user?.role === 'staff' ? 'Doğrulanmış Kurumsal Personel' : 'Tam Sistem Yetkilisi'} />
                     </div>
-                    <p className="text-sm font-bold text-amber-600 flex items-center gap-2">
-                      <Crown size={15} className="text-amber-500" /> SÜPER YÖNETİCİ HESABI • İESÜ Kariyer Koordinatörlüğü
+                    <p className={`text-sm font-bold ${user?.role === 'staff' ? 'text-indigo-600' : 'text-amber-600'} flex items-center gap-2`}>
+                      {user?.role === 'staff' ? <Briefcase size={15} className="text-indigo-500" /> : <Crown size={15} className="text-amber-500" />}
+                      {user?.role === 'staff'
+                        ? `${user?.title || 'Kurumsal Personel'} • ${user?.department || 'Kariyer Geliştirme Merkezi'}`
+                        : 'SÜPER YÖNETİCİ HESABI • Kariyer Geliştirme Koordinatörlüğü'}
                     </p>
                     <p className="text-xs font-medium text-slate-500 flex items-center gap-4 pt-1">
                       <span className="flex items-center gap-1"><MapPin size={13} className="text-slate-400" /> İstanbul Esenyurt Üniversitesi Kampüsü</span>
-                      <span className="flex items-center gap-1"><Mail size={13} className="text-slate-400" /> kgm@esenyurt.edu.tr</span>
+                      <span className="flex items-center gap-1"><Mail size={13} className="text-slate-400" /> {user?.email || 'kariyer@iesu.edu.tr'}</span>
                     </p>
                   </div>
                 </div>
@@ -2696,8 +2719,8 @@ export default function UserProfile({
                 {/* Quick Action Header Buttons */}
                 <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto pt-2 md:pt-0">
                   <button 
-                    onClick={() => setView?.('admin')} 
-                    className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 hover:from-amber-500 hover:to-amber-700 text-white px-5 py-2.5 rounded-xl text-xs font-black transition-all shadow-md active:scale-95 cursor-pointer border border-amber-400/30"
+                    onClick={() => setView?.(user?.role === 'staff' ? 'staff' : 'admin')} 
+                    className={`flex-1 md:flex-none flex items-center justify-center gap-2 ${user?.role === 'staff' ? 'bg-gradient-to-r from-indigo-700 via-indigo-800 to-slate-900 hover:from-indigo-600 hover:to-slate-800 border-indigo-400/30' : 'bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 hover:from-amber-500 hover:to-amber-700 border-amber-400/30'} text-white px-5 py-2.5 rounded-xl text-xs font-black transition-all shadow-md active:scale-95 cursor-pointer border`}
                   >
                     <LayoutDashboard size={16} /> Yönetim Merkezini Aç
                   </button>
@@ -3599,77 +3622,15 @@ export default function UserProfile({
       )}
 
       {/* ─── DİNAMİK ALT NAVİGASYON DOCK'U (HER DALA ÖZEL EGEMEN DOCK) ─── */}
-      {isAdminBranch ? (
-        /* 👑 SÜPER YÖNETİCİ & KGM ALTIN SARISI DOCK (Ana Akış ile %100 Birebir Uyumlu) */
+      {(isAdminBranch || isStaffBranch) ? (
         <AdminOmniDock 
-          currentUser={currentUser} 
+          currentUser={effectiveCurrentUser} 
           setView={setView} 
           setSelectedUserId={setSelectedUserId} 
           activeTab="profile"
-          theme="amber" 
+          theme={isStaffBranch ? 'indigo' : 'amber'}
+          homeView={isStaffBranch ? 'staff' : 'admin'}
         />
-      ) : isAcademicBranch ? (
-        /* 🏛️ AKADEMİK KADROYA ÖZEL ASİL MOR DOCK (Ana Akış ile Birebir Uyumlu #4C1D95) */
-        <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[340px]">
-          <div className="bg-white/95 backdrop-blur-2xl border-2 border-purple-200 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(76,29,149,0.2)] flex items-center justify-around px-4 text-gray-800">
-            {/* 1. Akademik Akış & Ana Sayfa */}
-            <button 
-              onClick={() => {
-                const store = useAppStore.getState();
-                if (store.setActivePortalBranch) store.setActivePortalBranch('academic');
-                if (setView) setView('academic');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }} 
-              className="p-2.5 rounded-full bg-[#4C1D95] text-white shadow-md shadow-purple-900/30 flex items-center justify-center cursor-pointer hover:scale-105 transition-all" 
-              title="Akademik Akış & Ana Sayfa"
-            >
-              <Home size={22} strokeWidth={2.2} />
-            </button>
-            
-            {/* 2. Staj & Evrak Onayı */}
-            <button 
-              onClick={() => {
-                const store = useAppStore.getState();
-                if (store.setActivePortalBranch) store.setActivePortalBranch('academic');
-                if (setView) setView('academic');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }} 
-              className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-[#4C1D95] via-purple-700 to-indigo-600 text-white shadow-lg shadow-purple-950/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-purple-300/40 cursor-pointer" 
-              title="Evrak & Staj Onayı"
-            >
-              <FileText size={22} strokeWidth={2.5} />
-            </button>
-
-            {/* 3. Araştırma OS Hub */}
-            <button 
-              onClick={() => {
-                const store = useAppStore.getState();
-                if (store.setActivePortalBranch) store.setActivePortalBranch('academic');
-                if (setView) setView('research_hub');
-              }} 
-              className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-purple-50 to-indigo-100 text-purple-900 shadow-md flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-purple-300/60 cursor-pointer" 
-              title="Araştırma OS Hub"
-            >
-              <BookOpen size={20} strokeWidth={2.5} />
-            </button>
-
-            {/* 4. Akademik Profilim */}
-            <button 
-              onClick={() => {
-                const store = useAppStore.getState();
-                if (store.setActivePortalBranch) store.setActivePortalBranch('academic');
-                const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
-                if (setSelectedUserId) setSelectedUserId(selfId);
-                store.setSelectedUserId?.(selfId);
-                if (setView) setView('user_profile');
-              }} 
-              className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#4C1D95] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
-              title="Akademik Profilim"
-            >
-              <SafeAvatar src={effectiveCurrentUser?.avatar} name={effectiveCurrentUser?.name || 'Akademik'} size="xs" alt="Akademisyen" />
-            </button>
-          </div>
-        </div>
       ) : isCompanyBranch ? (
         /* 🏢 KURUMSAL FİRMAYA ÖZEL LACİVERT DOCK (Ana Akış ile Birebir Uyumlu #0A2342) */
         <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">

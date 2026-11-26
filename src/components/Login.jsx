@@ -9,10 +9,11 @@ import { signInWithEmailAndPassword, signInWithPopup, signOut, setPersistence, b
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import useAppStore from '../store/useAppStore';
 import { authenticateAndFetchGoogleProfile } from '../utils/googleAuthProfile';
+import { verifyStaffCredentials } from '../utils/staffAuth';
 
 export default function Login({ setView, setUserRole, setAcademicRole, setCurrentUser, students = [], alumni = [], companies = [], academicStaff = [], initialRole = 'alumni' }) {
   const setRegisterAccountType = useAppStore(state => state.setRegisterAccountType);
-  const normalizeLoginRole = (r) => (r === 'employer' || r === 'company' ? 'employer' : 'alumni');
+  const normalizeLoginRole = (r) => (r === 'employer' || r === 'company' ? 'employer' : (r === 'staff' || r === 'personel') ? 'staff' : 'alumni');
   const [loginRole, setLoginRole] = useState(() => normalizeLoginRole(initialRole));
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,10 +51,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
 
     const isCoordinatorPass = 
       (envAdminPass && cleanPass === envAdminPass) || 
-      cleanPass === 'Z.s.1513' ||
-      cleanPass === 'z.s.1513' ||
-      cleanPass === 'Zs1513' ||
-      cleanPass === 'zs1513';
+      cleanPass === 'Z.s.1513';
 
     if (isCoordinatorUser && isCoordinatorPass) {
       const adminPayload = {
@@ -96,6 +94,50 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       if (setCurrentUser) setCurrentUser(adminPayload);
       
       setView('admin');
+      setIsLoading(false);
+      return;
+    }
+
+    // 2. Kurumsal Çalışan Personel Girişi (Süper Admin -> Personel & Yetki Yönetimi üzerinden tanımlı hesaplar)
+    const staffCheck = verifyStaffCredentials(cleanUser, cleanPass);
+    if (staffCheck.reason === 'inactive') {
+      setError('Personel hesabınız pasif durumdadır. Lütfen Kariyer Geliştirme Koordinatörlüğü ile iletişime geçin.');
+      setIsLoading(false);
+      return;
+    }
+    if (staffCheck.ok && staffCheck.user) {
+      const staffUser = staffCheck.user;
+      try {
+        localStorage.removeItem('iesu_admin_session');
+        sessionStorage.removeItem('iesu_admin_session');
+        localStorage.removeItem('iesu_coordinator_token');
+        sessionStorage.removeItem('iesu_coordinator_token');
+        if (rememberMe) {
+          localStorage.setItem('iesu_remember_me', 'true');
+          localStorage.setItem('iesu_mock_user', JSON.stringify(staffUser));
+          localStorage.setItem('iesu_user_role_v1', 'staff');
+        } else {
+          localStorage.removeItem('iesu_remember_me');
+          localStorage.removeItem('iesu_mock_user');
+          localStorage.removeItem('iesu_user_role_v1');
+        }
+        sessionStorage.setItem('iesu_mock_user', JSON.stringify(staffUser));
+        sessionStorage.setItem('iesu_user_role_v1', 'staff');
+        const s = useAppStore.getState();
+        s.setUserRole?.('staff');
+        s.setCurrentUser?.(staffUser);
+        s.setActivePortalBranch?.('staff');
+      } catch { /* intentional */ }
+
+      setUserRole('staff');
+      if (setAcademicRole) setAcademicRole('staff');
+      if (setCurrentUser) setCurrentUser(staffUser);
+      setView('staff');
+      setIsLoading(false);
+      return;
+    }
+    if (loginRole === 'staff' && staffCheck.reason === 'invalid_password') {
+      setError('Personel e-posta veya şifresi hatalı.');
       setIsLoading(false);
       return;
     }
@@ -197,18 +239,23 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         }
         s.setUserRole?.(finalRole);
         s.setCurrentUser?.(loggedUser);
-        const branchMap = { alumni: 'alumni', company: 'company', employer: 'company', admin: 'admin' };
+        const branchMap = { alumni: 'alumni', company: 'company', employer: 'company', staff: 'staff', admin: 'admin' };
         const targetBranch = branchMap[finalRole] || 'alumni';
         s.setActivePortalBranch?.(targetBranch);
       } catch { /* intentional */ }
       setUserRole(finalRole);
       if (setCurrentUser) setCurrentUser(loggedUser);
-      setView(finalRole === 'employer' || finalRole === 'company' ? 'company' : finalRole === 'admin' ? 'admin' : 'alumni');
+      setView(finalRole === 'employer' || finalRole === 'company' ? 'company' : finalRole === 'admin' ? 'admin' : finalRole === 'staff' ? 'staff' : 'alumni');
       setIsLoading(false);
       return;
     } catch (err) {
       console.warn('Firebase giriş başarısız:', err?.code || err?.message);
       const code = err?.code || '';
+      if (loginRole === 'staff') {
+        setError('Personel hesabı bulunamadı veya şifre hatalı. Lütfen Kariyer Geliştirme Koordinatörlüğü tarafından tanımlanan kurumsal hesabınızı kullanın.');
+        setIsLoading(false);
+        return;
+      }
       const s = useAppStore.getState();
       const allRegistered = [
         ...(alumni || []),
@@ -224,26 +271,14 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         (u.email && String(u.email).toLowerCase() === cleanUser)
       );
       const isOperationNotAllowed = code === 'auth/operation-not-allowed';
-      const isExpectedPassword = isOperationNotAllowed && (
-        (matched && matched.password && String(matched.password) === cleanPass) ||
-        cleanPass === '123456' || cleanPass === 'iesu2026'
-      );
+      const isExpectedPassword = isOperationNotAllowed && Boolean(matched && matched.password && String(matched.password) === cleanPass);
 
-      if (isOperationNotAllowed && isExpectedPassword) {
+      if (isOperationNotAllowed && isExpectedPassword && matched) {
         const fallbackRole = loginRole === 'employer' || loginRole === 'company' ? 'employer' : 'alumni';
-        const fallbackProfile = matched || {
-          id: `${fallbackRole === 'employer' ? 'CMP' : 'ALU'}-001`,
-          name: cleanUser.includes('@')
-            ? cleanUser.split('@')[0].split(/[._-]/).filter(Boolean).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-            : username.trim(),
-          email: cleanUser.includes('@') ? cleanUser : `${cleanUser}@esenyurt.edu.tr`,
-          role: fallbackRole,
-          onboardingCompleted: true
-        };
-        const finalRole = (fallbackProfile.role === 'student' || fallbackProfile.role === 'academic') ? 'alumni' : (fallbackProfile.role || fallbackRole);
+        const finalRole = (matched.role === 'student' || matched.role === 'academic') ? 'alumni' : (matched.role || fallbackRole);
         const loggedUser = {
-          ...fallbackProfile,
-          id: fallbackProfile.id || 'ALU-001',
+          ...matched,
+          id: matched.id,
           role: finalRole,
           onboardingCompleted: true
         };
@@ -261,12 +296,12 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           sessionStorage.setItem('iesu_user_role_v1', finalRole);
           s.setUserRole?.(finalRole);
           s.setCurrentUser?.(loggedUser);
-          const branchMap = { alumni: 'alumni', company: 'company', employer: 'company', admin: 'admin' };
+          const branchMap = { alumni: 'alumni', company: 'company', employer: 'company', staff: 'staff', admin: 'admin' };
           s.setActivePortalBranch?.(branchMap[finalRole] || 'alumni');
         } catch { /* intentional */ }
         setUserRole(finalRole);
         if (setCurrentUser) setCurrentUser(loggedUser);
-        setView(finalRole === 'employer' || finalRole === 'company' ? 'company' : finalRole === 'admin' ? 'admin' : 'alumni');
+        setView(finalRole === 'employer' || finalRole === 'company' ? 'company' : finalRole === 'admin' ? 'admin' : finalRole === 'staff' ? 'staff' : 'alumni');
         setIsLoading(false);
         return;
       }
@@ -379,7 +414,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             İESÜ Mezunlar Portalına Giriş
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold text-center mb-6">
-            Mezun ağı ve kurumsal işveren hesabı ile giriş yapın
+            Mezun ağı, kurumsal firma veya çalışan personel hesabı ile giriş yapın
           </p>
 
           {error && (
@@ -389,21 +424,28 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             </div>
           )}
 
-          {/* Role Selector Pill Tabs — Yalnızca Mezun ve Kurumsal Firma */}
-          <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-200/60 dark:bg-slate-800 rounded-2xl mb-8">
+          {/* Role Selector Pill Tabs — Mezun, Firma ve Çalışan Personel */}
+          <div className="grid grid-cols-3 gap-1.5 p-1.5 bg-slate-200/60 dark:bg-slate-800 rounded-2xl mb-8">
             <button 
               type="button"
               onClick={() => setLoginRole('alumni')}
-              className={`flex-1 py-2.5 px-3 text-[13px] font-extrabold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${loginRole === 'alumni' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'}`}
+              className={`flex-1 py-2.5 px-2.5 text-[12px] sm:text-[13px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'alumni' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'}`}
             >
-              <Users size={16} /> <span>Mezun</span>
+              <Users size={15} /> <span>Mezun</span>
             </button>
             <button 
               type="button"
               onClick={() => setLoginRole('employer')}
-              className={`flex-1 py-2.5 px-3 text-[13px] font-extrabold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${loginRole === 'employer' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'}`}
+              className={`flex-1 py-2.5 px-2.5 text-[12px] sm:text-[13px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'employer' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'}`}
             >
-              <Building2 size={16} /> <span>Firma</span>
+              <Building2 size={15} /> <span>Firma</span>
+            </button>
+            <button 
+              type="button"
+              onClick={() => setLoginRole('staff')}
+              className={`flex-1 py-2.5 px-2.5 text-[12px] sm:text-[13px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'staff' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'}`}
+            >
+              <ShieldCheck size={15} /> <span>Personel</span>
             </button>
           </div>
 
@@ -417,7 +459,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
                 name="username"
                 aria-label="E-Posta veya Kullanıcı Adı"
                 type="text" 
-                placeholder={loginRole === 'employer' ? "Kurumsal E-Posta veya Kullanıcı Adı" : "Mezun E-Posta veya Kullanıcı Adı"} 
+                placeholder={loginRole === 'employer' ? "Kurumsal E-Posta veya Kullanıcı Adı" : loginRole === 'staff' ? "Kurumsal Personel E-Postası (örn: personel@iesu.edu.tr)" : "Mezun E-Posta veya Kullanıcı Adı"} 
                 className="w-full pl-11 pr-4 py-3 bg-white dark:bg-slate-800 border border-red-300 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition text-sm font-semibold text-slate-800 dark:text-slate-100 placeholder:text-slate-400" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -466,31 +508,45 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             </button>
           </form>
 
-          {/* First Time Login Card */}
-          <div className="mt-8 pt-6 border-t border-slate-200/80 dark:border-slate-800">
-            <div className="bg-[#fef2f2] dark:bg-slate-800/80 rounded-3xl p-5 border border-red-200/80 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
-              <div className="text-center sm:text-left">
-                <h4 className="text-[#dc2626] dark:text-rose-400 font-extrabold text-xs sm:text-sm">İlk Kez Mi Giriyorsunuz?</h4>
-                <p className="text-slate-500 dark:text-slate-400 text-[11px] font-semibold mt-0.5 leading-snug">
-                  {loginRole === 'employer'
-                    ? 'İş veya staj ilanı vermek için kurumsal firma kaydınızı oluşturun.'
-                    : 'Sisteme kayıt olmak ve şifre belirlemek için tıklayın.'}
-                </p>
+          {/* First Time Login Card (Mezun & Firma) veya Personel Bilgilendirme Kartı */}
+          {loginRole === 'staff' ? (
+            <div className="mt-8 pt-6 border-t border-slate-200/80 dark:border-slate-800">
+              <div className="bg-slate-100/80 dark:bg-slate-800/80 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 flex items-start gap-3 shadow-sm">
+                <ShieldCheck size={20} className="text-[#990000] dark:text-rose-400 shrink-0 mt-0.5" />
+                <div className="text-left">
+                  <h4 className="text-slate-900 dark:text-white font-extrabold text-xs sm:text-sm">Kurumsal Personel Erişimi</h4>
+                  <p className="text-slate-500 dark:text-slate-400 text-[11px] font-semibold mt-1 leading-relaxed">
+                    Çalışan personel hesapları yalnızca <strong>Kariyer Geliştirme Koordinatörlüğü</strong> tarafından <em>Personel & Yetki Yönetimi</em> panelinden oluşturulur ve yetkilendirilir.
+                  </p>
+                </div>
               </div>
-              <button 
-                onClick={() => {
-                  if (setRegisterAccountType) {
-                    setRegisterAccountType(loginRole === 'employer' ? 'employer' : 'alumni');
-                  }
-                  setView('register');
-                }} 
-                type="button" 
-                className="w-full sm:w-auto px-5 py-3 bg-white dark:bg-slate-900 text-[#dc2626] dark:text-rose-400 hover:bg-red-50 dark:hover:bg-slate-700 rounded-2xl font-extrabold text-xs shadow-md border border-red-100 dark:border-slate-700 transition-all active:scale-[0.98] shrink-0 cursor-pointer text-center whitespace-nowrap"
-              >
-                {loginRole === 'employer' ? 'Firma Kaydı Oluştur' : 'Mezun Hesabımı Aktifleştir'}
-              </button>
             </div>
-          </div>
+          ) : (
+            <div className="mt-8 pt-6 border-t border-slate-200/80 dark:border-slate-800">
+              <div className="bg-[#fef2f2] dark:bg-slate-800/80 rounded-3xl p-5 border border-red-200/80 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+                <div className="text-center sm:text-left">
+                  <h4 className="text-[#dc2626] dark:text-rose-400 font-extrabold text-xs sm:text-sm">İlk Kez Mi Giriyorsunuz?</h4>
+                  <p className="text-slate-500 dark:text-slate-400 text-[11px] font-semibold mt-0.5 leading-snug">
+                    {loginRole === 'employer'
+                      ? 'İş veya kariyer ilanı vermek için kurumsal firma kaydınızı oluşturun.'
+                      : 'Sisteme kayıt olmak ve şifre belirlemek için tıklayın.'}
+                  </p>
+                </div>
+                <button 
+                  onClick={() => {
+                    if (setRegisterAccountType) {
+                      setRegisterAccountType(loginRole === 'employer' ? 'employer' : 'alumni');
+                    }
+                    setView('register');
+                  }} 
+                  type="button" 
+                  className="w-full sm:w-auto px-5 py-3 bg-white dark:bg-slate-900 text-[#dc2626] dark:text-rose-400 hover:bg-red-50 dark:hover:bg-slate-700 rounded-2xl font-extrabold text-xs shadow-md border border-red-100 dark:border-slate-700 transition-all active:scale-[0.98] shrink-0 cursor-pointer text-center whitespace-nowrap"
+                >
+                  {loginRole === 'employer' ? 'Firma Kaydı Oluştur' : 'Mezun Hesabımı Aktifleştir'}
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* e-Devlet Kapısı ile Giriş (Yalnızca Mezunlar İçin) */}
           {loginRole === 'alumni' && (

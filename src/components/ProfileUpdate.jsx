@@ -2343,7 +2343,7 @@ export default function ProfileUpdate({
                 if (hasChanges) handleSave(false);
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('alumni');
-                const selfId = currentUser?.id || 'ALU-001';
+                const selfId = currentUser?.id || currentUser?.uid || 'self';
                 if (setSelectedUserId) setSelectedUserId(selfId);
                 store.setSelectedUserId?.(selfId);
                 setView('user_profile');
@@ -2354,74 +2354,6 @@ export default function ProfileUpdate({
               <SafeAvatar 
                 src={formData.avatar || currentUser?.avatar || currentUser?.profileImage} 
                 name={currentUser?.name || 'Mezun'} 
-                size="xs" 
-                alt="Profile" 
-              />
-            </button>
-          </div>
-        </div>
-      ) : effectiveBranch === 'academic' ? (
-        /* 🏛️ AKADEMİK KADROYA ÖZEL ASİL MOR DOCK (Normal Akıştaki ile Birebir) */
-        <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[340px]">
-          <div className="bg-white/95 backdrop-blur-2xl border-2 border-purple-200 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(76,29,149,0.2)] flex items-center justify-around px-4 text-gray-800">
-            {/* 1. Akademik Akış & Ana Sayfa */}
-            <button 
-              onClick={() => {
-                if (hasChanges) handleSave(false);
-                const store = useAppStore.getState();
-                store.setActivePortalBranch?.('academic');
-                setView('academic');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }} 
-              className="p-2.5 rounded-full bg-[#4C1D95] text-white shadow-md shadow-purple-900/30 flex items-center justify-center cursor-pointer hover:scale-105 transition-all" 
-              title="Akademik Akışa Dön"
-            >
-              <Home size={22} strokeWidth={2.2} />
-            </button>
-            {/* 2. Staj & Evrak Onayı */}
-            <button 
-              onClick={() => {
-                if (hasChanges) handleSave(false);
-                const store = useAppStore.getState();
-                store.setActivePortalBranch?.('academic');
-                setView('academic');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }} 
-              className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-[#4C1D95] via-purple-700 to-indigo-600 text-white shadow-lg shadow-purple-950/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-purple-300/40 cursor-pointer" 
-              title="Evrak & Staj Onayı"
-            >
-              <FileText size={22} strokeWidth={2.5} />
-            </button>
-            {/* 3. Araştırma OS Hub */}
-            <button 
-              onClick={() => {
-                if (hasChanges) handleSave(false);
-                const store = useAppStore.getState();
-                store.setActivePortalBranch?.('academic');
-                setView('research_hub');
-              }} 
-              className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-purple-50 to-indigo-100 text-purple-900 shadow-md flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-purple-300/60 cursor-pointer" 
-              title="Araştırma OS Hub"
-            >
-              <BookOpen size={20} strokeWidth={2.5} />
-            </button>
-            {/* 4. Hoca Profilim */}
-            <button 
-              onClick={() => {
-                if (hasChanges) handleSave(false);
-                const store = useAppStore.getState();
-                store.setActivePortalBranch?.('academic');
-                const selfId = currentUser?.id || 'ACAD-001';
-                if (setSelectedUserId) setSelectedUserId(selfId);
-                store.setSelectedUserId?.(selfId);
-                setView('user_profile');
-              }} 
-              className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#4C1D95] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer ring-2 ring-purple-400" 
-              title="Hoca Profilim"
-            >
-              <SafeAvatar 
-                src={formData.avatar || currentUser?.avatar || currentUser?.profileImage} 
-                name={currentUser?.name || 'Hoca'} 
                 size="xs" 
                 alt="Profile" 
               />
@@ -2478,7 +2410,7 @@ export default function ProfileUpdate({
                 if (hasChanges) handleSave(false);
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('company');
-                const selfId = currentUser?.id || 'CMP-001';
+                const selfId = currentUser?.id || currentUser?.uid || 'self';
                 if (setSelectedUserId) setSelectedUserId(selfId);
                 store.setSelectedUserId?.(selfId);
                 setView('user_profile');
@@ -2495,73 +2427,7 @@ export default function ProfileUpdate({
             </button>
           </div>
         </div>
-      ) : (
-        /* 🎓 ÖĞRENCİYE ÖZEL KIRMIZI/CRIMSON DOCK (Normal Akıştaki ile Birebir) */
-        <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
-          <div className="bg-white/95 backdrop-blur-2xl border-2 border-red-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(153,0,0,0.18)] flex items-center justify-between px-4 text-gray-800">
-            {/* 1. Öğrenci Akışı */}
-            <button 
-              onClick={() => {
-                if (hasChanges) handleSave(false);
-                const store = useAppStore.getState();
-                store.setActivePortalBranch?.('student');
-                setView('student');
-              }} 
-              className="p-2.5 rounded-full text-slate-600 hover:text-[#990000] hover:bg-red-50 transition-all flex items-center justify-center cursor-pointer" 
-              title="Öğrenci Akışına Dön"
-            >
-              <Home size={22} strokeWidth={2.2} />
-            </button>
-            {/* 2. İş & Staj Olanakları */}
-            <button 
-              onClick={() => {
-                if (hasChanges) handleSave(false);
-                const store = useAppStore.getState();
-                store.setActivePortalBranch?.('student');
-                setView('jobs');
-              }} 
-              className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 text-white shadow-lg shadow-red-900/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-red-300/40 cursor-pointer" 
-              title="Öğrenci İş & Staj Olanakları"
-            >
-              <Briefcase size={20} strokeWidth={2.5} />
-            </button>
-            {/* 3. Keşfet & Sosyal Ağ */}
-            <button 
-              onClick={() => {
-                if (hasChanges) handleSave(false);
-                const store = useAppStore.getState();
-                store.setActivePortalBranch?.('student');
-                setView('student');
-              }} 
-              className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 text-white shadow-lg shadow-red-900/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-red-300/40 cursor-pointer" 
-              title="Keşfet & Sosyal Ağ Portalı"
-            >
-              <Search size={20} strokeWidth={2.8} />
-            </button>
-            {/* 4. Öğrenci Profilim */}
-            <button 
-              onClick={() => {
-                if (hasChanges) handleSave(false);
-                const store = useAppStore.getState();
-                store.setActivePortalBranch?.('student');
-                const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'STU-001';
-                if (setSelectedUserId) setSelectedUserId(selfId);
-                store.setSelectedUserId?.(selfId);
-                setView('user_profile');
-              }} 
-              className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer ring-2 ring-red-400" 
-              title="Öğrenci Profilim"
-            >
-              <SafeAvatar 
-                src={formData.avatar || currentUser?.avatar || currentUser?.profileImage} 
-                name={currentUser?.name || 'Öğrenci'} 
-                size="xs" 
-                alt="Profile" 
-              />
-            </button>
-          </div>
-        </div>
-      )}
+      ) : null}
 
       {/* MODALS - Redesigned to look like macOS Dialogs */}
       {showExpModal && (

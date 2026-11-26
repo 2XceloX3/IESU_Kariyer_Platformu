@@ -140,12 +140,19 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
   }, []);
 
 
-  const isAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin';
-  const alumniName = effectiveCurrentUser?.name || 'Mezun';
-  const alumniDept = isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : (effectiveCurrentUser?.department || 'Bölüm Belirtilmemiş');
-  const alumniGradYear = (effectiveCurrentUser?.role === 'alumni' && (effectiveCurrentUser?.gradYear || effectiveCurrentUser?.graduationYear)) ? (effectiveCurrentUser.gradYear || effectiveCurrentUser.graduationYear) : '2023';
+  const isAdmin = effectiveCurrentUser?.role === 'admin' || userRole === 'admin';
+  const isStaff = !isAdmin && (effectiveCurrentUser?.role === 'staff' || userRole === 'staff');
+  const alumniName = effectiveCurrentUser?.name || (isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : isStaff ? 'Kurumsal Personel' : 'Mezun');
+  const alumniDept = isAdmin
+    ? 'Kariyer Geliştirme Koordinatörlüğü'
+    : isStaff
+      ? (effectiveCurrentUser?.department || 'Kariyer Geliştirme Merkezi')
+      : (effectiveCurrentUser?.department || 'Bölüm Belirtilmemiş');
+  const alumniGradYear = (effectiveCurrentUser?.role === 'alumni' && (effectiveCurrentUser?.gradYear || effectiveCurrentUser?.graduationYear))
+    ? (effectiveCurrentUser.gradYear || effectiveCurrentUser.graduationYear)
+    : '';
   const alumniAvatar = effectiveCurrentUser?.avatar || '/iesu-logo.svg';
-  const alumniId = (effectiveCurrentUser?.role === 'alumni' && effectiveCurrentUser?.id && effectiveCurrentUser.id !== 'admin_1513') ? effectiveCurrentUser.id : (effectiveCurrentUser?.id || 'self');
+  const alumniId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || (isAdmin ? 'admin_1513' : 'self');
 
   const existingApp = (alumniCardApplications || []).find(a => a.tc === effectiveCurrentUser?.tc || a.email === effectiveCurrentUser?.email || a.name === effectiveCurrentUser?.name);
   const isFormActive = (alumniCardForms || []).length > 0 ? alumniCardForms[0]?.isActive : true;
@@ -189,7 +196,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               <Star size={22} strokeWidth={activeTab === 'create_post' ? 2.5 : 2} className={activeTab === 'create_post' ? 'fill-current text-orange-500/10' : ''} />
             </button>
             
-            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => setView(isAdmin ? 'admin' : isStaff ? 'staff' : (userRole === 'employer' || userRole === 'company') ? 'company' : 'alumni')}>
               <Logo color="emerald" className="h-10 w-auto hover:scale-105 transition-transform shrink-0" />
               <div className="hidden sm:block text-left">
                 <h1 className="text-[13px] font-black text-emerald-800 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
@@ -252,7 +259,11 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                     <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" title="Mezun Durumu Aktif"></span>
                   </h2>
                   <p className="text-[12px] font-bold text-gray-500 mb-4">
-                    {isAdmin ? 'Süper Yönetici & Koordinatör' : `${alumniDept} • Mezuniyet: ${alumniGradYear}`}
+                    {isAdmin
+                      ? 'Süper Yönetici & Koordinatör'
+                      : isStaff
+                        ? `${effectiveCurrentUser?.staffTitle || 'Kurumsal Personel'} • ${alumniDept}`
+                        : (alumniGradYear ? `${alumniDept} • Mezuniyet: ${alumniGradYear}` : alumniDept)}
                   </p>
                   
                   <div className="flex justify-center gap-6 border-y border-gray-100 py-3 mb-4">

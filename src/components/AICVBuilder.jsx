@@ -47,20 +47,20 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
       console.warn("Failed to load CV draft", e);
     }
 
-    const defaultRole = userRole === 'alumni' || currentUser?.role === 'alumni' ? 'alumni' : 'student';
-    const defaultTitle = defaultRole === 'alumni'
-      ? (currentUser?.department ? `${currentUser.department} Mezunu` : 'İESÜ Mezunu')
-      : (currentUser?.department ? `${currentUser.department} Öğrencisi` : 'İESÜ Öğrencisi');
+    const isInstitutional = currentUser?.role === 'admin' || currentUser?.role === 'staff';
+    const defaultTitle = isInstitutional
+      ? (currentUser?.staffTitle || 'Kariyer Geliştirme Koordinatörlüğü')
+      : (currentUser?.department ? `${currentUser.department} Mezunu` : 'İESÜ Mezunu');
 
     return {
-      name: currentUser?.name || 'Caner Öztürk',
+      name: currentUser?.name || 'Ad Soyad',
       photo: currentUser?.avatar || '/iesu-logo.svg',
       title: currentUser?.title || defaultTitle,
-      email: currentUser?.email || 'caner@esenyurt.edu.tr',
-      phone: currentUser?.phone || '+90 532 000 00 00',
+      email: currentUser?.email || '',
+      phone: currentUser?.phone || '',
       location: currentUser?.location || currentUser?.city || 'İstanbul, Türkiye',
-      linkedin: currentUser?.linkedin || 'linkedin.com/in/canerozturk',
-      github: currentUser?.github || 'github.com/canerozturk',
+      linkedin: currentUser?.linkedin || '',
+      github: currentUser?.github || '',
       website: '',
       summary: currentUser?.bio || currentUser?.summary || 'İstanbul Esenyurt Üniversitesi bünyesinde edindiğim teorik ve uygulamalı yetkinliklerle; teknoloji, inovasyon ve problem çözme odaklı projelerde aktif değer üretmeyi hedefliyorum.',
       gpa: currentUser?.gpa || '3.42',

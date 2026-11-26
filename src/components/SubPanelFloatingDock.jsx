@@ -22,100 +22,96 @@ export default function SubPanelFloatingDock({
   
   const isActualAdmin = Boolean(
     storeUserRole === 'admin' || 
-    userRole === 'admin' ||
     effectiveCurrentUser?.role === 'admin'
   );
+  const isActualStaff = !isActualAdmin && Boolean(
+    storeUserRole === 'staff' ||
+    effectiveCurrentUser?.role === 'staff'
+  );
 
-  const safeBranch = (activeBranch === 'admin' && !isActualAdmin) ? null : activeBranch;
-  const safePropRole = (userRole === 'admin' && !isActualAdmin) ? null : userRole;
+  const safeBranch = (
+    (activeBranch === 'admin' && !isActualAdmin) ||
+    (activeBranch === 'staff' && !isActualAdmin && !isActualStaff)
+  ) ? null : activeBranch;
+  const safePropRole = (
+    (userRole === 'admin' && !isActualAdmin) ||
+    (userRole === 'staff' && !isActualAdmin && !isActualStaff)
+  ) ? null : userRole;
 
-  // Kovan Dalı Egemenliği (Her kovan kendi temasını ve geri dönüş hedefini mutlak korur):
-  // 1. safeBranch varsa (kullanıcı şu anda hangi kovan peteğindeyse o kovanın dock'u ve geri dönüşü geçerlidir)
-  // 2. userRole prop (eğer özel olarak iletilmişse)
-  // 3. effectiveCurrentUser.role
+  // Kovan Dalı Egemenliği (Her kovan kendi temasını ve geri dönüş hedefini mutlak korur)
   const currentHive = (
-    (safeBranch && ['alumni', 'company', 'admin'].includes(safeBranch)) ? safeBranch :
-    (safePropRole && ['alumni', 'company', 'admin'].includes(safePropRole)) ? safePropRole :
-    (effectiveCurrentUser?.role && ['alumni', 'company', 'admin', 'employer'].includes(effectiveCurrentUser.role)) ? (effectiveCurrentUser.role === 'employer' ? 'company' : effectiveCurrentUser.role) :
-    'alumni'
+    (safeBranch && ['alumni', 'company', 'staff', 'admin'].includes(safeBranch)) ? safeBranch :
+    (safePropRole && ['alumni', 'company', 'staff', 'admin'].includes(safePropRole)) ? safePropRole :
+    (effectiveCurrentUser?.role && ['alumni', 'company', 'staff', 'admin', 'employer'].includes(effectiveCurrentUser.role))
+      ? (effectiveCurrentUser.role === 'employer' ? 'company' : effectiveCurrentUser.role)
+      : 'alumni'
   );
 
   const isAlumni = currentHive === 'alumni';
-  const isAcademic = false;
+  const isStaff = currentHive === 'staff';
   const isCompany = currentHive === 'company' || currentHive === 'employer';
   const isAdmin = currentHive === 'admin';
-  const isStudent = false;
 
-  // Alt yüzen dock tüm kovanlarda ve alt panellerde kurumsal navigasyonu sunar
-
-  const userName = effectiveCurrentUser?.name || (isAlumni ? 'Mezun' : isAcademic ? 'Akademik' : isCompany ? 'Kurumsal Firma' : isAdmin ? 'KGM Yönetici' : 'Öğrenci');
+  const userName = effectiveCurrentUser?.name || (isAlumni ? 'Mezun' : isStaff ? 'Kurumsal Personel' : isCompany ? 'Kurumsal Firma' : isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : 'Mezun');
   const userAvatar = effectiveCurrentUser?.avatar || effectiveCurrentUser?.logo || '/iesu-logo.svg';
 
-  const userId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentId || effectiveCurrentUser?.studentNo || 'self';
+  const userId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
 
-  const homeView = isAlumni ? 'alumni' : isAcademic ? 'academic' : isCompany ? 'company' : isAdmin ? 'admin' : 'student';
+  const homeView = isAlumni ? 'alumni' : isStaff ? 'staff' : isCompany ? 'company' : isAdmin ? 'admin' : 'alumni';
 
   // Tema Renkleri
   const borderColor = 
     isAlumni ? 'border-emerald-100 dark:border-emerald-500/40' :
-    isAcademic ? 'border-purple-200 dark:border-purple-500/40' :
+    isStaff ? 'border-indigo-200 dark:border-indigo-500/40' :
     isCompany ? 'border-blue-200 dark:border-blue-500/40' :
-    isAdmin ? 'border-amber-200 dark:border-amber-500/40' :
-    'border-red-100 dark:border-rose-500/40';
+    'border-amber-200 dark:border-amber-500/40';
 
   const shadowColor = 
     isAlumni ? 'shadow-[0_15px_40px_rgba(5,150,105,0.18)]' :
-    isAcademic ? 'shadow-[0_15px_40px_rgba(124,58,237,0.18)]' :
+    isStaff ? 'shadow-[0_15px_40px_rgba(67,56,202,0.18)]' :
     isCompany ? 'shadow-[0_15px_40px_rgba(30,58,95,0.18)]' :
-    isAdmin ? 'shadow-[0_15px_40px_rgba(180,83,9,0.18)]' :
-    'shadow-[0_15px_40px_rgba(153,0,0,0.18)]';
+    'shadow-[0_15px_40px_rgba(180,83,9,0.18)]';
 
   const primaryBg = 
     isAlumni ? 'bg-[#059669]' :
-    isAcademic ? 'bg-[#7c3aed]' :
+    isStaff ? 'bg-[#4338ca]' :
     isCompany ? 'bg-[#1e3a5f]' :
-    isAdmin ? 'bg-[#b45309]' :
-    'bg-[#990000]';
+    'bg-[#b45309]';
 
   const primaryText = 
     isAlumni ? 'text-[#059669] dark:text-emerald-300' :
-    isAcademic ? 'text-[#7c3aed] dark:text-purple-300' :
+    isStaff ? 'text-[#4338ca] dark:text-indigo-300' :
     isCompany ? 'text-[#1e3a5f] dark:text-sky-300' :
-    isAdmin ? 'text-[#b45309] dark:text-amber-300' :
-    'text-[#990000] dark:text-rose-300';
+    'text-[#b45309] dark:text-amber-300';
 
   const hoverBg = 
     isAlumni ? 'hover:bg-emerald-50 dark:hover:bg-slate-800' :
-    isAcademic ? 'hover:bg-purple-50 dark:hover:bg-slate-800' :
+    isStaff ? 'hover:bg-indigo-50 dark:hover:bg-slate-800' :
     isCompany ? 'hover:bg-blue-50 dark:hover:bg-slate-800' :
-    isAdmin ? 'hover:bg-amber-50 dark:hover:bg-slate-800' :
-    'hover:bg-red-50 dark:hover:bg-slate-800';
+    'hover:bg-amber-50 dark:hover:bg-slate-800';
 
   const gradientAction1 = 
     isAlumni ? 'bg-gradient-to-tr from-emerald-800 via-[#059669] to-teal-600 shadow-emerald-900/40 border-emerald-300/40' :
-    isAcademic ? 'bg-gradient-to-tr from-[#4C1D95] via-[#7c3aed] to-indigo-600 shadow-purple-950/40 border-purple-300/40' :
+    isStaff ? 'bg-gradient-to-tr from-indigo-900 via-[#4338ca] to-indigo-600 shadow-indigo-950/40 border-indigo-300/40' :
     isCompany ? 'bg-gradient-to-tr from-indigo-700 via-[#1e3a5f] to-slate-900 shadow-blue-950/40 border-blue-300/40' :
-    isAdmin ? 'bg-gradient-to-tr from-amber-700 via-[#b45309] to-yellow-600 shadow-amber-900/40 border-amber-300/40' :
-    'bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 shadow-red-900/40 border-red-300/40';
+    'bg-gradient-to-tr from-amber-700 via-[#b45309] to-yellow-600 shadow-amber-900/40 border-amber-300/40';
 
   const gradientAction2 = 
     isAlumni ? 'bg-gradient-to-tr from-emerald-800 via-[#059669] to-teal-600 shadow-emerald-900/40 border-emerald-300/40' :
-    isAcademic ? 'bg-gradient-to-tr from-purple-800 via-[#7c3aed] to-indigo-700 shadow-purple-900/40 border-purple-300/40' :
+    isStaff ? 'bg-gradient-to-tr from-slate-800 via-[#4338ca] to-indigo-700 shadow-indigo-900/40 border-indigo-300/40' :
     isCompany ? 'bg-gradient-to-tr from-blue-700 via-[#1e3a5f] to-indigo-800 shadow-blue-950/40 border-blue-300/40' :
-    isAdmin ? 'bg-gradient-to-tr from-amber-700 via-[#b45309] to-yellow-600 shadow-amber-900/40 border-amber-300/40' :
-    'bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 shadow-red-900/40 border-red-300/40';
+    'bg-gradient-to-tr from-amber-700 via-[#b45309] to-yellow-600 shadow-amber-900/40 border-amber-300/40';
 
   const profileBorder = 
     isAlumni ? 'border-[#059669]' :
-    isAcademic ? 'border-[#7c3aed]' :
+    isStaff ? 'border-[#4338ca]' :
     isCompany ? 'border-[#1e3a5f]' :
-    isAdmin ? 'border-[#b45309]' :
-    'border-[#990000]';
+    'border-[#b45309]';
 
   // 2. Buton Hedefi ve Başlığı (Her Kovana Özgü Kimlik ve Eylem)
-  const action1View = isCompany ? 'company_ats' : isAcademic ? 'research_hub' : isAlumni ? 'global_map' : 'jobs';
-  const action1Title = isCompany ? 'ATS Aday Takip Panosu' : isAcademic ? 'Araştırma OS Hub' : isAlumni ? 'Küresel Mezun Haritası' : 'İş & Staj Olanakları';
-  const Action1Icon = isCompany ? Briefcase : isAcademic ? BookOpen : isAlumni ? Globe : Briefcase;
+  const action1View = isCompany ? 'company_ats' : isStaff ? 'admin_cms' : isAlumni ? 'global_map' : 'admin_cms';
+  const action1Title = isCompany ? 'ATS Aday Takip Panosu' : isStaff ? 'Personel Çalışma Paneli (CMS)' : isAlumni ? 'Küresel Mezun Haritası' : 'Yönetim Konsolu (CMS)';
+  const Action1Icon = isCompany ? Briefcase : (isStaff || isAdmin) ? LayoutDashboard : Globe;
 
   // 3. İkinci Buton Hedefi ve Başlığı
   const action2View = isCompany ? 'create_job' : 'explore';

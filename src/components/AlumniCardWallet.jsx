@@ -30,16 +30,22 @@ export default function AlumniCardWallet({ setView, currentUser, userRole = 'alu
     else window.history.back();
   };
 
-  // Card Meta Data
-  const alumniName = currentUser?.name || 'Caner Öztürk';
-  const alumniDept = currentUser?.department || 'Bilgisayar Mühendisliği';
-  const alumniGradYear = currentUser?.graduationYear || currentUser?.gradYear || '2023';
+  // Card Meta Data — Gerçek oturum kimliği korunur (Süper Yönetici / Personel asla sahte mezun gibi gösterilmez)
+  const isInstitutionalUser = currentUser?.role === 'admin' || currentUser?.role === 'staff';
+  const alumniName = currentUser?.name || (currentUser?.role === 'admin' ? 'Kariyer Geliştirme Koordinatörlüğü' : 'İESÜ Mezunu');
+  const alumniDept = isInstitutionalUser
+    ? (currentUser?.department || (currentUser?.role === 'admin' ? 'Kariyer Geliştirme Koordinatörlüğü' : (currentUser?.staffTitle || 'Kurumsal Personel')))
+    : (currentUser?.department || 'Bölüm Belirtilmedi');
+  const alumniGradYear = isInstitutionalUser
+    ? 'KURUMSAL'
+    : (currentUser?.graduationYear || currentUser?.gradYear || String(new Date().getFullYear()));
   const alumniAvatar = currentUser?.avatar || '/iesu-logo.svg';
-  const alumniIdRaw = currentUser?.id || currentUser?.uid || '8841';
+  const alumniIdRaw = currentUser?.id || currentUser?.uid || '0001';
   const formattedCardNo = useMemo(() => {
-    const cleanId = String(alumniIdRaw).replace(/\D/g, '').slice(-4).padStart(4, '0') || '8841';
-    return `IESU-ALM-${alumniGradYear}-${cleanId}`;
-  }, [alumniGradYear, alumniIdRaw]);
+    const prefix = currentUser?.role === 'admin' ? 'IESU-KGM' : currentUser?.role === 'staff' ? 'IESU-PRS' : 'IESU-ALM';
+    const cleanId = String(alumniIdRaw).replace(/\D/g, '').slice(-4).padStart(4, '0') || '0001';
+    return `${prefix}-${alumniGradYear}-${cleanId}`;
+  }, [alumniGradYear, alumniIdRaw, currentUser?.role]);
 
   const verifyUrl = `https://kariyer.esenyurt.edu.tr/verify/alumni/${formattedCardNo}`;
 
