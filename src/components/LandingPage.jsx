@@ -175,7 +175,7 @@ export default function LandingPage({ setView, currentUser, userRole }) {
     },
     kullanim: {
       title: "Kullanım Koşulları",
-      description: "Bu web sitesi, İstanbul Esenyurt Üniversitesi öğrencileri, mezunları ve akademik personeli için kariyer planlama süreçlerini desteklemek amacıyla hazırlanmıştır. Sitede yer alan iş/staj ilanları, haberler ve duyurular bilgilendirme amaçlıdır.",
+      description: "Bu web sitesi, İstanbul Esenyurt Üniversitesi öğrencileri, mezunları, kurumsal işverenleri ve kariyer ofisi personeli için kariyer planlama süreçlerini desteklemek amacıyla hazırlanmıştır. Sitede yer alan iş/staj ilanları, haberler ve duyurular bilgilendirme amaçlıdır.",
       date: "01/01/2026",
       category: "Yasal Bilgilendirme"
     },
@@ -582,7 +582,7 @@ export default function LandingPage({ setView, currentUser, userRole }) {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[260px]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:auto-rows-[260px]">
             {/* Top Left: Featured News (Large) */}
             {news[0] && (
               <div onClick={() => setSelectedItem(news[0])} className="md:col-span-2 md:row-span-2 relative bg-slate-950 rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-2xl transition-all duration-500">
@@ -865,8 +865,14 @@ export default function LandingPage({ setView, currentUser, userRole }) {
 
       {/* Action Pill Informative Modal */}
       {selectedPillModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-xl rounded-3xl p-6 md:p-8 shadow-2xl text-slate-800 dark:text-slate-100 relative animate-in fade-in zoom-in-95 duration-200">
+        <div
+          className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4"
+          onClick={() => setSelectedPillModal(null)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl p-6 md:p-8 shadow-2xl text-slate-800 dark:text-slate-100 relative animate-in fade-in zoom-in-95 duration-200"
+          >
             {/* Close X Button */}
             <button 
               onClick={() => setSelectedPillModal(null)}
@@ -894,7 +900,7 @@ export default function LandingPage({ setView, currentUser, userRole }) {
             )}
 
             {/* Description & Feature List */}
-            <div className="space-y-4 mb-8">
+            <div className="space-y-4 mb-6">
               <p className="text-xs font-medium text-slate-600 dark:text-slate-300 leading-relaxed">
                 {selectedPillModal.desc}
               </p>
@@ -914,37 +920,40 @@ export default function LandingPage({ setView, currentUser, userRole }) {
               )}
             </div>
 
-            {/* Direct Portal Entry & Detail View Buttons */}
-            <div className="flex gap-3">
-              {selectedPillModal.targetView && (
+            {/* Direct Portal Entry Buttons (Mükerrer CTA olmadan) */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              {currentUser ? (
                 <button
                   onClick={() => {
                     const target = selectedPillModal.targetView;
                     setSelectedPillModal(null);
-                    const protectedViews = ['student', 'staj', 'student_kgb', 'mbs', 'alumni_card', 'birlik_agi', 'alumni', 'company', 'cvbuilder', 'global_map'];
-                    if (protectedViews.includes(target)) {
-                      if (currentUser) { setView && setView(target); }
-                      else { setView && setView('login'); }
-                    } else if (setView) {
-                      setView(target);
-                    }
+                    if (setView && target) setView(target);
                   }}
-                  className="flex-1 py-4 bg-slate-900 hover:bg-black text-white font-black rounded-2xl text-xs uppercase tracking-widest transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                  className="flex-1 py-3.5 bg-[#990000] hover:bg-red-800 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  Detaylı İncele <ArrowRight size={16} />
+                  Modülü Aç <ArrowRight size={16} />
                 </button>
-              )}
-
-              {!currentUser && (
-                <button
-                  onClick={() => {
-                    setSelectedPillModal(null);
-                    if (setView) setView('login');
-                  }}
-                  className="flex-1 py-4 bg-[#990000] hover:bg-red-800 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition shadow-lg flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  Giriş Yap <LogIn size={16} />
-                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      setSelectedPillModal(null);
+                      if (setView) setView('jobs');
+                    }}
+                    className="flex-1 py-3.5 bg-slate-900 hover:bg-black text-white font-black rounded-2xl text-xs uppercase tracking-widest transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    Açık İlanları İncele <ArrowRight size={15} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedPillModal(null);
+                      if (setView) setView('login');
+                    }}
+                    className="flex-1 py-3.5 bg-[#990000] hover:bg-red-800 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    Giriş Yap <LogIn size={16} />
+                  </button>
+                </>
               )}
             </div>
           </div>

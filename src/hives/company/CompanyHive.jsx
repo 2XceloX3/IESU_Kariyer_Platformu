@@ -100,6 +100,8 @@ export default function CompanyHive({ currentUser, setView }) {
   useEffect(() => {
     if (pathView && pathView !== 'company' && pathView !== 'feed') {
       setActiveView(pathView);
+    } else if (pathView === 'company' || pathView === 'feed') {
+      setActiveView('feed');
     }
   }, [pathView, setActiveView]);
 
@@ -166,6 +168,7 @@ export default function CompanyHive({ currentUser, setView }) {
       }
       case 'news':
       case 'haberler':
+      case 'duyurular':
         return <NewsEvents setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'events':
       case 'events_list':
@@ -187,15 +190,15 @@ export default function CompanyHive({ currentUser, setView }) {
       case 'cerez-politikasi':
       case 'cerez-politikası': {
         const legalId = (
-          activeView === 'aydinlatma-metni' || activeView === 'aydinlatma' ? 'kvkk' :
-          activeView === 'cerez-politikasi' || activeView === 'cerez-politikası' ? 'cerez' :
-          activeView
+          currentView === 'aydinlatma-metni' || currentView === 'aydinlatma' ? 'kvkk' :
+          currentView === 'cerez-politikasi' || currentView === 'cerez-politikası' ? 'cerez' :
+          currentView
         );
         return <DynamicContentPage contentId={legalId} setView={handleSetView} previousView="company" />;
       }
-default:
-        if (typeof activeView === 'string' && activeView.startsWith('inner_page_')) {
-          return <DynamicContentPage contentId={activeView.replace('inner_page_', '')} setView={handleSetView} previousView="company" />;
+      default:
+        if (typeof currentView === 'string' && currentView.startsWith('inner_page_')) {
+          return <DynamicContentPage contentId={currentView.replace('inner_page_', '')} setView={handleSetView} previousView="company" />;
         }
         return (
           <CompanyFeed

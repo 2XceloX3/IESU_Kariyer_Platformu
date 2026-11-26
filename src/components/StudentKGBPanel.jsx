@@ -308,33 +308,34 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
     }
 
     const match = currentStudentRecord;
-    const profileData = DEFAULT_STUDENT_PROFILES[effectiveCurrentUser?.id || match?.id] || DEFAULT_STUDENT_PROFILES['STU-01'];
+    const matchedDemo = DEFAULT_STUDENT_PROFILES[effectiveCurrentUser?.id || match?.id] || null;
+    const isRealUserWithoutDemo = Boolean(effectiveCurrentUser?.id && !matchedDemo);
+    const profileData = matchedDemo || (isRealUserWithoutDemo ? {} : DEFAULT_STUDENT_PROFILES['STU-01']);
     const progress = computeCareerProgress({
       user: effectiveCurrentUser || match,
       applications: applications || [],
     });
     const score = progress.percent;
-    const grade = gradeFromPercent(score);
     return {
       id: effectiveCurrentUser?.id || match?.id || profileData.id || (effectiveCurrentUser?.uid || 'self'),
-      name: effectiveCurrentUser?.name || match?.name || profileData.name,
-      department: effectiveCurrentUser?.department || match?.department || profileData.department,
-      faculty: effectiveCurrentUser?.faculty || profileData.faculty,
-      grade: effectiveCurrentUser?.grade || (effectiveCurrentUser?.graduationYear ? `${effectiveCurrentUser.graduationYear} Mezun Adayı` : profileData.grade),
-      studentNo: effectiveCurrentUser?.studentNo || profileData.studentNo,
-      targetSector: profileData.targetSector || match?.targetSector || effectiveCurrentUser?.targetSector || 'Yazılım & Bilişim Mimarisi',
-      internshipsCount: typeof match?.internships === 'number' ? match.internships : (typeof effectiveCurrentUser?.internships === 'number' ? effectiveCurrentUser.internships : (match?.internshipsCount ?? profileData.internshipsCount)),
-      certificationsCount: typeof match?.certifications === 'number' ? match.certifications : (typeof effectiveCurrentUser?.certifications === 'number' ? effectiveCurrentUser.certifications : (match?.certificationsCount ?? profileData.certificationsCount)),
-      workshopsCount: typeof match?.workshopsAttended === 'number' ? match.workshopsAttended : (typeof effectiveCurrentUser?.workshopsAttended === 'number' ? effectiveCurrentUser.workshopsAttended : (match?.workshopsCount ?? profileData.workshopsCount)),
-      mentorMeetingsCount: typeof match?.mentorMeetings === 'number' ? match.mentorMeetings : (typeof effectiveCurrentUser?.mentorMeetings === 'number' ? effectiveCurrentUser.mentorMeetings : (match?.mentorMeetingsCount ?? profileData.mentorMeetingsCount)),
+      name: effectiveCurrentUser?.name || match?.name || profileData.name || 'İESÜ Öğrencisi',
+      department: effectiveCurrentUser?.department || match?.department || profileData.department || 'Bölüm Belirtilmedi',
+      faculty: effectiveCurrentUser?.faculty || profileData.faculty || 'İstanbul Esenyurt Üniversitesi',
+      grade: effectiveCurrentUser?.grade || (effectiveCurrentUser?.year ? `${effectiveCurrentUser.year}. Sınıf` : (effectiveCurrentUser?.graduationYear ? `${effectiveCurrentUser.graduationYear} Mezun Adayı` : (profileData.grade || 'Aktif Öğrenci'))),
+      studentNo: effectiveCurrentUser?.studentNo || profileData.studentNo || '—',
+      targetSector: effectiveCurrentUser?.targetSector || match?.targetSector || profileData.targetSector || 'Kariyer Hedefi Belirlenmedi',
+      internshipsCount: typeof match?.internships === 'number' ? match.internships : (typeof effectiveCurrentUser?.internships === 'number' ? effectiveCurrentUser.internships : (Array.isArray(effectiveCurrentUser?.internships) ? effectiveCurrentUser.internships.length : (match?.internshipsCount ?? (profileData.internshipsCount || 0)))),
+      certificationsCount: typeof match?.certifications === 'number' ? match.certifications : (typeof effectiveCurrentUser?.certifications === 'number' ? effectiveCurrentUser.certifications : (Array.isArray(effectiveCurrentUser?.certifications) ? effectiveCurrentUser.certifications.length : (match?.certificationsCount ?? (profileData.certificationsCount || 0)))),
+      workshopsCount: typeof match?.workshopsAttended === 'number' ? match.workshopsAttended : (typeof effectiveCurrentUser?.workshopsAttended === 'number' ? effectiveCurrentUser.workshopsAttended : (match?.workshopsCount ?? (profileData.workshopsCount || 0))),
+      mentorMeetingsCount: typeof match?.mentorMeetings === 'number' ? match.mentorMeetings : (typeof effectiveCurrentUser?.mentorMeetings === 'number' ? effectiveCurrentUser.mentorMeetings : (match?.mentorMeetingsCount ?? (profileData.mentorMeetingsCount || 0))),
       cvCompleteness: score,
-      portfolioItems: match?.portfolioItems ?? (effectiveCurrentUser?.portfolioItems ?? profileData.portfolioItems),
+      portfolioItems: match?.portfolioItems ?? (effectiveCurrentUser?.portfolioItems ?? (profileData.portfolioItems || 0)),
       accreditationScore: score,
-      verificationCode: effectiveCurrentUser?.verificationCode || profileData.verificationCode || `İESÜ-KGB-2026-${String(effectiveCurrentUser?.id || match?.id || '9941').replace(/[^0-9]/g, '').slice(-4).padStart(4, '0') || '9941'}`,
-      avatar: effectiveCurrentUser?.avatar || profileData.avatar,
-      advisorName: effectiveCurrentUser?.advisorName || profileData?.advisorName || 'Doç. Dr. Selin Kaya',
-      internships: Array.isArray(effectiveCurrentUser?.internships) ? effectiveCurrentUser.internships : (effectiveCurrentUser?.id && !DEFAULT_STUDENT_PROFILES[effectiveCurrentUser.id] ? [] : (Array.isArray(profileData.internships) ? profileData.internships : [])),
-      certifications: Array.isArray(effectiveCurrentUser?.certifications) ? effectiveCurrentUser.certifications : (effectiveCurrentUser?.id && !DEFAULT_STUDENT_PROFILES[effectiveCurrentUser.id] ? [] : (Array.isArray(profileData.certifications) ? profileData.certifications : []))
+      verificationCode: effectiveCurrentUser?.verificationCode || profileData.verificationCode || `İESÜ-KGB-2026-${String(effectiveCurrentUser?.id || match?.id || '0001').replace(/[^0-9]/g, '').slice(-4).padStart(4, '0')}`,
+      avatar: effectiveCurrentUser?.avatar || profileData.avatar || null,
+      advisorName: effectiveCurrentUser?.advisorName || profileData?.advisorName || 'Kariyer Geliştirme Koordinatörlüğü',
+      internships: Array.isArray(effectiveCurrentUser?.internships) ? effectiveCurrentUser.internships : (isRealUserWithoutDemo ? [] : (Array.isArray(profileData.internships) ? profileData.internships : [])),
+      certifications: Array.isArray(effectiveCurrentUser?.certifications) ? effectiveCurrentUser.certifications : (isRealUserWithoutDemo ? [] : (Array.isArray(profileData.certifications) ? profileData.certifications : []))
     };
   }, [isAdmin, currentStudentRecord, effectiveCurrentUser, DEFAULT_STUDENT_PROFILES, applications]);
 
@@ -361,7 +362,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
     { id: 'W2', title: 'TÜBİTAK 2209-A Proje Hazırlama & Ar-Ge Metodolojisi', category: 'Araştırma', hours: 6, date: '22 Ocak 2026', speaker: 'Dr. Öğr. Üyesi Caner Kurt' },
     { id: 'W3', title: 'Teknik Mülakat Simülasyonu & Canlı Kodlama Atölyesi', category: 'Kariyer Becerisi', hours: 4, date: '10 Mart 2026', speaker: 'Trendyol Tech İK Ekibi' },
     { id: 'W4', title: 'Siber Güvenlik Farkındalığı & KVKK Veri Güvenliği', category: 'Hukuk & Bilişim', hours: 4, date: '05 Aralık 2025', speaker: 'Av. Mert Şahin' },
-    { id: 'W5', title: 'Git & GitHub ile Büyük Ölçekli Ekip İşbirliği', category: 'Teknik Atölye', hours: 4, date: '18 Ekim 2025', speaker: 'Kariyer Kulübü Mentörleri' },
+    { id: 'W5', title: 'Git & GitHub ile Büyük Ölçekli Ekip İşbirliği', category: 'Teknik Atölye', hours: 4, date: '18 Ekim 2025', speaker: 'İESÜ Mezun Mentörleri' },
     { id: 'W6', title: 'Fintech Trendleri & Açık Bankacılık API Entegrasyonları', category: 'Sektör Analizi', hours: 4, date: '28 Eylül 2025', speaker: 'Garanti BBVA Teknoloji' },
     { id: 'W7', title: 'Profesyonel Sunum Teknikleri ve Müzakere Becerileri', category: 'Kişisel Gelişim', hours: 4, date: '12 Eylül 2025', speaker: 'Kariyer Danışmanlığı Masası' },
   ]);
@@ -1268,55 +1269,16 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
           </div>
         </div>
       )}
-      {/* ── 5. FLOATING DOCK (KURUMSAL ÖĞRENCİ DOCK'U) ─────────────── */}
+      {/* ── 5. FLOATING DOCK (ORTAK KURUMSAL ÖĞRENCİ DOCK'U) ─────────── */}
       {(isAdmin || userRole === 'admin' || activePortalBranch === 'admin') ? null : (
-        <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px] print:hidden">
-          <div className="bg-white/95 backdrop-blur-2xl border-2 border-red-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(153,0,0,0.18)] flex items-center justify-between px-4 text-gray-800">
-            
-            {/* Akış */}
-            <button 
-              onClick={() => setView(backTarget)} 
-              className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-[#990000] hover:bg-red-50 cursor-pointer" 
-              title="Akış"
-            >
-              <Home size={22} strokeWidth={2.2} />
-            </button>
-            
-            {/* KGB Karnesi - ACTIVE */}
-            <button 
-              onClick={() => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                setActiveTab('ozet');
-              }} 
-              className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 text-white shadow-lg shadow-red-900/40 flex items-center justify-center mx-1 shrink-0 border border-red-300/40 cursor-pointer" 
-              title="KGB Karnesi"
-            >
-              <GraduationCap size={22} strokeWidth={2.5} />
-            </button>
-
-            {/* Kariyer Fırsatları */}
-            <button 
-              onClick={() => setView('jobs')} 
-              className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-[#990000] hover:bg-red-50 cursor-pointer" 
-              title="Kariyer Fırsatları"
-            >
-              <Briefcase size={22} strokeWidth={2.2} />
-            </button>
-            
-            {/* Profil */}
-            <button 
-              onClick={() => {
-                const selfId = studentData?.id || effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'self';
-                if (setSelectedUserId) setSelectedUserId(selfId);
-                useAppStore.getState().setSelectedUserId?.(selfId);
-                setView('user_profile');
-              }} 
-              className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
-              title="Profilim"
-            >
-              <SafeAvatar src={studentData.avatar || effectiveCurrentUser?.avatar} name={studentData.name} size="xs" alt="Profile" />
-            </button>
-          </div>
+        <div className="print:hidden">
+          <SubPanelFloatingDock
+            currentUser={effectiveCurrentUser}
+            userRole="student"
+            setView={setView}
+            setSelectedUserId={setSelectedUserId}
+            activeTab="kgb"
+          />
         </div>
       )}
 

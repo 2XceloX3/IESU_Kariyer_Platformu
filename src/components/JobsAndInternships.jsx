@@ -755,7 +755,9 @@ export default function JobsAndInternships({
                         <div key={job.id} className={`bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group ${theme.hoverBorder}`}>
                           <div className="p-5">
                             <div className="flex items-start gap-4">
-                              <div className="w-14 h-14 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center shadow-sm">{job.logo?<img src={job.logo} alt={job.company} className="w-full h-full object-cover" />:<Building2 size={24} className="text-gray-400" />}</div>
+                              <div className="w-14 h-14 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center shadow-sm">
+                                <SafeAvatar src={job.logo} name={job.company || job.title || 'Firma'} size="md" rounded="rounded-xl" className="w-full h-full object-cover" />
+                              </div>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-start justify-between gap-2 flex-wrap">
                                   <div>
@@ -765,19 +767,27 @@ export default function JobsAndInternships({
                                   <div className="flex items-center gap-1.5 flex-wrap">
                                     {((job.type || '').toUpperCase().includes('STAJ') || (job.title || '').toLocaleLowerCase('tr-TR').includes('staj') || job.isLaw3308Guaranteed) && (
                                       <>
-                                        <span className="px-2 py-0.5 bg-blue-50 text-blue-800 border border-blue-200/80 rounded-md text-[10px] font-black" title="3308 Sayılı Kanun Kapsamında Ücret Güvenceli: Net asgari ücretin %30'u yasal güvencede">
-                                          ⚖️ 3308 Kanun Ücret Güvenceli
-                                        </span>
-                                        <span className="px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200/80 rounded-md text-[10px] font-black" title="İş kazası ve meslek hastalığı primleri İESÜ Rektörlüğü tarafından ödenir">
-                                          🏛️ Üniversite SGK Onaylı
-                                        </span>
-                                        <span className="px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200/80 rounded-md text-[10px] font-black" title="İşveren yol ve yemek masraflarını karşılamaktadır">
-                                          🍽️ Yol & Yemek Karşılanıyor
-                                        </span>
+                                        {job.isLaw3308Guaranteed !== false && (
+                                          <span className="px-2 py-0.5 bg-blue-50 text-blue-800 border border-blue-200/80 rounded-md text-[10px] font-black" title="3308 Sayılı Kanun Kapsamında Ücret Güvenceli: Net asgari ücretin %30'u yasal güvencede">
+                                            ⚖️ 3308 Ücret Güvenceli
+                                          </span>
+                                        )}
+                                        {job.isUniversitySgkCovered !== false && (
+                                          <span className="px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200/80 rounded-md text-[10px] font-black" title="İş kazası ve meslek hastalığı primleri İESÜ Rektörlüğü tarafından ödenir">
+                                            🏛️ Üniversite SGK Onaylı
+                                          </span>
+                                        )}
+                                        {job.hasTransportFood !== false && (
+                                          <span className="px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200/80 rounded-md text-[10px] font-black" title="İşveren yol ve yemek masraflarını karşılamaktadır">
+                                            🍽️ Yol & Yemek
+                                          </span>
+                                        )}
                                       </>
                                     )}
-                                    <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded-md text-[10px] font-extrabold">🎓 Öğrenci Dostu</span>
-                                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide shrink-0 ${typeColors[job.type]||'bg-gray-100 text-gray-600'}`}>{job.type||'Ilan'}</span>
+                                    {effectiveRole === 'student' && ((job.type || '').toUpperCase().includes('STAJ') || (job.type || '').toLowerCase().includes('yarı') || job.studentFriendly) && (
+                                      <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded-md text-[10px] font-extrabold">🎓 Öğrenci Dostu</span>
+                                    )}
+                                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide shrink-0 ${typeColors[job.type]||'bg-gray-100 text-gray-600'}`}>{job.type||'İlan'}</span>
                                   </div>
                                 </div>
                                 <div className="flex flex-wrap items-center gap-3 mt-2">
@@ -1236,7 +1246,7 @@ export default function JobsAndInternships({
 
       {footerModal&&<FooterModals activeModal={footerModal} onClose={()=>setFooterModal(null)}/>}
 
-      {/* FLOATING BOTTOM DOCK - HER KOVANA ÖZGÜ BAĞLAMSAL DOCK */}
+      {/* FLOATING BOTTOM DOCK - HER KOVANA ÖZGÜ BAĞLAMSAL DOCK (Misafire sahte mezun dock'u gösterilmez) */}
       {effectiveRole === 'admin' ? (
         <AdminOmniDock 
           currentUser={effectiveCurrentUser} 
@@ -1245,18 +1255,33 @@ export default function JobsAndInternships({
           theme="amber" 
           homeView="admin" 
         />
-      ) : (
+      ) : effectiveRole === 'staff' ? (
+        <AdminOmniDock 
+          currentUser={effectiveCurrentUser} 
+          setView={setView} 
+          activeTab="jobs" 
+          theme="indigo" 
+          homeView="staff" 
+        />
+      ) : effectiveRole !== 'guest' ? (
         <SubPanelFloatingDock 
           currentUser={effectiveCurrentUser} 
           setView={setView} 
           activeTab="jobs" 
           userRole={effectiveRole} 
         />
-      )}
+      ) : null}
 
       {(effectiveRole === 'student' || effectiveRole === 'alumni') && (
         <div className="fixed bottom-36 right-4 z-[70]">
-          <button type="button" data-testid="jobs-cvbuilder-link" onClick={() => setView?.('cvbuilder')} className="text-xs font-black text-[#990000] hover:underline px-3 py-2 rounded-xl border border-red-100 bg-white shadow-md">
+          <button
+            type="button"
+            data-testid="jobs-cvbuilder-link"
+            onClick={() => setView?.('cvbuilder')}
+            className={`text-xs font-black hover:underline px-3 py-2 rounded-xl border bg-white shadow-md cursor-pointer ${
+              effectiveRole === 'alumni' ? 'text-emerald-700 border-emerald-200' : 'text-[#990000] border-red-100'
+            }`}
+          >
             CV Oluşturucu
           </button>
         </div>

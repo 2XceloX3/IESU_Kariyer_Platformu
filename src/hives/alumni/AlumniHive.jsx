@@ -111,6 +111,8 @@ export default function AlumniHive({ currentUser, setView }) {
   useEffect(() => {
     if (pathView && pathView !== 'alumni' && pathView !== 'feed') {
       setActiveView(pathView);
+    } else if (pathView === 'alumni' || pathView === 'feed') {
+      setActiveView('feed');
     }
   }, [pathView, setActiveView]);
 
@@ -193,6 +195,7 @@ export default function AlumniHive({ currentUser, setView }) {
         return <CampusMap setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'news':
       case 'haberler':
+      case 'duyurular':
         return <NewsEvents setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'events':
       case 'events_list':
@@ -214,15 +217,15 @@ export default function AlumniHive({ currentUser, setView }) {
       case 'cerez-politikasi':
       case 'cerez-politikası': {
         const legalId = (
-          activeView === 'aydinlatma-metni' || activeView === 'aydinlatma' ? 'kvkk' :
-          activeView === 'cerez-politikasi' || activeView === 'cerez-politikası' ? 'cerez' :
-          activeView
+          currentView === 'aydinlatma-metni' || currentView === 'aydinlatma' ? 'kvkk' :
+          currentView === 'cerez-politikasi' || currentView === 'cerez-politikası' ? 'cerez' :
+          currentView
         );
         return <DynamicContentPage contentId={legalId} setView={handleSetView} previousView="alumni" />;
       }
-default:
-        if (typeof activeView === 'string' && activeView.startsWith('inner_page_')) {
-          return <DynamicContentPage contentId={activeView.replace('inner_page_', '')} setView={handleSetView} previousView="alumni" />;
+      default:
+        if (typeof currentView === 'string' && currentView.startsWith('inner_page_')) {
+          return <DynamicContentPage contentId={currentView.replace('inner_page_', '')} setView={handleSetView} previousView="alumni" />;
         }
         return (
           <AlumniFeed
