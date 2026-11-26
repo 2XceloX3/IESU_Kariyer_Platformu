@@ -29,7 +29,7 @@ describe('YÖK / YÖKAK Akreditasyon ve İstihdam Raporlama Motoru Integration S
     it('renders CMSAnalytics with official PanelHeader actions and YÖKAK title', () => {
       render(<CMSAnalytics students={[]} alumni={[]} companies={[]} jobs={[]} applications={[]} />);
 
-      expect(screen.getByText('Sistem Analitiği')).toBeInTheDocument();
+      expect(screen.getByText('Analitik & YÖKAK Raporları')).toBeInTheDocument();
       expect(screen.getByText('Resmî YÖKAK Raporu Al (PDF/Yazdır)')).toBeInTheDocument();
       expect(screen.getByText('Resmî Excel/CSV İndir')).toBeInTheDocument();
       expect(screen.getByText(/YÖKAK KAP A\.1\.1 & B\.2\.2/i)).toBeInTheDocument();

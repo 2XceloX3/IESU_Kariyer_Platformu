@@ -340,7 +340,7 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser, setV
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-          <h3 className="font-black text-gray-900">Dernek İçerikleri</h3>
+          <h3 className="font-black text-gray-900">İESÜ Mezunlar Portalı İçerikleri</h3>
           <div className="relative">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
             <input value={search} onChange={e => setSearch(e.target.value)} type="text" placeholder="İçerik ara..." className="pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-red-300 w-64" />

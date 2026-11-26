@@ -62,13 +62,12 @@ export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser
       { id: 'super_admin', title: '🛡️ Süper Admin Kontrol Merkezi', category: 'Yönetim', icon: <ShieldAlert size={18} className="text-[#990000]" />, action: () => setView('admin_cms') },
       { id: 'staff_portal', title: '🏛️ Personel Çalışma Portalı', category: 'Yönetim', icon: <Building2 size={18} className="text-indigo-600" />, action: () => setView('staff') },
       { id: 'student_portal', title: '🎓 Öğrenci & Staj Portalı', category: 'Yönetim', icon: <GraduationCap size={18} className="text-[#990000]" />, action: () => setView('student') },
-      { id: 'site_editor', title: '🎨 Görsel Site Düzenleyici (CMS Pro)', category: 'Yönetim', icon: <Palette size={18} className="text-[#990000]" />, action: () => setView('admin_cms') },
-      { id: 'audit_logs', title: '🔒 Denetim Logları & Güvenlik Takibi', category: 'Yönetim', icon: <ShieldCheck size={18} className="text-[#990000]" />, action: () => setView('audit_logs') },
+      { id: 'platform_settings', title: '⚙️ Platform & Ana Sayfa Ayarları', category: 'Yönetim', icon: <Settings size={18} className="text-[#990000]" />, action: () => setView('platform_ayarlari') },
+      { id: 'analytics_yokak', title: '📊 Analitik & YÖKAK Raporları', category: 'Yönetim', icon: <ShieldCheck size={18} className="text-[#990000]" />, action: () => setView('analytics') },
     ] : []),
     ...(isStaff ? [
-      { id: 'staff_cms', title: '🏛️ Personel Çalışma Paneli (CMS)', category: 'Personel', icon: <Building2 size={18} className="text-indigo-600" />, action: () => setView('admin_cms') },
-      { id: 'staff_home', title: '📋 Personel Akış & Operasyon Merkezi', category: 'Personel', icon: <Home size={18} className="text-indigo-600" />, action: () => setView('staff') },
-      { id: 'student_portal', title: '🎓 Öğrenci & Staj Portalı', category: 'Personel', icon: <GraduationCap size={18} className="text-[#990000]" />, action: () => setView('student') },
+      { id: 'staff_home', title: '📋 Personel Çalışma İstasyonu', category: 'Personel', icon: <Home size={18} className="text-indigo-600" />, action: () => setView('staff') },
+      { id: 'staff_cms', title: '🏛️ Yetkili CMS Modülleri', category: 'Personel', icon: <Building2 size={18} className="text-indigo-600" />, action: () => setView('admin_cms') },
     ] : []),
     ...(isStudent ? [
       { id: 'student_staj', title: '📋 Staj & Ulusal Staj Programı (USP)', category: 'Öğrenci & Staj', icon: <Briefcase size={18} className="text-[#990000]" />, action: () => setView('staj') },

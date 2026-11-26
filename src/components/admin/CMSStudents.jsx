@@ -1,14 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import SafeAvatar from '../shared/SafeAvatar';
-import PanelHeader from './PanelHeader';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
-import CMSCandidatePool from './CMSCandidatePool';
-import { GraduationCap, Edit, Trash2, Plus, Search, Filter, UserCircle2, Mail, Briefcase, FileText, CheckCircle2, Download, Users, UserCheck, Sparkles, Layers } from 'lucide-react';
-import { exportToCSV } from '../../utils/export';
+import { GraduationCap, Edit, Trash2, Plus, Search, Briefcase, Download, Users, UserCheck, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function CMSStudents({ students = [], setStudents }) {
-  const [activeTab, setActiveTab] = useState('staj_takip'); // 'staj_takip' | 'aday_havuzu'
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -102,36 +98,6 @@ export default function CMSStudents({ students = [], setStudents }) {
 
   const listView = (
     <div className="space-y-6 font-sans">
-      {/* PANEL MOD GEÇİŞ SEKMELERİ */}
-      <div className="flex items-center gap-2 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/80 w-fit">
-        <button
-          onClick={() => setActiveTab('staj_takip')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
-            activeTab === 'staj_takip'
-              ? 'bg-[#990000] text-white shadow-md shadow-red-950/20'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-          }`}
-        >
-          <GraduationCap size={16} />
-          Öğrenci & Staj Takibi
-        </button>
-        <button
-          onClick={() => setActiveTab('aday_havuzu')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
-            activeTab === 'aday_havuzu'
-              ? 'bg-[#990000] text-white shadow-md shadow-red-950/20'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-          }`}
-        >
-          <Sparkles size={16} className="text-amber-400" />
-          Öğrenci Aday Havuzu & Eşleşme Paneli
-        </button>
-      </div>
-
-      {activeTab === 'aday_havuzu' ? (
-        <CMSCandidatePool />
-      ) : (
-        <>
       {/* HEADER & BANNER */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#990000] via-rose-900 to-slate-900 text-white p-6 sm:p-8 shadow-xl shadow-red-950/20">
         <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -235,7 +201,7 @@ export default function CMSStudents({ students = [], setStudents }) {
           <input 
             type="text" placeholder="Öğrenci adı, no veya bölüm ara..." 
             className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#990000] focus:bg-white transition-all"
-            value={searchQuery} onChange={e=>setSearchQuery(e.target.value)}
+            value={searchQuery} onChange={e=>{ setSearchQuery(e.target.value); setCurrentPage(1); }}
           />
         </div>
 
@@ -244,7 +210,7 @@ export default function CMSStudents({ students = [], setStudents }) {
             {['all', 'aktif', 'pasif'].map(st => (
               <button
                 key={st}
-                onClick={() => setStatusFilter(st)}
+                onClick={() => { setStatusFilter(st); setCurrentPage(1); }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   statusFilter === st ? 'bg-[#990000] text-white shadow-sm font-black' : 'text-slate-600 hover:text-slate-900'
                 }`}
@@ -325,7 +291,32 @@ export default function CMSStudents({ students = [], setStudents }) {
           ))
         )}
       </div>
-        </>
+
+      {/* SAYFALAMA */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between bg-white px-5 py-3 rounded-2xl border border-slate-200/80 shadow-xs">
+          <span className="text-xs font-bold text-slate-500">
+            Toplam {filtered.length} öğrenci • Sayfa {currentPage} / {totalPages}
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={currentPage <= 1}
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40 flex items-center gap-1 cursor-pointer"
+            >
+              <ChevronLeft size={14} /> Önceki
+            </button>
+            <button
+              type="button"
+              disabled={currentPage >= totalPages}
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40 flex items-center gap-1 cursor-pointer"
+            >
+              Sonraki <ChevronRight size={14} />
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

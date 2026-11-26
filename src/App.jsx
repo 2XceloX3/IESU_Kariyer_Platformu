@@ -26,17 +26,13 @@ const JobCreator = lazy(() => import('./components/JobCreator'));
 window.toast = toast;
 const PUBLIC_NEWS = new Set(['haberler', 'duyurular', 'etkinlikler', 'news', 'events', 'events_list', 'etkinliklerimiz']);
 const ADMIN_CMS = new Set([
-  'admin_cms', 'yonetim_konsolu', 'admin_console', 'audit_logs', 'idari_portal',
-  'overview', 'basvuru_havuzu', 'cms_mentorship_pool', 'cms_datapool', 'operasyon', 
-  'cms_staff', 'mesajlar', 'data_cleanup', 'ilan', 'cms_feat', 'cms_jobs', 'gonullu', 
-  'mentorluk', 'etkinlik', 'cms_events', 'kariyer_gunleri', 'cms_news', 'cms_ann', 
-  'academic_catalog', 'academic_approvals', 'anket', 'analytics', 'entegrasyon', 
-  'cms_mezun_dernek', 'cms_alumni_assoc', 'kart', 'cms_ssp', 'platform_ayarlari', 'akademik_radar', 
-  'aday_havuzu', 'user_types', 'audit_log', 'site_editor', 'cms_sync', 
-  'institutional_stats', 'cms_career_counseling', 'cms_corporate_partnerships', 
-  'company_edu_requests', 'company_event_msgs', 'content_import', 'cms_ment', 
-  'cms_portfolios', 'cms_incubator', 'cms_gallery', 'students',
-  'world_map'
+  'admin_cms', 'yonetim_konsolu', 'admin_console', 'idari_portal',
+  'overview', 'operasyon', 'mesajlar',
+  'students', 'alumni', 'companies', 'cms_mezun_dernek', 'cms_alumni_assoc', 'kart', 'user_types', 'cms_staff',
+  'cms_ann', 'cms_news', 'etkinlik', 'cms_events', 'kariyer_gunleri', 'company_edu_requests',
+  'ilan', 'basvuru_havuzu', 'gonullu', 'cms_corporate_partnerships', 'cms_jobs',
+  'mentorluk', 'cms_mentorship_pool', 'cms_ssp', 'cms_career_counseling',
+  'analytics', 'cms_datapool', 'anket', 'platform_ayarlari'
 ]);
 const ALUMNI_ROUTES = new Set(['alumni', 'mbs', 'alumni_card', 'alumni_assoc_portal', 'mezun_dernek', 'birlik_agi', 'alumni_dao']), ACADEMIC_ROUTES = new Set(['academic', 'research_hub', 'academic_catalog', 'counseling_approvals', 'academic_onboarding']);
 const STAFF_ROUTES = new Set(['staff', 'personel', 'personel_portali']);
@@ -158,6 +154,31 @@ if (p && p.role !== 'admin') {
       document.documentElement.style.colorScheme = darkMode ? 'dark' : 'light';
     }
   }, [darkMode]);
+
+  // Ana siteden (esenyurt.edu.tr) haber/duyuru/etkinlik aktarımı ve Firestore senkronizasyonu
+  // yönetim paneli arayüzünü kalabalıklaştırmadan arka planda tamamen sessiz çalışır.
+  useEffect(() => {
+    const isTest = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || import.meta.env?.MODE === 'test');
+    if (isTest || typeof window === 'undefined') return undefined;
+    let stopBgScraper = null;
+    import('./services/backgroundScraperService').then(({ startBackgroundScraperService }) => {
+      if (typeof startBackgroundScraperService === 'function') {
+        stopBgScraper = startBackgroundScraperService({
+          intervalMs: 15 * 60 * 1000,
+          onUpdate: (data) => {
+            if (!data) return;
+            const st = useAppStore.getState();
+            if (Array.isArray(data.news) && data.news.length > 0 && st.setNews) st.setNews(data.news);
+            if (Array.isArray(data.announcements) && data.announcements.length > 0 && st.setAnnouncements) st.setAnnouncements(data.announcements);
+            if (Array.isArray(data.events) && data.events.length > 0 && st.setEvents) st.setEvents(data.events);
+          }
+        });
+      }
+    }).catch(() => {});
+    return () => {
+      if (typeof stopBgScraper === 'function') stopBgScraper();
+    };
+  }, []);
 
   // Zustand store'daki currentUser null'a düştüğünde (logout) React local state'i de senkronize et.
   useEffect(() => {

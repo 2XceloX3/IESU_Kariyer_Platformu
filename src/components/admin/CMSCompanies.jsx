@@ -314,7 +314,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
               <button onClick={() => setSelectedCompany(null)} className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition text-white">✕</button>
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-2xl bg-white p-1 shadow-md flex items-center justify-center overflow-hidden shrink-0">
-                  {selectedCompany.logo ? <img src={selectedCompany.logo} alt={selectedCompany.name} className="w-full h-full object-cover" /> : <Building2 size={28} className="text-[#990000]" />}
+                  <SafeAvatar src={selectedCompany.logo} name={selectedCompany.name} size={48} className="w-full h-full object-cover rounded-xl" />
                 </div>
                 <div>
                   <h2 className="text-xl font-black">{selectedCompany.name}</h2>
@@ -331,7 +331,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
                 <div><span className="font-bold text-gray-400 block">E-Posta</span><span className="font-semibold text-gray-800">{selectedCompany.email || '-'}</span></div>
                 <div><span className="font-bold text-gray-400 block">Telefon</span><span className="font-semibold text-gray-800">{selectedCompany.phone || '-'}</span></div>
                 <div><span className="font-bold text-gray-400 block">Sistem Durumu</span><span className="font-black text-emerald-600">{selectedCompany.status || 'Onaylı'}</span></div>
-                <div><span className="font-bold text-gray-400 block">Aktif İlan Sayısı</span><span className="font-black text-[#990000]">{selectedCompany.activeJobs || 0} İlan</span></div>
+                <div><span className="font-bold text-gray-400 block">Aktif İlan Sayısı</span><span className="font-black text-[#990000]">{getActiveJobCount(selectedCompany)} İlan</span></div>
                 <div><span className="font-bold text-gray-400 block">Kayıt Tarihi</span><span className="font-semibold text-gray-600">{selectedCompany.createdAt ? new Date(selectedCompany.createdAt).toLocaleDateString('tr-TR') : 'Resmî Kayıt'}</span></div>
               </div>
 

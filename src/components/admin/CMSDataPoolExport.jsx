@@ -460,7 +460,7 @@ export default function CMSDataPoolExport() {
             </div>
             <div className="bg-white/15 border border-white/30 backdrop-blur-md p-3.5 rounded-2xl text-white shadow-sm">
               <span className="text-[10px] font-bold uppercase tracking-wider text-teal-100 block">Aktif Veri Kanalları</span>
-              <span className="text-xl font-black text-white mt-0.5 block">16 Havuz</span>
+              <span className="text-xl font-black text-white mt-0.5 block">14 Havuz</span>
             </div>
             <div className="bg-white/15 border border-white/30 backdrop-blur-md p-3.5 rounded-2xl col-span-2 sm:col-span-1 text-white shadow-sm">
               <span className="text-[10px] font-bold uppercase tracking-wider text-teal-100 block">Excel & Yedek Formatı</span>
@@ -551,60 +551,6 @@ export default function CMSDataPoolExport() {
         </button>
 
         <button
-          onClick={() => { setSubTab('bmi'); setSearch(''); }}
-          className={`px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-2 cursor-pointer ${
-            subTab === 'bmi' ? 'bg-teal-700 text-white shadow-md shadow-teal-900/20' : 'text-slate-600 hover:bg-slate-100'
-          }`}
-        >
-          <FlaskConical size={15} /> Vücut Kitle Endeksi & Sağlık ({bmiRecords.length})
-        </button>
-
-        <button
-          onClick={() => { setSubTab('helpdesk'); setSearch(''); }}
-          className={`px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-2 cursor-pointer ${
-            subTab === 'helpdesk' ? 'bg-blue-700 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'
-          }`}
-        >
-          <Ticket size={15} /> BİDB Destek Talepleri ({helpdeskTickets.length})
-        </button>
-
-        <button
-          onClick={() => { setSubTab('labs'); setSearch(''); }}
-          className={`px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-2 cursor-pointer ${
-            subTab === 'labs' ? 'bg-cyan-800 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'
-          }`}
-        >
-          <Server size={15} /> Lab Rezervasyonları ({labReservations.length})
-        </button>
-
-        <button
-          onClick={() => { setSubTab('research_calls'); setSearch(''); }}
-          className={`px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-2 cursor-pointer ${
-            subTab === 'research_calls' ? 'bg-purple-900 text-white shadow-md shadow-purple-950/20' : 'text-slate-600 hover:bg-slate-100'
-          }`}
-        >
-          <BookOpen size={15} /> Proje & Bursiyer Başvuruları ({researchCallApplications.length})
-        </button>
-
-        <button
-          onClick={() => { setSubTab('manage_labs'); setSearch(''); }}
-          className={`px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-2 cursor-pointer ${
-            subTab === 'manage_labs' ? 'bg-cyan-900 text-white shadow-md shadow-cyan-950/20' : 'text-slate-600 hover:bg-slate-100'
-          }`}
-        >
-          <Settings size={15} /> Ar-Ge Lab & Form Yönetimi ({researchLabs.length})
-        </button>
-
-        <button
-          onClick={() => { setSubTab('manage_calls'); setSearch(''); }}
-          className={`px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-2 cursor-pointer ${
-            subTab === 'manage_calls' ? 'bg-indigo-900 text-white shadow-md shadow-indigo-950/20' : 'text-slate-600 hover:bg-slate-100'
-          }`}
-        >
-          <Settings size={15} /> Proje Çağrıları & Soruları ({researchCalls.length})
-        </button>
-
-        <button
           onClick={() => { setSubTab('surveys'); setSearch(''); }}
           className={`px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-2 cursor-pointer ${
             subTab === 'surveys' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'
@@ -619,7 +565,7 @@ export default function CMSDataPoolExport() {
             subTab === 'alumni_assoc' ? 'bg-rose-800 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
-          <GraduationCap size={15} /> İESÜ Mezunlar Birliği Başvuruları ({alumniAssocApplications.length})
+          <GraduationCap size={15} /> İESÜ Mezunlar Portalı Başvuruları ({alumniAssocApplications.length})
         </button>
 
         <button

@@ -103,7 +103,7 @@ export default function OperasyonPanel() {
       {/* Kurumsal Protokol & Sanayi CRM Masası (Genişletilebilir) */}
       {showProtocolCRM && (
         <div className="p-6 bg-slate-50/50 rounded-3xl border border-slate-200">
-          <CorporateProtocolCRM currentUser={currentUser} />
+          <CorporateProtocolCRM currentUser={currentUser} mode="admin" />
         </div>
       )}
 

@@ -555,7 +555,7 @@ export default function CorporateProtocolCRM({ currentUser = null, _currentUser 
           }`}
         >
           <Building2 size={15} />
-          <span>{isCompanyMode ? `Kurumumuzun Protokolleri (${visibleProtocols.length})` : `Protokoller & Kontenjan CRM (${visibleProtocols.length})`}</span>
+          <span>{isCompanyMode ? `Kurumumuzun Protokolleri (${protocols.length})` : `Protokoller & Kontenjan CRM (${protocols.length})`}</span>
         </button>
 
         {!isCompanyMode && (

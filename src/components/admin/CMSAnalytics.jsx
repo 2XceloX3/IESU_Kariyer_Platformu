@@ -1,19 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, BarChart, Bar } from 'recharts';
-import { BarChart3, TrendingUp, Users, Eye, MousePointerClick, Briefcase, GraduationCap, Building2, Calendar, Target, PhoneCall, MailCheck, CheckCircle2, FileText, Download, Award, ShieldCheck, Sparkles, RefreshCw, Layers } from 'lucide-react';
-import AdminCMSLayout, { TopInfoCard } from './AdminCMSLayout';
+import { Users, Briefcase, GraduationCap, Building2, Target, Eye, FileText, Download, Sparkles } from 'lucide-react';
+import { TopInfoCard } from './AdminCMSLayout';
 import PanelHeader from './PanelHeader';
-import CMSWorldMap from './CMSWorldMap';
 import useAppStore from '../../store/useAppStore';
-import { computeKpi } from '../../kpi/compute';
-import KpiStatusView from '../../kpi/KpiStatusView';
 import { checkupToEmploymentDeclarations } from '../../kpi/adapters';
-import { 
-  calculateYokakIndicators, 
-  calculatePukoScorecards, 
-  exportYokakAuditPdf, 
-  downloadYokakAuditCsv, 
-  SAMPLE_ACCREDITATION_DECLARATIONS, 
+import {
+  calculateYokakIndicators,
+  calculatePukoScorecards,
+  exportYokakAuditPdf,
+  downloadYokakAuditCsv,
+  SAMPLE_ACCREDITATION_DECLARATIONS,
   ACCREDITATION_STANDARDS,
   maskTCKN,
   isEmploymentInField,
@@ -79,174 +75,26 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
     });
   }, [pukoScorecardsStore, effectiveDeclarations, surveyResponses]);
 
-  const decl = (employmentDeclarations.length ? employmentDeclarations : checkupToEmploymentDeclarations(checkupRecords));
-  const kpiEmployment = computeKpi('alumni_employment_rate', decl, { period });
-  const kpiRelevance = computeKpi('major_relevance_rate', decl, { period });
-  const kpiPlacement90 = computeKpi('placement_90d_rate', decl, { period });
-  const kpiInternship = computeKpi('internship_completion_rate', internships, { period });
-  const kpiPerJob = computeKpi('placements_per_job', { jobs, applications }, { jobs, applications, period });
-  const kpiEvents = computeKpi('event_attendance_rate', eventRegistrations, { period });
-  const kpiSurvey = computeKpi('survey_response_rate', surveyInvites, { period, responses: surveyResponses });
-  const kpisOk = [kpiEmployment, kpiRelevance, kpiPlacement90, kpiInternship, kpiPerJob, kpiEvents, kpiSurvey].filter(k => k.status === 'ok');
-  const hasExportableKpis = kpisOk.length > 0 || (effectiveDeclarations && effectiveDeclarations.length > 0);
-
-  // Legacy checkup charts: only when raw checkup rows exist (non-KPI decorative); never invent % 
-  const hasCheckupData = checkupRecords.length > 0;
-  const totalCheckup = checkupRecords.length;
-  const postgradCount = checkupRecords.filter(r => r.postgrad === 'Evet').length;
-  const updatedPhoneCount = checkupRecords.filter(r => r.phoneUpdated === 'Hayır' || r.newPhone).length;
-  const updatedEmailCount = checkupRecords.filter(r => r.emailUpdated === 'Hayır' || r.newEmail).length;
-
-  const relatedPct = kpiRelevance.status === 'ok' ? kpiRelevance.value : null;
-  const relatedJobCount = kpiRelevance.numerator;
-  const postgradPct = hasCheckupData ? Math.round((postgradCount / totalCheckup) * 100) : null;
-  const otherSectorPct = hasCheckupData && relatedPct != null ? Math.max(0, 100 - relatedPct) : null;
-  const fmtPct = (v) => (v == null ? 'Veri yok' : `%${v}`);
-  const fmtCount = (v) => (hasCheckupData ? String(v) : 'Veri yok');
-
-  const majorAlignmentData = hasCheckupData ? [
-    { name: 'Kendi Bölümüyle İlgili', value: relatedPct, count: relatedJobCount, fill: '#10B981' },
-    { name: 'Farklı Sektörde', value: otherSectorPct, count: Math.max(0, totalCheckup - relatedJobCount), fill: '#F59E0B' },
-    { name: 'Lisansüstü Eğitimde', value: postgradPct, count: postgradCount, fill: '#3B82F6' }
-  ] : [];
-
-  const workModeData = hasCheckupData ? [
-    { mode: 'Hibrit', count: checkupRecords.filter(r => r.workMode === 'Hibrit').length },
-    { mode: 'Ofisten', count: checkupRecords.filter(r => r.workMode === 'Ofisten').length },
-    { mode: 'Uzaktan', count: checkupRecords.filter(r => r.workMode?.includes('Uzaktan')).length },
-    { mode: 'Freelance', count: checkupRecords.filter(r => r.workMode?.includes('Freelance')).length }
-  ] : [];
-
-  // Güvenli HTML kaçırma fonksiyonu (Stored XSS Kalkanı)
-  const escapeHtml = (val) => {
-    if (val == null) return '';
-    return String(val)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  };
-
-  // YÖK Report PDF / Print Export Handler — gerçek veri yoksa dışa aktarım yapılmaz
-  const exportYokReport = () => {
-    if (!hasExportableKpis) {
-      window.toast?.error?.('Raporlanacak KPI yok (status=ok ve n≥minN). Boş/yetersiz veri ile export üretilmez.');
-      return;
-    }
-    const reportWindow = window.open('', '_blank');
-    if (!reportWindow) {
-      window.toast?.error?.('Tarayıcınız açılır pencereyi engelledi. Lütfen açılır pencerelere izin verin.');
-      return;
-    }
-    const content = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>İESÜ YÖK Mezun İstihdam ve Akreditasyon Raporu (2026)</title>
-        <style>
-          body { font-family: Arial, sans-serif; padding: 40px; color: #1e293b; line-height: 1.6; }
-          .header { border-bottom: 3px solid #990000; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
-          .title { font-size: 22px; font-weight: bold; color: #990000; text-transform: uppercase; }
-          .subtitle { font-size: 13px; color: #64748b; font-weight: bold; }
-          .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
-          .kpi-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; text-align: center; }
-          .kpi-val { font-size: 28px; font-weight: bold; color: #0a2342; margin-top: 5px; }
-          .kpi-label { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: bold; }
-          table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
-          th { background: #0a2342; color: white; padding: 10px; text-align: left; text-transform: uppercase; }
-          td { border-bottom: 1px solid #e2e8f0; padding: 10px; }
-          .footer { margin-top: 50px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 20px; }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <div>
-            <div class="title">İSTANBUL ESENYURT ÜNİVERSİTESİ</div>
-            <div class="subtitle">Kariyer Geliştirme Koordinatörlüğü — YÖK Mezun Takip & Akreditasyon Raporu</div>
-          </div>
-          <div><strong>Tarih:</strong> ${new Date().toLocaleDateString('tr-TR')}</div>
-        </div>
-
-        <h3>1. YÖK Akreditasyon ve İstihdam Göstergeleri</h3>
-        <div class="kpi-grid">
-          <div class="kpi-card">
-            <div class="kpi-label">Kendi Bölümüyle İlgili Çalışan</div>
-            <div class="kpi-val" style="color: #10b981;">${relatedPct == null ? 'Veri yok' : '%' + relatedPct}</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Lisansüstü Eğitime Devam Eden</div>
-            <div class="kpi-val" style="color: #3b82f6;">${postgradPct == null ? 'Veri yok' : '%' + postgradPct}</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Farklı Sektörde Çalışan / Diğer</div>
-            <div class="kpi-val" style="color: #f59e0b;">${otherSectorPct == null ? 'Veri yok' : '%' + otherSectorPct}</div>
-          </div>
-        </div>
-
-        <h3>2. Kariyer Check-up Yanıt ve Veri Havuzu Detayı</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Mezun Adı</th>
-              <th>Bölüm</th>
-              <th>Mezuniyet</th>
-              <th>İstihdam / Sektör</th>
-              <th>Bölümle İlişkili Mi?</th>
-              <th>Lisansüstü</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${checkupRecords.map(r => `
-              <tr>
-                <td>${escapeHtml(r.id)}</td>
-                <td><strong>${escapeHtml(r.name)}</strong></td>
-                <td>${escapeHtml(r.department)}</td>
-                <td>${escapeHtml(r.graduationYear)}</td>
-                <td>${escapeHtml(r.employed)} (${escapeHtml(r.sector)})</td>
-                <td>${escapeHtml(r.relatedToMajor)} ${r.relatedToMajor === 'Hayır' ? `(${escapeHtml(r.newJobTitleIfNo)})` : ''}</td>
-                <td>${escapeHtml(r.postgrad)}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-
-        <div class="footer">
-          Bu rapor İstanbul Esenyurt Üniversitesi Kariyer Platformu Otomatik YÖK Akreditasyon Servisi tarafından üretilmiştir. © 2026
-        </div>
-        <script>window.print();</script>
-      </body>
-      </html>
-    `;
-    reportWindow.document.write(content);
-    reportWindow.document.close();
-  };
-
-  // Gerçek dizi uzunlukları; eksikte uydurma KPI yok
+  // Gerçek dizi uzunlukları; uydurma telemetri veya sahte metrik yok
   const totalStudents = (students || []).length;
   const activeStudents = (students || []).filter(s => s.status === 'Aktif').length;
   const totalAlumni = (alumni || []).length;
-  
-  const totalJobs = (jobs || []).length;
+  const totalCompanies = (companies || []).length;
+  const activeJobs = (jobs || []).filter(j => j?.status === 'Yayında' || j?.status === 'Aktif').length;
   const totalApplications = (applications || []).length;
 
   const popularJobs = (jobs || []).slice(0, 4).map(j => ({
     title: j.title,
     company: j.company,
     clicks: j.clicks ?? j.views ?? null,
-    applications: j.applicants ?? null
+    applications: j.applicants ?? (applications || []).filter(a => a.jobId === j.id).length
   })).filter(j => j.title);
 
-  const popularCompanies = (companies || []).slice(0, 3).map(c => ({
+  const popularCompanies = (companies || []).slice(0, 4).map(c => ({
     name: c.name,
     sector: c.sector,
-    views: c.views ?? c.profileViews ?? null
+    activeJobCount: (jobs || []).filter(j => (j.company || '').toLowerCase() === (c.name || '').toLowerCase()).length
   })).filter(c => c.name);
-
-  // Aylık ziyaret için henüz telemetri yok — grafik boş kalır (önizleme uydurma veri yok)
-  const monthlyVisits = [];
-  const hasVisitTelemetry = monthlyVisits.length > 0;
 
   const StatProgress = ({ label, value, max, colorClass }) => (
     <div className="mb-4">
@@ -263,8 +111,8 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
   return (
     <div className="animate-fade-in space-y-6">
       <PanelHeader 
-        title="Sistem Analitiği" 
-        sub="Platformun kullanım istatistiklerini, YÖK/YÖKAK akreditasyon göstergelerini ve PUKÖ karne analizlerini inceleyin." 
+        title="Analitik & YÖKAK Raporları" 
+        sub="YÖK/YÖKAK mezun istihdam göstergeleri, PUKÖ kalite karneleri ve güncel paydaş istatistikleri" 
         action={
           <div className="flex flex-wrap items-center gap-2">
             <button 
@@ -285,12 +133,12 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
         } 
       />
 
-      {/* KPI Cards */}
+      {/* Gerçek Canlı Veri KPI Kartları */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <TopInfoCard icon={<Users size={20} />} title="Aktif Kullanıcı" count={(activeStudents + totalAlumni) || 'Veri yok'} color="blue" />
-        <TopInfoCard icon={<MousePointerClick size={20} />} title="Aylık Etkileşim" count="Veri yok" color="emerald" />
-        <TopInfoCard icon={<Briefcase size={20} />} title="Toplam Başvuru" count={totalApplications} color="orange" />
-        <TopInfoCard icon={<Eye size={20} />} title="İlan Görüntülenmesi" count="Veri yok" color="purple" />
+        <TopInfoCard icon={<Users size={20} />} title="Kayıtlı Öğrenci & Mezun" count={totalStudents + totalAlumni} color="blue" />
+        <TopInfoCard icon={<Building2 size={20} />} title="Kurumsal İşveren" count={totalCompanies} color="emerald" />
+        <TopInfoCard icon={<Briefcase size={20} />} title="Yayındaki İş & Staj İlanı" count={activeJobs} color="orange" />
+        <TopInfoCard icon={<GraduationCap size={20} />} title="Toplam Başvuru" count={totalApplications} color="purple" />
       </div>
 
       {/* YÖK / YÖKAK AKREDİTASYON, İSTİHDAM VE PUKÖ PERFORMANS MOTORU */}
@@ -522,122 +370,79 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Chart Area */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h3 className="font-black text-gray-900 flex items-center gap-2"><TrendingUp size={18} className="text-[#0A66C2]"/> Aylık Ziyaretçi Trendi</h3>
-              <p className="text-xs text-gray-500 mt-1">Son 6 aydaki tekil giriş sayısı (bin)</p>
-            </div>
-          </div>
-          
-          <div className="h-72 w-full">
-            {!hasVisitTelemetry ? (
-              <div className="h-full flex items-center justify-center text-sm font-bold text-slate-400">Veri yok — ziyaret telemetrisi bağlı değil</div>
-            ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={monthlyVisits} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#0A66C2" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#0A66C2" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' }}
-                  itemStyle={{ color: '#0f172a', fontWeight: 'bold' }}
-                />
-                <Area type="monotone" dataKey="value" stroke="#0A66C2" strokeWidth={3} fillOpacity={1} fill="url(#colorVisits)" />
-              </AreaChart>
-            </ResponsiveContainer>
-            )}
-          </div>
-        </div>
-
-        {/* Demographics */}
+        {/* Kullanıcı Dağılımı */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
           <div>
-            <h3 className="font-black text-gray-900 flex items-center gap-2 mb-6"><Target size={18} className="text-red-500"/> Kullanıcı Dağılımı</h3>
+            <h3 className="font-black text-gray-900 flex items-center gap-2 mb-6"><Target size={18} className="text-red-500"/> Paydaş Dağılımı</h3>
             <div className="space-y-1">
-              <StatProgress label="Öğrenciler" value={totalStudents} max={Math.max(totalStudents, 1)} colorClass="bg-red-500" />
-              <StatProgress label="Mezunlar" value={totalAlumni} max={Math.max(totalAlumni, 1)} colorClass="bg-emerald-500" />
-              <StatProgress label="Firmalar" value={(companies || []).length} max={Math.max((companies || []).length, 1)} colorClass="bg-amber-500" />
+              <StatProgress label="Öğrenciler" value={totalStudents} max={Math.max(totalStudents + totalAlumni + totalCompanies, 1)} colorClass="bg-red-500" />
+              <StatProgress label="Mezunlar" value={totalAlumni} max={Math.max(totalStudents + totalAlumni + totalCompanies, 1)} colorClass="bg-emerald-500" />
+              <StatProgress label="Firmalar" value={totalCompanies} max={Math.max(totalStudents + totalAlumni + totalCompanies, 1)} colorClass="bg-amber-500" />
             </div>
           </div>
           <div className="mt-6 p-4 bg-gray-50 rounded-xl">
-            <p className="text-xs text-gray-500 font-medium leading-relaxed">
-              Öğrenci aktiflik oranı <b>{totalStudents > 0 ? '%' + (activeStudents / totalStudents * 100).toFixed(1) : 'Veri yok'}</b>. İESÜ Mezunlar Portalı kampanyalarıyla mezun katılımını artırabilirsiniz.
+            <p className="text-xs text-gray-600 font-medium leading-relaxed">
+              Öğrenci aktiflik oranı <b>{totalStudents > 0 ? '%' + (activeStudents / totalStudents * 100).toFixed(1) : '%0'}</b>. İESÜ Mezunlar Portalı duyurularıyla mezun katılımını artırabilirsiniz.
             </p>
           </div>
         </div>
 
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Popular Jobs */}
+        {/* En Çok İlgi Gören İlanlar */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="p-5 border-b border-gray-100 bg-gray-50/50">
-            <h3 className="font-black text-gray-900 flex items-center gap-2"><Briefcase size={18} className="text-orange-500"/> En Çok İlgi Gören İlanlar</h3>
+            <h3 className="font-black text-gray-900 flex items-center gap-2"><Briefcase size={18} className="text-orange-500"/> Güncel İlanlar</h3>
           </div>
           <div className="p-5 space-y-4">
             {popularJobs.length === 0 && (
-              <p className="text-sm font-bold text-slate-400 text-center py-6">Veri yok</p>
+              <p className="text-sm font-bold text-slate-400 text-center py-6">Henüz yayınlanmış ilan yok</p>
             )}
             {popularJobs.map((job, idx) => (
               <div key={idx} className="flex items-center justify-between border-b border-gray-50 pb-4 last:border-0 last:pb-0">
-                <div className="flex gap-3 items-center">
-                  <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 font-black shrink-0">
+                <div className="flex gap-3 items-center min-w-0">
+                  <div className="w-9 h-9 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 font-black shrink-0 text-xs">
                     {idx + 1}
                   </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-gray-900 truncate max-w-[200px]">{job.title}</h4>
-                    <p className="text-xs font-medium text-gray-500">{job.company}</p>
+                  <div className="min-w-0">
+                    <h4 className="text-sm font-bold text-gray-900 truncate">{job.title}</h4>
+                    <p className="text-xs font-medium text-gray-500 truncate">{job.company}</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-black text-gray-900">{job.clicks ?? '—'} <span className="text-[10px] text-gray-500 font-bold uppercase">Tık</span></div>
-                  <div className="text-xs font-bold text-emerald-600">{job.applications ?? '—'} Başvuru</div>
+                <div className="text-right shrink-0 ml-2">
+                  <div className="text-xs font-black text-emerald-600">{job.applications} Başvuru</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Popular Companies */}
+        {/* Öne Çıkan Kurumsal Firmalar */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="p-5 border-b border-gray-100 bg-gray-50/50">
-            <h3 className="font-black text-gray-900 flex items-center gap-2"><Building2 size={18} className="text-purple-500"/> En Çok İncelenen Firmalar</h3>
+            <h3 className="font-black text-gray-900 flex items-center gap-2"><Building2 size={18} className="text-purple-500"/> Kurumsal İşverenler</h3>
           </div>
           <div className="p-5 space-y-4">
             {popularCompanies.length === 0 && (
-              <p className="text-sm font-bold text-slate-400 text-center py-6">Veri yok</p>
+              <p className="text-sm font-bold text-slate-400 text-center py-6">Kayıtlı firma yok</p>
             )}
             {popularCompanies.map((comp, idx) => (
               <div key={idx} className="flex items-center justify-between border-b border-gray-50 pb-4 last:border-0 last:pb-0">
-                <div className="flex gap-3 items-center">
-                  <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 font-black shrink-0">
-                    <Eye size={18} />
+                <div className="flex gap-3 items-center min-w-0">
+                  <div className="w-9 h-9 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 font-black shrink-0">
+                    <Building2 size={16} />
                   </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-gray-900 truncate max-w-[200px]">{comp.name}</h4>
-                    <p className="text-xs font-medium text-gray-500">{comp.sector}</p>
+                  <div className="min-w-0">
+                    <h4 className="text-sm font-bold text-gray-900 truncate">{comp.name}</h4>
+                    <p className="text-xs font-medium text-gray-500 truncate">{comp.sector || 'Sektör'}</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-black text-gray-900">{comp.views ?? '—'}</div>
-                  <div className="text-[10px] font-bold text-gray-500 uppercase">Profil Görüntülenmesi</div>
+                <div className="text-right shrink-0 ml-2">
+                  <div className="text-xs font-black text-gray-900">{comp.activeJobCount} İlan</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
       </div>
-      
-      {/* World Map Analytics */}
-      <CMSWorldMap />
     </div>
   );
 }

@@ -14,45 +14,45 @@ export const STAFF_PERMISSION_GROUPS = [
     id: 'students_staj',
     label: 'Öğrenci & Staj Yönetimi',
     shortLabel: 'Öğrenci & Staj',
-    desc: 'Öğrenci listesi, gönüllü/zorunlu staj onayları, KGB ve CV portfolyoları',
+    desc: 'Öğrenci listesi, gönüllü/zorunlu staj onayları ve KGB kariyer karnesi',
     color: 'rose',
-    tabs: ['students', 'gonullu', 'cms_ssp', 'cms_portfolios'],
+    tabs: ['students', 'gonullu', 'cms_ssp'],
     primaryTab: 'students'
   },
   {
     id: 'alumni',
     label: 'Mezunlar & MBS Yönetimi',
     shortLabel: 'Mezun & MBS',
-    desc: 'Mezun havuzu, Mezunlar Portalı içerikleri, Dijital Mezun Kartı ve harita',
+    desc: 'Mezun havuzu, İESÜ Mezunlar Portalı içerikleri ve Dijital Mezun Kartı',
     color: 'emerald',
-    tabs: ['alumni', 'cms_mezun_dernek', 'kart', 'world_map', 'cms_groups'],
+    tabs: ['alumni', 'cms_mezun_dernek', 'kart'],
     primaryTab: 'alumni'
   },
   {
     id: 'companies_protocols',
     label: 'Firma & İş Birliği Protokolleri',
     shortLabel: 'Firma & Protokol',
-    desc: 'Kurumsal firmalar, üniversite-işletme protokolleri ve kariyer günleri',
+    desc: 'Kurumsal firmalar, üniversite-işletme protokolleri, kariyer günleri ve eğitim talepleri',
     color: 'blue',
-    tabs: ['companies', 'cms_corporate_partnerships', 'kariyer_gunleri', 'company_edu_requests', 'company_event_msgs'],
+    tabs: ['companies', 'cms_corporate_partnerships', 'kariyer_gunleri', 'company_edu_requests'],
     primaryTab: 'cms_corporate_partnerships'
   },
   {
     id: 'jobs_applications',
     label: 'İlan & Başvuru Onayı',
     shortLabel: 'İlan & Başvuru',
-    desc: 'İş/staj ilan denetimi, başvuru havuzu ve operasyon onay masası',
+    desc: 'İş/staj ilan denetimi, başvuru havuzu ve onay/SGK masası',
     color: 'amber',
-    tabs: ['operasyon', 'ilan', 'cms_jobs', 'cms_feat', 'basvuru_havuzu', 'aday_havuzu'],
+    tabs: ['operasyon', 'ilan', 'cms_jobs', 'basvuru_havuzu'],
     primaryTab: 'ilan'
   },
   {
     id: 'content',
     label: 'İçerik, Haber & Etkinlik',
     shortLabel: 'İçerik & Duyuru',
-    desc: 'Haberler, duyurular, kariyer etkinlikleri, galeri ve resmi içerik aktarımı',
+    desc: 'Haberler, duyurular, kariyer ve kampüs etkinlikleri',
     color: 'violet',
-    tabs: ['cms_news', 'cms_ann', 'cms_events', 'etkinlik', 'cms_gallery', 'content_import'],
+    tabs: ['cms_news', 'cms_ann', 'cms_events', 'etkinlik'],
     primaryTab: 'cms_ann'
   },
   {
@@ -61,7 +61,7 @@ export const STAFF_PERMISSION_GROUPS = [
     shortLabel: 'Mentörlük',
     desc: 'Bire bir kariyer danışmanlığı randevuları ve mentör eşleştirme havuzu',
     color: 'teal',
-    tabs: ['cms_career_counseling', 'mentorluk', 'cms_ment', 'cms_mentorship_pool'],
+    tabs: ['cms_career_counseling', 'mentorluk', 'cms_mentorship_pool'],
     primaryTab: 'cms_career_counseling'
   },
   {
@@ -77,7 +77,7 @@ export const STAFF_PERMISSION_GROUPS = [
     id: 'reports_export',
     label: 'Veri Havuzu, Anket & Analitik',
     shortLabel: 'Veri & Rapor',
-    desc: 'Excel/CSV veri dışa aktarımı, anketler ve istihdam analitiği',
+    desc: 'Excel/CSV veri dışa aktarımı, anketler ve YÖKAK istihdam analitiği',
     color: 'indigo',
     tabs: ['cms_datapool', 'analytics', 'anket'],
     primaryTab: 'cms_datapool'

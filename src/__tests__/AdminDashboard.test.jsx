@@ -64,15 +64,24 @@ describe('AdminDashboard Component', () => {
     expect(screen.getAllByText(/Mezun/i).length).toBeGreaterThan(0);
   });
 
-  it('can navigate to settings tab as super admin', () => {
+  it('can navigate to settings tab as super admin and hides background/infra/mock clutter from Raporlama & Ayarlar', () => {
     render(<AdminDashboard {...mockProps} />);
     
-    const systemCatBtn = screen.getByRole('button', { name: /Sistem & Analiz/i });
+    const systemCatBtn = screen.getByRole('button', { name: /Raporlama & Ayarlar/i });
     fireEvent.click(systemCatBtn);
 
     const settingsTab = screen.getByRole('button', { name: /Platform Ayarları/i });
     fireEvent.click(settingsTab);
     expect(screen.getAllByText(/Platform Ayarları/i).length).toBeGreaterThan(0);
+
+    // Arka plan aktarım, senkronizasyon, sahte entegrasyon ve gereksiz geliştirici sekmeleri gösterilmemelidir
+    expect(screen.queryByRole('button', { name: /Entegrasyonlar/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /CMS Senkronizasyon/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Resmi İçerik Aktarımı/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Demo Veri Temizliği/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Denetim Logu/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Dünyadaki Mezunlarımız/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Aday Havuzunu Yönet/i })).not.toBeInTheDocument();
   });
 
   it('enforces strict RBAC for staff users: hides superAdminOnly tabs and blocks direct initialTab bypass', () => {
@@ -89,7 +98,7 @@ describe('AdminDashboard Component', () => {
     expect(screen.getByText(/Personel Çalışma Paneli/i)).toBeInTheDocument();
     expect(screen.queryByText(/SÜPER YÖNETİCİ/i)).not.toBeInTheDocument();
 
-    const systemCatBtn = screen.getByRole('button', { name: /Sistem & Analiz/i });
+    const systemCatBtn = screen.getByRole('button', { name: /Raporlama & Ayarlar/i });
     fireEvent.click(systemCatBtn);
 
     expect(screen.queryByRole('button', { name: /Platform Ayarları/i })).not.toBeInTheDocument();
@@ -114,7 +123,7 @@ describe('AdminDashboard Component', () => {
   it('permanently removes 389834 covert message surveillance system (keyboard & modal triggers disabled)', () => {
     render(<AdminDashboard {...mockProps} />);
 
-    const systemCatBtn = screen.getByRole('button', { name: /Sistem & Analiz/i });
+    const systemCatBtn = screen.getByRole('button', { name: /Raporlama & Ayarlar/i });
     fireEvent.click(systemCatBtn);
 
     expect(screen.queryByRole('button', { name: /Mesajlaşma & İletişim Denetimi/i })).not.toBeInTheDocument();
