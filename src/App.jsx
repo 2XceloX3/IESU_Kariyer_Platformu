@@ -468,9 +468,9 @@ if (p && p.role !== 'admin') {
 
     // Admin & Staff branch handling for shared / other views
     if ((currentBranch === 'admin' && isAdmin) || (currentBranch === 'staff' && (isStaff || isAdmin))) {
-      const workspaceRole = (currentBranch === 'staff' && isStaff) ? 'staff' : (isAdmin ? 'admin' : 'staff');
-      const workspacePrev = currentBranch === 'staff' ? 'staff' : 'admin';
-      const isStaffMode = currentBranch === 'staff' || isStaff;
+      const isStaffMode = Boolean(isStaff && !isAdmin);
+      const workspaceRole = isStaffMode ? 'staff' : 'admin';
+      const workspacePrev = isStaffMode ? 'staff' : 'admin';
       if (pathView === 'job_creator' || pathView === 'create_job' || pathView === 'post_job' || pathView === 'post-job') return <JobCreator setView={setView} currentUser={currentUser} userRole={workspaceRole} />;
       if (pathView === 'profile_update') return <ProfileUpdate setView={setView} currentUser={currentUser} userRole={workspaceRole} setSelectedUserId={s.setSelectedUserId} />;
       if (pathView === 'jobs') return <JobsAndInternships setView={setView} previousView={workspacePrev} currentUser={currentUser} userRole={workspaceRole} />;

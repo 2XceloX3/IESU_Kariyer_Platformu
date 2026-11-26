@@ -204,7 +204,7 @@ describe('AdminDashboard Component', () => {
       allowedModules: ['content', 'messages']
     };
 
-    // 1. StaffPortal renders bespoke staff workspace and ONLY granted modules
+    // 1. StaffPortal renders bespoke operational workstation and ONLY granted desks (no filler dock)
     const { unmount: unmountPortal } = render(
       <StaffPortal
         currentUser={contentOnlyStaff}
@@ -214,11 +214,27 @@ describe('AdminDashboard Component', () => {
         setSelectedUserId={mockSetSelectedUserId}
       />
     );
-    expect(screen.getByText(/KGM Personel Çalışma Portalı/i)).toBeInTheDocument();
-    expect(screen.getByText(/İçerik, Haber & Etkinlik/i)).toBeInTheDocument();
-    expect(screen.queryByText(/Öğrenci & Staj Yönetimi/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Firma & İş Birliği Protokolleri/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/KGM Personel Operasyon İstasyonu/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/İçerik & Duyuru Masası/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Günlük Takip Notlarım/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Öğrenci & Staj Masası/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Firma, İlan & Protokol/i)).not.toBeInTheDocument();
+    expect(screen.queryByTitle(/Kurumsal Takvim/i)).not.toBeInTheDocument();
     unmountPortal();
+
+    // 1b. Super Admin viewing StaffPortal keeps Super Admin identity with preview bar
+    const { unmount: unmountAdminPreview } = render(
+      <StaffPortal
+        currentUser={{ id: 'admin_1513', name: 'Kariyer Geliştirme Koordinatörlüğü', role: 'admin' }}
+        userRole="admin"
+        academicRole="super_admin"
+        setView={mockSetView}
+        setSelectedUserId={mockSetSelectedUserId}
+      />
+    );
+    expect(screen.getByText(/Süper Yönetici Modu/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Süper Admin Merkezine Dön/i })).toBeInTheDocument();
+    unmountAdminPreview();
 
     // 2. TopProfileMenu for Staff MUST NOT expose Öğrenci / Mezun / Firma portal switchers
     const { unmount: unmountMenu } = render(
