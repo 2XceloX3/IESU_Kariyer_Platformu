@@ -271,8 +271,8 @@ export default function LandingPage({ setView, currentUser, userRole }) {
 
 
       <SEO 
-        title="Ana Sayfa" 
-        description="İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü"
+        title="İESÜ Mezunlar Portalı" 
+        description="İstanbul Esenyurt Üniversitesi (İESÜ) Mezunlar Portalı ve Kariyer Geliştirme Koordinatörlüğü"
         url="https://kariyer.esenyurt.edu.tr/"
       />
 
@@ -327,72 +327,72 @@ export default function LandingPage({ setView, currentUser, userRole }) {
         </section>
       )}
 
-        {/* Action Pills with Informative Modals */}
+        {/* Action Pills with Informative Modals — İESÜ Mezunlar Portalı Odaklı */}
         <section className="relative z-10 py-4 max-w-7xl mx-auto px-4">
           <div className="flex justify-center flex-wrap gap-4">
             <button 
               onClick={() => setSelectedPillModal({
-                id: 'startup_incubator',
-                title: 'İESÜMER Kuluçka & Girişimcilik Merkezi',
-                badge: '🚀 Girişimcilik & Ar-Ge',
-                imageUrl: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&auto=format&fit=crop&q=60',
-                desc: 'Girişimcilik ve kuluçka merkeziyle ilgili güncel hizmetleri, başvuru koşullarını ve iletişim bilgilerini üniversitenin resmî duyurularından takip edin.',
+                id: 'mbs',
+                title: 'Mezun Bilgi Sistemi (MBS)',
+                badge: '🎓 İESÜ Mezunlar Portalı',
+                imageUrl: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&auto=format&fit=crop&q=60',
+                desc: 'İstanbul Esenyurt Üniversitesi Mezun Bilgi Sistemi (MBS) ile mezuniyet kaydınızı güncelleyin, kariyer gelişiminizi takip edin ve sektörel komitelere katılın.',
                 features: [
-                  'Güncel program ve etkinlik duyuruları',
-                  'Başvuru ve katılım koşulları',
-                  'Merkez iletişim bilgileri'
+                  'Doğrulanmış İESÜ Mezun Profili ve Kayıt Güncelleme',
+                  'Sektörel Mezun Komiteleri ve Dayanışma Ağı',
+                  'Mezun Buluşmaları ve Kurumsal Duyurular'
                 ],
-                targetView: 'startup_incubator'
+                targetView: 'mbs'
               })} 
               className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl rounded-full px-6 py-3 flex items-center gap-3 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
             >
-              <div className="bg-indigo-100 dark:bg-red-950/60 p-1.5 rounded-full text-red-600 dark:text-red-400 group-hover:bg-red-600 group-hover:text-white transition-colors"><Building size={18} /></div>
-              <span className="font-bold text-red-900 dark:text-slate-100 text-[13px]">İESÜMER Kuluçka & Girişimcilik</span>
+              <div className="bg-emerald-100 dark:bg-emerald-950/60 p-1.5 rounded-full text-emerald-700 dark:text-emerald-400 group-hover:bg-emerald-700 group-hover:text-white transition-colors"><GraduationCap size={18} /></div>
+              <span className="font-bold text-slate-900 dark:text-slate-100 text-[13px]">Mezun Bilgi Sistemi (MBS)</span>
             </button>
 
             <button 
               onClick={() => setSelectedPillModal({
-                id: 'staj',
-                title: 'CBİKO Ulusal Staj & Yetenek Kapısı',
-                badge: '💼 Kariyer & İstihdam',
+                id: 'alumni_card',
+                title: 'Dijital Mezun Kartı & Ayrıcalıklar',
+                badge: '💳 Resmî Mezun Kimliği',
                 imageUrl: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800&auto=format&fit=crop&q=60',
-                desc: 'Ulusal Staj Programı ve Yetenek Kapısı için güncel başvuru tarihlerini, koşulları ve fırsatları ilgili resmî platformlardan kontrol edin.',
+                desc: 'Ömür boyu geçerli İESÜ Dijital Mezun Kartı ile kampüs kütüphanesi, sosyal tesisler, lisansüstü bursları ve anlaşmalı kurumsal markalardaki ayrıcalıklardan yararlanın.',
                 features: [
-                  'Resmî başvuru takvimi ve koşulları',
-                  'Yayımlanan staj fırsatları',
-                  'Kariyer merkezi iletişim bilgileri'
+                  'QR & Barkod Doğrulamalı 3D Dijital Mezun Kimliği',
+                  'Kütüphane ve Kampüs Tesislerinde Ömür Boyu Erişim',
+                  'Lisansüstü Eğitim ve Kurumsal Marka İndirimleri'
                 ],
-                targetView: 'staj'
+                targetView: 'alumni_card'
               })} 
               className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl rounded-full px-6 py-3 flex items-center gap-3 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
             >
-              <div className="bg-emerald-100 dark:bg-emerald-950/60 p-1.5 rounded-full text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><Target size={18} /></div>
-              <span className="font-bold text-red-900 dark:text-slate-100 text-[13px]">Yetenek & Staj Kapısı</span>
+              <div className="bg-red-100 dark:bg-red-950/60 p-1.5 rounded-full text-[#990000] dark:text-red-400 group-hover:bg-[#990000] group-hover:text-white transition-colors"><ShieldCheck size={18} /></div>
+              <span className="font-bold text-slate-900 dark:text-slate-100 text-[13px]">Dijital Mezun Kartı</span>
             </button>
 
             <button 
               onClick={() => setSelectedPillModal({
                 id: 'cvbuilder',
-                title: 'Özgeçmiş & CV Oluşturucu',
-                badge: '🤖 Kariyer Asistanı',
+                title: 'Akıllı CV Stüdyosu & EuroPass',
+                badge: '🤖 Yapay Zekâ Destekli',
                 imageUrl: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&auto=format&fit=crop&q=60',
-                desc: 'CV oluşturucu ile profil bilgilerinizden özgeçmiş taslağı hazırlayın; başvuru öncesi bilgilerinizi kontrol edin.',
+                desc: 'Akıllı CV Stüdyosu ile ATS uyumlu, modern ve EuroPass standartlarında özgeçmişinizi dakikalar içinde hazırlayın ve PDF olarak indirin.',
                 features: [
-                  'Profil bilgilerini kullanarak CV taslağı hazırlama',
-                  'İçeriği gözden geçirip düzenleme',
-                  'Mevcut dışa aktarma seçeneklerini kullanma'
+                  'Canlı A4 Önizlemeli 7 Adımlı CV Editörü',
+                  'ATS Optimizasyonu ve Yapay Zekâ Özet Üretici',
+                  'Tek Tıkla PDF ve EuroPass Dışa Aktarma'
                 ],
                 targetView: 'cvbuilder'
               })} 
               className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl rounded-full px-6 py-3 flex items-center gap-3 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
             >
               <div className="bg-purple-100 dark:bg-purple-950/60 p-1.5 rounded-full text-purple-600 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors"><FileText size={18} /></div>
-              <span className="font-bold text-red-900 dark:text-slate-100 text-[13px]">Özgeçmiş & CV Oluşturucu</span>
+              <span className="font-bold text-slate-900 dark:text-slate-100 text-[13px]">Akıllı CV Stüdyosu</span>
             </button>
           </div>
         </section>
 
-      {/* 3. BENTO BOX GRID: GELECEĞİN YETENEKLERİ (ULTRA PREMIUM CORPORATE) */}
+      {/* 3. BENTO BOX GRID: İESÜ MEZUNLAR PORTALI EKOSİSTEMİ */}
       <section className="py-20 sm:py-28 bg-[#fdfdfd] dark:bg-slate-950 relative overflow-hidden transition-colors duration-300">
         {/* Subtle Corporate Grid Background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
@@ -400,62 +400,62 @@ export default function LandingPage({ setView, currentUser, userRole }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-black mb-3 tracking-tight text-[#990000] dark:text-red-400">
-              Geleceğe Odaklan.
+              İESÜ Mezunlar Portalı.
             </h2>
             <p className="text-slate-500 dark:text-slate-400 font-medium text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-              Kariyer Geliştirme Merkezi servisleriyle yeteneklerini keşfet, iş dünyasına rakiplerinden bir adım önde başla.
+              İstanbul Esenyurt Üniversitesi mezunlarıyla yaşam boyu kariyer, dayanışma, küresel iletişim ve sektörel iş birliği ağı.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-5 md:gap-6 auto-rows-[minmax(200px,auto)] min-h-[400px] perspective-1000">
-            {/* Bento 1: Ulusal Staj Programı */}
+            {/* Bento 1: İESÜ Mezunlar Portalı & Sektör Komiteleri */}
             <SpotlightCard 
               spotlightColor="rgba(255,255,255,0.15)" 
-              className="md:col-span-2 md:row-span-2 md:col-start-1 md:row-start-1 !bg-[#990000] !border-none !p-0 cursor-pointer group"
+              className="md:col-span-2 md:row-span-2 md:col-start-1 md:row-start-1 !bg-[#065f46] !border-none !p-0 cursor-pointer group"
               onClick={() => setSelectedPillModal({
-                id: 'bento_ulusal_staj',
-                title: 'Ulusal Staj Programı & Yetenek Kapısı',
-                badge: '🏛️ CBİKO Resmî Staj Programı',
+                id: 'bento_mezun_portali',
+                title: 'İESÜ Mezunlar Portalı & Sektör Komiteleri',
+                badge: '🎓 Resmî Mezun Dayanışma Ağı',
                 imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-                desc: 'Cumhurbaşkanlığı İnsan Kaynakları Ofisi (CBİKO) tarafından yürütülen Ulusal Staj Programı, fırsat eşitliği ve liyakat esaslarına göre yükseköğretim öğrencilerinin kamu kurumları ve özel sektörde staj imkanına erişimini sağlar.',
+                desc: 'İstanbul Esenyurt Üniversitesi (İESÜ) Mezunlar Portalı; mezunlarımızın sektörel komitelerde buluşmasını, iş ve kariyer fırsatlarını paylaşmasını ve üniversitemizle bağını yaşam boyu güçlendirmesini sağlar.',
                 features: [
-                  'Kamu Kurumları ve Bakanlıklarda Liyakat Esaslı Staj',
-                  'Özel Sektör Devlerinde Öncelikli Staj İlanları',
-                  'SGK ve Resmî Staj Evraklarının Portaldan Onaylanması',
-                  'Birebir Kariyer Danışmanı İncelemesi ve Takibi'
+                  'Doğrulanmış İESÜ Mezun Ağı ve Mesleki Komiteler',
+                  'Kurumsal İşveren İlanları ve Öncelikli Kariyer Fırsatları',
+                  'Yıllık Mezun Buluşmaları ve Sektör Zirveleri',
+                  'Dijital Mezun Kartı ve Yaşam Boyu Kütüphane Erişimi'
                 ],
-                targetView: 'staj'
+                targetView: 'birlik_agi'
               })}
             >
               <div className="h-full flex flex-col justify-end p-8 md:p-10 relative">
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center mix-blend-overlay opacity-20 group-hover:scale-105 transition-transform duration-700"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-[#990000] via-[#990000]/80 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#064e3b] via-[#065f46]/80 to-transparent"></div>
                 <div className="relative z-10">
                   <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white mb-6 border border-white/20">
-                    <Briefcase size={28} />
+                    <GraduationCap size={28} />
                   </div>
-                  <h3 className="text-2xl md:text-3xl font-black text-white mb-2 tracking-tight">Ulusal Staj<br/>Programı</h3>
-              <p className="text-red-100 text-sm font-medium mb-8 max-w-md leading-relaxed opacity-90">Ulusal Staj Programı ve Yetenek Kapısı hakkındaki güncel başvuru bilgilerini resmî platformlardan inceleyin.</p>
-                  <button type="button" className="bg-white text-[#990000] px-7 py-3 rounded-full font-bold text-[13px] w-max hover:bg-gray-50 transition-colors flex items-center gap-2 shadow-xl shadow-black/10 z-20 cursor-pointer relative">Detayları İncele <ArrowRight size={16}/></button>
+                  <h3 className="text-2xl md:text-3xl font-black text-white mb-2 tracking-tight">İESÜ Mezunlar<br/>Portalı</h3>
+                  <p className="text-emerald-100 text-sm font-medium mb-8 max-w-md leading-relaxed opacity-90">Sektör komiteleri, kurumsal iş fırsatları ve yaşam boyu mezun dayanışma ağında yerinizi alın.</p>
+                  <button type="button" className="bg-white text-emerald-900 px-7 py-3 rounded-full font-bold text-[13px] w-max hover:bg-gray-50 transition-colors flex items-center gap-2 shadow-xl shadow-black/10 z-20 cursor-pointer relative">Detayları İncele <ArrowRight size={16}/></button>
                 </div>
               </div>
             </SpotlightCard>
 
-            {/* Bento 2: Kariyer Danışmanlığı & Değerlendirme */}
+            {/* Bento 2: Mezun Kariyer Danışmanlığı */}
             <SpotlightCard 
               spotlightColor="rgba(10,35,66,0.05)" 
               className="col-span-1 row-span-1 md:col-start-3 md:row-start-1 p-6 md:p-8 flex flex-col !bg-white dark:!bg-slate-900 cursor-pointer hover:-translate-y-1 transition-transform border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl"
               onClick={() => setSelectedPillModal({
                 id: 'bento_kariyer_rehberligi',
-                title: 'Birebir Kariyer Danışmanlığı & Yetenek Testleri',
+                title: 'Mezun Kariyer Danışmanlığı & CV Analizi',
                 badge: '🎯 Profesyonel Kariyer Koçluğu',
                 imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=60',
-                desc: 'İstanbul Esenyurt Üniversitesi Kariyer Danışmanları tarafından öğrencilerimize yetkinlik haritası çıkarma, mülakat simülasyonları, CV inceleme ve kariyer hedefleri belirleme alanlarında birebir danışmanlık verilmektedir.',
+                desc: 'Kariyer Geliştirme Koordinatörlüğü uzmanları tarafından mezunlarımıza kariyer geçişi, liderlik gelişimi, ATS uyumlu özgeçmiş analizi ve mülakat hazırlığı desteği sunulmaktadır.',
                 features: [
-                  'Birebir Yüz Yüze veya Online Mülakat Simülasyonu',
-                  'Kişilik ve Yetkinlik Değerlendirme Envanterleri',
-                  'Profesyonel Özgeçmiş (CV) ve Niyet Mektubu Analizi',
-                  'Kariyer Haritası ve Mezuniyet Sonrası İstihdam Planı'
+                  'Birebir Kariyer Geçişi ve Yükselme Danışmanlığı',
+                  'Profesyonel Özgeçmiş (CV) ve EuroPass İncelemesi',
+                  'Sektör Liderleriyle Network Buluşmaları',
+                  'Kurumsal İş Fırsatlarına Doğrudan Erişim'
                 ],
                 targetView: 'services'
               })}
@@ -464,26 +464,25 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                 <TrendingUp size={24} />
               </div>
               <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">Kariyer Danışmanlığı</h3>
-              <p className="text-gray-500 dark:text-slate-400 text-[13px] font-medium leading-relaxed">Kariyer hedeflerinizi belirleme ve başvuru hazırlığınızı güçlendirme konusunda bilgi alın.</p>
+              <p className="text-gray-500 dark:text-slate-400 text-[13px] font-medium leading-relaxed">Mezuniyet sonrası kariyer hedeflerinizi ve başvuru stratejinizi güçlendirin.</p>
             </SpotlightCard>
 
-            {/* Bento 3: Akran Mentorluk Programı */}
+            {/* Bento 3: Mezun Mentörlük Ağı */}
             <SpotlightCard 
               spotlightColor="rgba(255,255,255,0.1)" 
               className="col-span-1 row-span-1 md:col-start-4 md:row-start-1 p-6 md:p-8 flex flex-col !bg-gradient-to-br !from-[#1C4173] !to-[#11294D] !border-none cursor-pointer hover:-translate-y-1 transition-transform shadow-lg"
               onClick={() => setSelectedPillModal({
-                id: 'bento_akran_mentor',
-                title: 'İESÜ Akran Mentorluk Programı',
-                badge: '🤝 Öğrenci Rehberlik Ağı',
+                id: 'bento_mezun_mentor',
+                title: 'Mezun Mentörlük & Deneyim Paylaşımı',
+                badge: '🤝 Sektörel Rehberlik Ağı',
                 imageUrl: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&auto=format&fit=crop&q=60',
-                desc: 'Üst sınıf başarılı öğrenciler ile yeni başlayan öğrencileri bir araya getiren Akran Mentorluk Programı; akademik uyum, ders çalışma teknikleri, kampüs yaşamı ve kariyer vizyonu kazandırmayı amaçlar.',
+                desc: 'Farklı sektörlerde deneyim kazanmış İESÜ mezunlarını bir araya getiren Mentörlük Ağı ile tecrübelerinizi paylaşın ve meslektaşlarınızla yeni iş birlikleri geliştirin.',
                 features: [
-                  'Deneyimli Üst Sınıf Öğrencilerinden Birebir Mentorluk',
-                  'Akademik Uyum ve Ders Başarısı Yöntemleri',
-                  'Kampüs ve Öğrenci Kulüpleri Etkinlik Entegrasyonu',
-                  'Rozet ve Puan (BP) Ödüllü Sosyal Paylaşım Ağı'
+                  'Kıdemli Mezunlardan Sektörel Mentörlük',
+                  'Girişimcilik ve Kariyer Dönüşümü Rehberliği',
+                  'Komite Bazlı Uzmanlık Paylaşım Oturumları'
                 ],
-                targetView: 'mentor_match'
+                targetView: 'alumni'
               })}
             >
               <div className="absolute -right-6 -bottom-6 opacity-[0.07] pointer-events-none"><Users size={160} /></div>
@@ -491,60 +490,60 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                 <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center text-white mb-5 border border-white/20">
                   <Users size={24} />
                 </div>
-                <h3 className="text-xl font-black text-white mb-2 tracking-tight">Akran Mentor</h3>
-                <p className="text-red-100/80 text-[13px] font-medium leading-relaxed">Deneyimli öğrencilerin rehberliğinde vizyonunuzu şekillendirin.</p>
+                <h3 className="text-xl font-black text-white mb-2 tracking-tight">Mezun Mentörlük</h3>
+                <p className="text-blue-100/80 text-[13px] font-medium leading-relaxed">Sektör deneyimi yüksek mezunlarımızla güçlü mesleki bağlar kurun.</p>
               </div>
             </SpotlightCard>
 
-            {/* Bento 4: Sektörel İşbirliklerimiz */}
+            {/* Bento 4: Kurumsal İşveren İşbirlikleri */}
             <SpotlightCard 
               spotlightColor="rgba(10,35,66,0.05)" 
               className="col-span-1 row-span-1 md:col-start-3 md:row-start-2 p-6 md:p-8 flex flex-col justify-center items-center text-center !bg-white dark:!bg-slate-900 cursor-pointer hover:-translate-y-1 transition-transform border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl"
               onClick={() => setSelectedPillModal({
                 id: 'bento_isbirlikleri',
-                title: 'Kurumsal Sektör İşbirlikleri & Protokoller',
-                badge: '🤝 İşveren duyuruları',
+                title: 'Kurumsal İşveren İşbirlikleri & İlanlar',
+                badge: '🏢 İşveren Protokolleri',
                 imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&auto=format&fit=crop&q=60',
-                desc: 'Güncel işveren etkinlikleri, ilanlar ve iş birliği duyuruları yayımlandıkça burada görüntülenir.',
+                desc: 'Üniversitemizle protokol anlaşmalı kurumsal firmalar, İESÜ mezunlarına özel istihdam ilanlarını ve kariyer fırsatlarını doğrudan portal üzerinden yayımlar.',
                 features: [
-                  'Yayımlanan iş ve staj ilanları',
-                  'Güncel kariyer etkinlikleri',
-                  'İşveren iş birliği duyuruları'
+                  'Mezunlara Özel Tam Zamanlı İş İlanları',
+                  'Kurumsal Firma & ATS İşe Alım Entegrasyonu',
+                  'Sektör Buluşmaları ve İşveren Zirveleri'
                 ],
-                targetView: 'about_us'
+                targetView: 'jobs'
               })}
             >
               <div className="w-14 h-14 bg-red-50/80 dark:bg-red-950/50 rounded-2xl flex items-center justify-center text-[#990000] dark:text-red-400 mb-4 border border-red-100/50 dark:border-red-900/40">
                 <Handshake size={28} />
               </div>
-              <h3 className="text-lg font-black text-gray-900 dark:text-white mb-1 tracking-tight">İşbirliklerimiz</h3>
-              <p className="text-gray-500 dark:text-slate-400 text-[12px] font-medium leading-relaxed">Güncel işveren etkinlikleri ve iş birliği duyurularını takip edin.</p>
+              <h3 className="text-lg font-black text-gray-900 dark:text-white mb-1 tracking-tight">İşveren Ağı</h3>
+              <p className="text-gray-500 dark:text-slate-400 text-[12px] font-medium leading-relaxed">Kurumsal iş ortaklarımızın mezunlara özel istihdam fırsatlarını inceleyin.</p>
             </SpotlightCard>
 
-            {/* Bento 5: Araştırma Faaliyetleri */}
+            {/* Bento 5: Küresel Mezun Haritası */}
             <SpotlightCard 
               spotlightColor="rgba(255,255,255,0.05)" 
               className="col-span-1 row-span-1 md:col-start-4 md:row-start-2 p-6 md:p-8 flex flex-col justify-between !bg-[#051121] !border-none text-white cursor-pointer hover:-translate-y-1 transition-transform shadow-lg"
               onClick={() => setSelectedPillModal({
-                id: 'bento_arastirma',
-                title: 'Geleceğin Meslekleri & Araştırma Hub',
-                badge: '📊 Sektörel Analiz & Ar-Ge',
+                id: 'bento_kuresel_harita',
+                title: 'Küresel Mezun Haritası & İletişim',
+                badge: '🌍 Dünya Çapında İESÜ',
                 imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=60',
-                desc: 'Kariyer alanlarına ilişkin araştırma ve içerikler yayımlandıkça bu bölümde paylaşılır.',
+                desc: 'Türkiye’nin 81 ilinde ve dünyanın 350+ teknoloji, finans ve sanayi merkezinde görev yapan İESÜ mezunlarını interaktif küresel harita üzerinden keşfedin.',
                 features: [
-                  'Güncel kariyer içerikleri',
-                  'Araştırma duyuruları',
-                  'Sektörel etkinlikler'
+                  '81 İl ve Dünya Geneli Mezun Dağılım Haritası',
+                  'Ülke ve Şehir Bazlı Mezun İletişim Merkezleri',
+                  'Uluslararası Kariyer ve Yaşam Maliyeti Rehberi'
                 ],
-                targetView: 'research_hub'
+                targetView: 'global_map'
               })}
             >
               <div>
-                <h3 className="text-lg font-black mb-2 tracking-tight text-white/90">Araştırma Faaliyetleri</h3>
-                <p className="text-gray-400 text-[12px] font-medium mb-6 leading-relaxed">Kariyer alanlarına ilişkin güncel içerik ve araştırma duyuruları.</p>
+                <h3 className="text-lg font-black mb-2 tracking-tight text-white/90">Küresel Mezun Haritası</h3>
+                <p className="text-gray-400 text-[12px] font-medium mb-6 leading-relaxed">Dünya çapındaki İESÜ mezun merkezlerini ve kariyer ağını keşfedin.</p>
               </div>
               <div className="flex justify-between items-end">
-                <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-gray-300 border border-white/10"><Search size={20} /></div>
+                <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-emerald-300 border border-white/10"><Search size={20} /></div>
                 <ArrowRight size={20} className="text-gray-500" />
               </div>
             </SpotlightCard>
@@ -968,7 +967,7 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                   onClick={() => {
                     const target = selectedPillModal.targetView;
                     setSelectedPillModal(null);
-                    const protectedViews = ['student_kgb', 'staj', 'mentor_match', 'cvbuilder', 'startup_incubator', 'incubator', 'research_hub'];
+                    const protectedViews = ['mbs', 'alumni_card', 'birlik_agi', 'alumni', 'cvbuilder', 'global_map'];
                     if (protectedViews.includes(target)) {
                       if (currentUser) { setView && setView(target); }
                       else { setView && setView('login'); }

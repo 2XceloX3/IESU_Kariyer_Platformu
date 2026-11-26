@@ -34,10 +34,8 @@ import { useAdminStore } from '../brain/useAdminStore';
 
 const mapRoleToHive = (role) => {
   if (role === 'company' || role === 'employer') return 'company';
-  if (role === 'academic') return 'academic';
-  if (role === 'alumni') return 'alumni';
   if (role === 'admin') return 'admin';
-  if (role === 'student') return 'student';
+  if (role === 'alumni' || role === 'student' || role === 'academic') return 'alumni';
   return undefined;
 };
 
@@ -91,8 +89,8 @@ export const coreStore = create(
       setAuthenticatedUserId: (id) => set({ authenticatedUserId: id }),
 
       // 4. activeHive
-      activeHive: 'student',
-      setActiveHive: (hive) => set({ activeHive: hive }),
+      activeHive: 'alumni',
+      setActiveHive: (hive) => set({ activeHive: (hive === 'student' || hive === 'academic') ? 'alumni' : hive }),
 
       // 5. previousHive
       previousHive: null,
@@ -109,13 +107,14 @@ export const coreStore = create(
       setSelectedClubId: (id) => set({ selectedClubId: id }),
 
       // 8. activePortalBranch
-      activePortalBranch: 'student',
+      activePortalBranch: 'alumni',
       setActivePortalBranch: (branch) => {
         if (!branch || branch === 'undefined') return;
         set((state) => {
           const currentRole = state.userRole || state.currentUser?.role;
+          const normalized = (branch === 'student' || branch === 'academic') ? 'alumni' : branch;
           // Strict branch isolation: non-admin users can never switch branch to 'admin'
-          const safeBranch = (branch === 'admin' && currentRole !== 'admin') ? 'student' : branch;
+          const safeBranch = (normalized === 'admin' && currentRole !== 'admin') ? 'alumni' : normalized;
           try {
             if (typeof window !== 'undefined') localStorage.setItem('iesu_active_portal_branch', safeBranch);
           } catch { /* intentional */ }
@@ -266,12 +265,12 @@ export const coreStore = create(
           userRole: null,
           currentUser: null,
           authenticatedUserId: null,
-          activeHive: 'student',
+          activeHive: 'alumni',
           previousHive: null,
           selectedUserId: null,
           selectedGroupId: null,
           selectedClubId: null,
-          activePortalBranch: 'student',
+          activePortalBranch: 'alumni',
           userBP: 150,
           purchasedItems: [],
           activeFrame: null,
@@ -330,9 +329,10 @@ export const coreStore = create(
           safeUser = userRest;
         }
         const isAdminUser = state.userRole === 'admin' || state.currentUser?.role === 'admin';
+        const rawBranch = (state.activePortalBranch === 'student' || state.activePortalBranch === 'academic') ? 'alumni' : state.activePortalBranch;
         const safeBranch = isAdminUser 
-          ? state.activePortalBranch 
-          : (state.activePortalBranch === 'admin' ? 'student' : (state.activePortalBranch || 'student'));
+          ? (rawBranch || 'admin')
+          : (rawBranch === 'admin' ? 'alumni' : (rawBranch || 'alumni'));
         return {
           userRole: state.userRole,
           currentUser: safeUser,

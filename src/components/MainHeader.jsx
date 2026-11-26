@@ -32,8 +32,8 @@ export default function MainHeader({ setView, currentUser, userRole }) {
     if (!currentUser) return 'landing';
     const role = currentUser.role || userRole;
     if (role === 'admin') return 'admin';
-    if (activePortalBranch && activePortalBranch !== 'landing') return activePortalBranch;
-    return (role === 'employer' || role === 'company') ? 'company' : role === 'alumni' ? 'alumni' : role === 'academic' ? 'academic' : 'student';
+    if (activePortalBranch && ['alumni', 'company', 'admin'].includes(activePortalBranch)) return activePortalBranch;
+    return (role === 'employer' || role === 'company') ? 'company' : 'alumni';
   };
 
   const navBgColor = darkMode

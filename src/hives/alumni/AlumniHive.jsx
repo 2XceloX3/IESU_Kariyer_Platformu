@@ -5,7 +5,7 @@ import useAlumniStore from './store/useAlumniStore';
 import useAppStore from '../../store/useAppStore';
 
 const PORTAL_ROUTES = new Set([
-  'student', 'alumni', 'company', 'academic', 'admin', 'admin_cms', 
+  'alumni', 'company', 'admin', 'admin_cms', 
   'yonetim_konsolu', 'admin_console', 'audit_logs', 'login', 'register', 
   'landing', 'forgot_password'
 ]);
@@ -74,7 +74,7 @@ export default function AlumniHive({ currentUser, setView }) {
       if (PORTAL_ROUTES.has(clean) && clean !== 'alumni') {
         const store = useAppStore.getState();
         const isUserAdmin = effectiveCurrentUser?.role === 'admin' || store.userRole === 'admin';
-        if (['student', 'company', 'academic'].includes(clean) && isUserAdmin) {
+        if (['company'].includes(clean) && isUserAdmin) {
           store.setActivePortalBranch?.(clean);
         } else if ((clean === 'admin' || clean === 'admin_cms' || clean === 'yonetim_konsolu') && isUserAdmin) {
           store.setActivePortalBranch?.('admin');

@@ -5,7 +5,7 @@ import useCompanyStore from './store/useCompanyStore';
 import useAppStore from '../../store/useAppStore';
 
 const PORTAL_ROUTES = new Set([
-  'student', 'alumni', 'company', 'academic', 'admin', 'admin_cms', 
+  'alumni', 'company', 'admin', 'admin_cms', 
   'yonetim_konsolu', 'admin_console', 'audit_logs', 'login', 'register', 
   'landing', 'forgot_password'
 ]);
@@ -62,8 +62,8 @@ export default function CompanyHive({ currentUser, setView }) {
       const clean = v.replace(/^\//, '');
       if (PORTAL_ROUTES.has(clean) && clean !== 'company') {
         const store = useAppStore.getState();
-        if (['student', 'alumni', 'academic'].includes(clean)) {
-          store.setActivePortalBranch?.(clean);
+        if (clean === 'alumni') {
+          store.setActivePortalBranch?.('alumni');
         } else if (clean === 'admin' || clean === 'admin_cms' || clean === 'yonetim_konsolu') {
           store.setActivePortalBranch?.('admin');
         }

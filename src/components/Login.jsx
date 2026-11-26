@@ -10,9 +10,10 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import useAppStore from '../store/useAppStore';
 import { authenticateAndFetchGoogleProfile } from '../utils/googleAuthProfile';
 
-export default function Login({ setView, setUserRole, setAcademicRole, setCurrentUser, students = [], alumni = [], companies = [], academicStaff = [], initialRole = 'student' }) {
+export default function Login({ setView, setUserRole, setAcademicRole, setCurrentUser, students = [], alumni = [], companies = [], academicStaff = [], initialRole = 'alumni' }) {
   const setRegisterAccountType = useAppStore(state => state.setRegisterAccountType);
-  const [loginRole, setLoginRole] = useState(initialRole);
+  const normalizeLoginRole = (r) => (r === 'employer' || r === 'company' ? 'employer' : 'alumni');
+  const [loginRole, setLoginRole] = useState(() => normalizeLoginRole(initialRole));
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -21,8 +22,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    const supportedRoles = ['student', 'alumni', 'academic', 'company', 'employer'];
-    setLoginRole(supportedRoles.includes(initialRole) ? initialRole : 'student');
+    setLoginRole(normalizeLoginRole(initialRole));
   }, [initialRole]);
 
   const handleLogin = async (e) => {
@@ -116,18 +116,14 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         console.warn('Persistence config warning:', pErr?.message);
       }
 
-      // E-posta formatında girilmediyse (öğrenci no / kullanıcı adı girildiyse) store'dan eşleştir
+      // E-posta formatında girilmediyse (mezun no / kullanıcı adı girildiyse) store'dan eşleştir
       let authEmail = username.trim();
       const s = useAppStore.getState();
       const allRegistered = [
-        ...(students || []),
         ...(alumni || []),
         ...(companies || []),
-        ...(academicStaff || []),
-        ...(s.students || []),
         ...(s.alumni || []),
-        ...(s.companies || []),
-        ...(s.academicStaff || [])
+        ...(s.companies || [])
       ];
       const matched = allRegistered.find(u => 
         (u.studentId && String(u.studentId).toLowerCase() === cleanUser) ||
@@ -174,6 +170,14 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       }
 
       const finalRole = userData.role || loginRole;
+      if (finalRole === 'student' || finalRole === 'academic') {
+        if (typeof signOut === 'function') {
+          await signOut(auth);
+        }
+        setError('Öğrenci ve Akademik portallar kapatılmıştır. Yalnızca İESÜ Mezunlar Portalı ve Kurumsal Firma hesapları ile giriş yapılabilir.');
+        setIsLoading(false);
+        return;
+      }
       const loggedUser = { id: user.uid, ...userData, role: finalRole, email: user.email };
       try {
         if (rememberMe) {
@@ -193,13 +197,13 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         }
         s.setUserRole?.(finalRole);
         s.setCurrentUser?.(loggedUser);
-        const branchMap = { student: 'student', alumni: 'alumni', company: 'company', employer: 'company', academic: 'academic', admin: 'admin' };
-        const targetBranch = branchMap[finalRole] || 'student';
+        const branchMap = { alumni: 'alumni', company: 'company', employer: 'company', admin: 'admin' };
+        const targetBranch = branchMap[finalRole] || 'alumni';
         s.setActivePortalBranch?.(targetBranch);
       } catch { /* intentional */ }
       setUserRole(finalRole);
       if (setCurrentUser) setCurrentUser(loggedUser);
-      setView(finalRole === 'employer' ? 'company' : finalRole);
+      setView(finalRole === 'employer' || finalRole === 'company' ? 'company' : finalRole === 'admin' ? 'admin' : 'alumni');
       setIsLoading(false);
       return;
     } catch (err) {
@@ -207,14 +211,10 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       const code = err?.code || '';
       const s = useAppStore.getState();
       const allRegistered = [
-        ...(students || []),
         ...(alumni || []),
         ...(companies || []),
-        ...(academicStaff || []),
-        ...(s.students || []),
         ...(s.alumni || []),
-        ...(s.companies || []),
-        ...(s.academicStaff || [])
+        ...(s.companies || [])
       ];
       const matched = allRegistered.find(u =>
         (u.studentId && String(u.studentId).toLowerCase() === cleanUser) ||
@@ -230,19 +230,20 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       );
 
       if (isOperationNotAllowed && isExpectedPassword) {
+        const fallbackRole = loginRole === 'employer' || loginRole === 'company' ? 'employer' : 'alumni';
         const fallbackProfile = matched || {
-          id: `${loginRole === 'alumni' ? 'ALU' : loginRole === 'academic' ? 'ACAD' : loginRole === 'employer' || loginRole === 'company' ? 'CMP' : 'STU'}-001`,
+          id: `${fallbackRole === 'employer' ? 'CMP' : 'ALU'}-001`,
           name: cleanUser.includes('@')
             ? cleanUser.split('@')[0].split(/[._-]/).filter(Boolean).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
             : username.trim(),
           email: cleanUser.includes('@') ? cleanUser : `${cleanUser}@esenyurt.edu.tr`,
-          role: loginRole,
+          role: fallbackRole,
           onboardingCompleted: true
         };
-        const finalRole = fallbackProfile.role || loginRole;
+        const finalRole = (fallbackProfile.role === 'student' || fallbackProfile.role === 'academic') ? 'alumni' : (fallbackProfile.role || fallbackRole);
         const loggedUser = {
           ...fallbackProfile,
-          id: fallbackProfile.id || 'STU-001',
+          id: fallbackProfile.id || 'ALU-001',
           role: finalRole,
           onboardingCompleted: true
         };
@@ -260,12 +261,12 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           sessionStorage.setItem('iesu_user_role_v1', finalRole);
           s.setUserRole?.(finalRole);
           s.setCurrentUser?.(loggedUser);
-          const branchMap = { student: 'student', alumni: 'alumni', company: 'company', employer: 'company', academic: 'academic', admin: 'admin' };
-          s.setActivePortalBranch?.(branchMap[finalRole] || 'student');
+          const branchMap = { alumni: 'alumni', company: 'company', employer: 'company', admin: 'admin' };
+          s.setActivePortalBranch?.(branchMap[finalRole] || 'alumni');
         } catch { /* intentional */ }
         setUserRole(finalRole);
         if (setCurrentUser) setCurrentUser(loggedUser);
-        setView(finalRole === 'employer' ? 'company' : finalRole);
+        setView(finalRole === 'employer' || finalRole === 'company' ? 'company' : finalRole === 'admin' ? 'admin' : 'alumni');
         setIsLoading(false);
         return;
       }
@@ -289,8 +290,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
 
   const handleEDevlet = () => {
     setError(null);
-    const targetRole = loginRole === 'alumni' ? 'alumni' : loginRole === 'academic' ? 'academic' : 'student';
-    const res = initiateEDevletOAuthLogin(targetRole, { mode: 'login' });
+    const res = initiateEDevletOAuthLogin('alumni', { mode: 'login' });
     if (!res.enabled && res.message) {
       setError(res.message);
     }
@@ -375,9 +375,12 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         {/* Main Card with Curved Top Red Line */}
         <div className="bg-[#f8f9fa] dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-[32px] shadow-2xl p-6 sm:p-10 relative overflow-hidden border-t-4 border-[#dc2626] dark:border-x dark:border-b dark:border-slate-800 transition-colors duration-300">
 
-          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-6 text-center tracking-tight">
-            Portala Giriş Yapın
+          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-2 text-center tracking-tight">
+            İESÜ Mezunlar Portalına Giriş
           </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold text-center mb-6">
+            Mezun ağı ve kurumsal işveren hesabı ile giriş yapın
+          </p>
 
           {error && (
             <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-600 text-red-700 rounded-r-xl font-bold text-sm flex items-center gap-2">
@@ -386,35 +389,21 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             </div>
           )}
 
-          {/* Role Selector Pill Tabs */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1.5 bg-slate-200/60 dark:bg-slate-800 rounded-2xl mb-8">
+          {/* Role Selector Pill Tabs — Yalnızca Mezun ve Kurumsal Firma */}
+          <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-200/60 dark:bg-slate-800 rounded-2xl mb-8">
             <button 
               type="button"
               onClick={() => setLoginRole('alumni')}
-              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'alumni' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'}`}
+              className={`flex-1 py-2.5 px-3 text-[13px] font-extrabold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${loginRole === 'alumni' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'}`}
             >
-              <Users size={15} /> <span>Mezun</span>
-            </button>
-            <button 
-              type="button"
-              onClick={() => setLoginRole('student')}
-              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'student' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'}`}
-            >
-              <GraduationCap size={15} /> <span>Öğrenci</span>
-            </button>
-            <button 
-              type="button"
-              onClick={() => setLoginRole('academic')}
-              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'academic' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'}`}
-            >
-              <ShieldCheck size={15} /> <span>Akademik</span>
+              <Users size={16} /> <span>Mezun</span>
             </button>
             <button 
               type="button"
               onClick={() => setLoginRole('employer')}
-              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'employer' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'}`}
+              className={`flex-1 py-2.5 px-3 text-[13px] font-extrabold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${loginRole === 'employer' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'}`}
             >
-              <Building2 size={15} /> <span>Firma</span>
+              <Building2 size={16} /> <span>Firma</span>
             </button>
           </div>
 
@@ -428,7 +417,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
                 name="username"
                 aria-label="E-Posta veya Kullanıcı Adı"
                 type="text" 
-                placeholder={loginRole === 'student' ? "E-posta veya kullanıcı adı" : "Kullanıcı Adı / E-Posta"} 
+                placeholder={loginRole === 'employer' ? "Kurumsal E-Posta veya Kullanıcı Adı" : "Mezun E-Posta veya Kullanıcı Adı"} 
                 className="w-full pl-11 pr-4 py-3 bg-white dark:bg-slate-800 border border-red-300 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition text-sm font-semibold text-slate-800 dark:text-slate-100 placeholder:text-slate-400" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -491,20 +480,20 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
               <button 
                 onClick={() => {
                   if (setRegisterAccountType) {
-                    setRegisterAccountType(loginRole === 'employer' ? 'employer' : loginRole === 'student' ? 'student' : (loginRole === 'admin' || loginRole === 'academic') ? 'academic' : 'alumni');
+                    setRegisterAccountType(loginRole === 'employer' ? 'employer' : 'alumni');
                   }
                   setView('register');
                 }} 
                 type="button" 
                 className="w-full sm:w-auto px-5 py-3 bg-white dark:bg-slate-900 text-[#dc2626] dark:text-rose-400 hover:bg-red-50 dark:hover:bg-slate-700 rounded-2xl font-extrabold text-xs shadow-md border border-red-100 dark:border-slate-700 transition-all active:scale-[0.98] shrink-0 cursor-pointer text-center whitespace-nowrap"
               >
-                {loginRole === 'employer' ? 'Firma Kaydı Oluştur' : 'Hesabımı Aktifleştir'}
+                {loginRole === 'employer' ? 'Firma Kaydı Oluştur' : 'Mezun Hesabımı Aktifleştir'}
               </button>
             </div>
           </div>
 
-          {/* e-Devlet Kapısı ile Giriş (Öğrenci, Mezun ve Akademik İçin) */}
-          {(loginRole === 'student' || loginRole === 'alumni' || loginRole === 'academic') && (
+          {/* e-Devlet Kapısı ile Giriş (Yalnızca Mezunlar İçin) */}
+          {loginRole === 'alumni' && (
             <>
               <div className="relative flex items-center py-5">
                 <div className="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
@@ -519,7 +508,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
                 className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-red-400 text-slate-800 dark:text-slate-100 py-3.5 px-5 rounded-2xl hover:bg-red-50/40 dark:hover:bg-slate-700/70 transition-all shadow-sm active:scale-[0.98] cursor-pointer group"
               >
                 <img src="/edevlet-vector.svg" alt="e-Devlet" className="h-4 w-auto object-contain" />
-                <span className="font-extrabold text-xs">e-Devlet ile Giriş Yap</span>
+                <span className="font-extrabold text-xs">e-Devlet ile Mezuniyetini Doğrula & Giriş Yap</span>
               </button>
             </>
           )}

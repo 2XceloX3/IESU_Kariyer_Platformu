@@ -13,7 +13,7 @@ export default function SubPanelFloatingDock({
   setView, 
   setSelectedUserId, 
   activeTab = '', 
-  userRole = 'student' 
+  userRole = 'alumni' 
 }) {
   const activeBranch = useAppStore(state => state.activePortalBranch);
   const storeCurrentUser = useAppStore(state => state.currentUser);
@@ -34,17 +34,17 @@ export default function SubPanelFloatingDock({
   // 2. userRole prop (eğer özel olarak iletilmişse)
   // 3. effectiveCurrentUser.role
   const currentHive = (
-    (safeBranch && ['student', 'alumni', 'academic', 'company', 'admin'].includes(safeBranch)) ? safeBranch :
-    (safePropRole && ['student', 'alumni', 'academic', 'company', 'admin'].includes(safePropRole)) ? safePropRole :
-    (effectiveCurrentUser?.role && ['student', 'alumni', 'academic', 'company', 'admin', 'employer', 'academic_staff'].includes(effectiveCurrentUser.role)) ? (effectiveCurrentUser.role === 'employer' ? 'company' : effectiveCurrentUser.role === 'academic_staff' ? 'academic' : effectiveCurrentUser.role) :
-    'student'
+    (safeBranch && ['alumni', 'company', 'admin'].includes(safeBranch)) ? safeBranch :
+    (safePropRole && ['alumni', 'company', 'admin'].includes(safePropRole)) ? safePropRole :
+    (effectiveCurrentUser?.role && ['alumni', 'company', 'admin', 'employer'].includes(effectiveCurrentUser.role)) ? (effectiveCurrentUser.role === 'employer' ? 'company' : effectiveCurrentUser.role) :
+    'alumni'
   );
 
   const isAlumni = currentHive === 'alumni';
-  const isAcademic = currentHive === 'academic' || currentHive === 'academic_staff';
+  const isAcademic = false;
   const isCompany = currentHive === 'company' || currentHive === 'employer';
   const isAdmin = currentHive === 'admin';
-  const isStudent = !isAlumni && !isAcademic && !isCompany && !isAdmin;
+  const isStudent = false;
 
   // Alt yüzen dock tüm kovanlarda ve alt panellerde kurumsal navigasyonu sunar
 

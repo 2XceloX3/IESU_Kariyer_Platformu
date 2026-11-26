@@ -98,7 +98,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
         currentUser: null,
         userRole: null,
         authenticatedUserId: null,
-        activeHive: 'student',
+        activeHive: 'alumni',
         previousHive: null,
         selectedUserId: null,
         selectedGroupId: null,
@@ -150,13 +150,11 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
 
   // Dal Egemenliği: Sayfa görünümü (currentView) veya açıkça belirtilen userRole önceliklidir
   const effectiveBranch = 
-    (currentView === 'student') ? 'student' :
     (currentView === 'alumni') ? 'alumni' :
-    (currentView === 'academic') ? 'academic' :
     (currentView === 'company' || currentView === 'employer') ? 'company' :
     (currentView === 'admin' || currentView === 'admin_cms' || currentView === 'yonetim_konsolu') ? 'admin' :
-    (userRole && ['student', 'alumni', 'academic', 'company', 'admin'].includes(userRole)) ? userRole :
-    (activePortalBranch || effectiveCurrentUser?.role || 'student');
+    (userRole && ['alumni', 'company', 'admin'].includes(userRole)) ? userRole :
+    (activePortalBranch && ['alumni', 'company', 'admin'].includes(activePortalBranch) ? activePortalBranch : (effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer' ? 'company' : effectiveCurrentUser?.role === 'admin' ? 'admin' : 'alumni'));
 
   const isAdmin = effectiveCurrentUser?.role === 'admin' || userRole === 'admin' || Boolean(effectiveCurrentUser?.isSuperAdmin);
 
@@ -322,49 +320,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     <span className={`text-[11px] font-bold ${userRole === 'alumni' || currentView === 'alumni' ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>Mezun Portalı</span>
                   </button>
 
-                  {/* 4. Öğrenci Portalı */}
-                  <button 
-                    role="menuitem" 
-                    onClick={() => { 
-                      setIsOpen(false); 
-                      const store = useAppStore.getState();
-                      store.setActivePortalBranch?.('student');
-                      setView?.('student');
-                    }} 
-                    className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
-                      userRole === 'student' || currentView === 'student'
-                        ? 'bg-rose-600 text-white font-black border-rose-500 shadow-rose-900/20' 
-                        : 'bg-white dark:bg-slate-800/90 hover:bg-rose-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700 hover:border-rose-300 dark:hover:border-rose-500/50'
-                    }`}
-                  >
-                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'student' || currentView === 'student' ? 'bg-white/20 text-white' : 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 group-hover:bg-rose-600 group-hover:text-white'}`}>
-                      <GraduationCap size={16} />
-                    </div>
-                    <span className={`text-[11px] font-black leading-tight text-center ${userRole === 'student' || currentView === 'student' ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>Öğrenci Portalı</span>
-                  </button>
-
-                  {/* 5. Akademik Portal */}
-                  <button 
-                    role="menuitem" 
-                    onClick={() => { 
-                      setIsOpen(false); 
-                      const store = useAppStore.getState();
-                      store.setActivePortalBranch?.('academic');
-                      setView?.('academic'); 
-                    }} 
-                    className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
-                      userRole === 'academic' || currentView === 'academic'
-                        ? 'bg-[#4C1D95] text-white font-black border-purple-500 shadow-purple-950/20' 
-                        : 'bg-white dark:bg-slate-800/90 hover:bg-purple-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-500/50'
-                    }`}
-                  >
-                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'academic' || currentView === 'academic' ? 'bg-white/20 text-white' : 'bg-purple-100 dark:bg-purple-500/20 text-[#4C1D95] dark:text-purple-300 group-hover:bg-[#4C1D95] group-hover:text-white'}`}>
-                      <BookOpen size={16} />
-                    </div>
-                    <span className={`text-[11px] font-bold ${userRole === 'academic' || currentView === 'academic' ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>Akademik Portal</span>
-                  </button>
-
-                  {/* 6. Firma Portalı */}
+                  {/* 4. Firma Portalı */}
                   <button 
                     role="menuitem" 
                     onClick={() => { 

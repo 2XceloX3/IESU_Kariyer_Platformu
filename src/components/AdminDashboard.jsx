@@ -137,8 +137,8 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
         <Card className="p-6 col-span-1">
           <h3 className="font-black text-gray-900 mb-4">Sistem Özeti</h3>
           <div className="space-y-4">
-            <StatCard icon={<Users size={16}/>} label="Toplam Öğrenci" value={(students || []).length} color="blue" />
             <StatCard icon={<Award size={16}/>} label="Toplam Mezun" value={(alumni || []).length} color="emerald" />
+            <StatCard icon={<Building2 size={16}/>} label="Kurumsal İşveren" value={(companies || []).length} color="blue" />
           </div>
         </Card>
       </div>
@@ -182,14 +182,14 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
                 </div>
               </div>
             ))}
-            {(students || []).slice(0, 1).map(s => (
-              <div key={s?.id} className="flex items-start gap-3">
+            {(alumni || []).slice(0, 1).map(a => (
+              <div key={a?.id} className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
                   <UserPlus size={14} className="text-emerald-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-gray-900">Yeni Öğrenci Kaydı: {s?.name}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{s?.department}</p>
+                  <p className="text-sm font-bold text-gray-900">Yeni Mezun Kaydı: {a?.name}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{a?.department}</p>
                 </div>
               </div>
             ))}
@@ -269,27 +269,27 @@ const PANEL_CATEGORIES = [
   },
   { 
     id: 'kullanici', 
-    label: 'Kullanıcı Yönetimi', 
+    label: 'Mezun & Firma Yönetimi', 
     icon: <Users size={14}/>, 
-    panels: ['students', 'alumni', 'companies', 'academic_staff', 'cms_staff', 'cms_clubs', 'cms_mezun_dernek', 'kart', 'cms_groups', 'user_types'] 
+    panels: ['alumni', 'companies', 'cms_staff', 'cms_mezun_dernek', 'kart', 'cms_groups', 'user_types'] 
   },
   { 
     id: 'icerik', 
-    label: 'İçerik & Platform', 
+    label: 'İçerik & İlanlar', 
     icon: <FileText size={14}/>, 
-    panels: ['cms_news', 'cms_ann', 'cms_events', 'etkinlik', 'cms_jobs', 'ilan', 'cms_feat', 'cms_portfolios', 'cms_gallery', 'gonullu', 'sem', 'academic_catalog', 'academic_approvals', 'kariyer_gunleri', 'content_import', 'mesajlar'] 
+    panels: ['cms_news', 'cms_ann', 'cms_events', 'etkinlik', 'cms_jobs', 'ilan', 'cms_feat', 'cms_portfolios', 'cms_gallery', 'kariyer_gunleri', 'content_import', 'mesajlar'] 
   },
   { 
     id: 'kgm_danismanlik', 
-    label: 'Kariyer Danışmanlığı & Sektör', 
+    label: 'Mentörlük & Sektör', 
     icon: <UserCheck size={14}/>, 
-    panels: ['cms_career_counseling', 'mentorluk', 'cms_ment', 'cms_mentorship_pool', 'cms_incubator', 'cms_corporate_partnerships', 'company_edu_requests', 'company_event_msgs', 'akademik', 'akademik_radar', 'cms_ssp'] 
+    panels: ['cms_career_counseling', 'mentorluk', 'cms_ment', 'cms_mentorship_pool', 'cms_corporate_partnerships', 'company_edu_requests', 'company_event_msgs'] 
   },
   { 
     id: 'sistem', 
     label: 'Sistem & Analiz', 
     icon: <Settings size={14}/>, 
-    panels: ['site_editor', 'institutional_stats', 'platform_ayarlari', 'cms_sync', 'data_cleanup', 'cms_datapool', 'content_import', 'analytics', 'anket', 'audit_log', 'akademik_radar', 'aday_havuzu', 'entegrasyon', 'cms_ssp'] 
+    panels: ['site_editor', 'institutional_stats', 'platform_ayarlari', 'cms_sync', 'data_cleanup', 'cms_datapool', 'content_import', 'analytics', 'anket', 'audit_log', 'aday_havuzu', 'entegrasyon'] 
   }
 ];
 
@@ -623,12 +623,12 @@ export default function AdminDashboard({
   const [superAdminOverride, setSuperAdminOverride] = useState(false);
   const isSuperAdmin = superAdminOverride || userRole === 'superadmin' || userRole === 'super_admin' || userRole === 'admin' || academicRole === 'super_admin' || currentUser?.role === 'super_admin' || currentUser?.role === 'admin' || currentUser?.id === 'admin_1513' || currentUser?.name === 'Kariyer Geliştirme Koordinatörlüğü' || currentUser?.email === 'kariyer@iesu.edu.tr';
 
+  const CLOSED_PORTAL_TABS = new Set(['students', 'academic_staff', 'cms_clubs', 'gonullu', 'academic_catalog', 'academic_approvals', 'akademik', 'akademik_radar', 'cms_ssp', 'cms_incubator', 'sem']);
   const ALL_TABS = [...MAIN_TABS, ...MORE_TABS].filter(tab => {
+    if (CLOSED_PORTAL_TABS.has(tab.id)) return false;
     if (tab.id === 'cms_message_audit') return isAuditUnlocked;
     if (tab.id === 'anket' && !featureSurveys) return false;
     if (tab.id === 'kart' && !featureAlumniCard) return false;
-    if (tab.id === 'cms_ssp' && !sspEnabled) return false;
-    if (tab.id === 'sem' && !featureSEMAcademy) return false;
     if (tab.superAdminOnly && !isSuperAdmin) return false;
     return true;
   });

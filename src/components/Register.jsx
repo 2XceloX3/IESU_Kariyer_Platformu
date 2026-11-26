@@ -242,8 +242,9 @@ export const validateRoleFields = (accountType, formData) => {
 
 export default function Register({ setView, setCurrentUser, setUserRole }) {
   const { setStudents, setAlumni, setAcademicStaff, setCompanies, registerAccountType } = useAppStore();
+  const normalizeRegisterType = (t) => (t === 'employer' || t === 'company' ? 'employer' : 'alumni');
   const [step, setStep] = useState(1); // 1: Info, 2: Success
-  const [accountType, setAccountType] = useState(() => normalizeRoleKey(registerAccountType || 'alumni'));
+  const [accountType, setAccountType] = useState(() => normalizeRegisterType(registerAccountType)); // 'alumni', 'employer'
   const [error, setError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [touchedFields, setTouchedFields] = useState({});
@@ -254,6 +255,12 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
   const [companyLogoData, setCompanyLogoData] = useState(null);
   const [googleLinkedProfile, setGoogleLinkedProfile] = useState(null);
   const tenant = getTenantConfig();
+
+  React.useEffect(() => {
+    if (registerAccountType) {
+      setAccountType(normalizeRegisterType(registerAccountType));
+    }
+  }, [registerAccountType]);
 
   // Role-specific + shared form state
   const [formData, setFormData] = useState({
@@ -1378,24 +1385,24 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
 
           {step === 1 ? (
             <>
-              {/* Role Selector Pill Tabs (Matching Login.jsx Style) */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1.5 bg-slate-200/70 dark:bg-slate-800 rounded-2xl mb-6">
-                {(['alumni', 'student', 'academic', 'employer']).map((roleKey) => {
+              {/* Role Selector Pill Tabs (Yalnızca Mezun ve Kurumsal Firma) */}
+              <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-200/70 dark:bg-slate-800 rounded-2xl mb-6">
+                {(['alumni', 'employer']).map((roleKey) => {
                   const meta = ROLE_META[roleKey];
                   const isActive = accountType === roleKey;
-                  const IconComp = roleKey === 'employer' ? Building2 : roleKey === 'academic' ? ShieldCheck : GraduationCap;
+                  const IconComp = roleKey === 'employer' ? Building2 : GraduationCap;
                   return (
                     <button
                       key={roleKey}
                       type="button"
                       onClick={() => { setAccountType(roleKey); setActivationNotice(null); setError(null); setFieldErrors({}); setTouchedFields({}); }}
-                      className={`flex-1 py-2.5 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                      className={`flex-1 py-2.5 px-3 text-[13px] font-extrabold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
                         isActive
                           ? 'bg-[#990000] text-white shadow-md'
                           : 'text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                       }`}
                     >
-                      <IconComp size={15} />
+                      <IconComp size={16} />
                       <span>{meta.tabLabel}</span>
                     </button>
                   );
@@ -1565,21 +1572,17 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
 
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed mb-7 font-medium">
                 {accountType === 'employer'
-                  ? 'Kurumsal firma kaydınız ve hesap aktivasyonunuz Kariyer Geliştirme Koordinatörlüğü sisteminde tamamlanmıştır. Şimdi doğrudan Şirket Portalına geçiş yapabilirsiniz.'
-                  : accountType === 'academic'
-                  ? 'Akademik hesabınız başarıyla oluşturuldu ve aktifleştirildi. Artık Akademik Portala geçiş yapabilirsiniz.'
-                  : accountType === 'alumni'
-                  ? "Mezun hesabınız başarıyla oluşturuldu ve aktifleştirildi. İESÜ Mezunlar Portalı'na hemen giriş yapabilirsiniz."
-                  : 'Öğrenci hesabınız başarıyla oluşturuldu ve aktifleştirildi. Öğrenci Kariyer Portalına hemen geçiş yapabilirsiniz.'}
+                  ? 'Kurumsal firma kaydınız ve hesap aktivasyonunuz Kariyer Geliştirme Koordinatörlüğü sisteminde tamamlanmıştır. Şimdi doğrudan Firma Portalına geçiş yapabilirsiniz.'
+                  : "Mezun hesabınız başarıyla oluşturuldu ve aktifleştirildi. İESÜ Mezunlar Portalı'na hemen giriş yapabilirsiniz."}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
                 <button
                   type="button"
                   data-testid="complete-activation-enter-btn"
-                  onClick={() => activateAndEnterPortal(registeredUser, accountType)}
+                  onClick={() => activateAndEnterPortal(registeredUser, accountType === 'employer' ? 'employer' : 'alumni')}
                   className="w-full sm:w-auto inline-flex items-center justify-center bg-[#dc2626] hover:bg-red-700 text-white font-extrabold text-sm py-3.5 px-7 rounded-2xl transition-all shadow-lg active:scale-[0.98] cursor-pointer whitespace-nowrap"
                 >
-                  {accountType === 'employer' ? 'Firma Portalına Giriş Yap & Devam Et' : 'Platforma Giriş Yap & Devam Et'}
+                  {accountType === 'employer' ? 'Firma Portalına Giriş Yap & Devam Et' : 'Mezun Portalına Giriş Yap & Devam Et'}
                 </button>
                 <button
                   type="button"

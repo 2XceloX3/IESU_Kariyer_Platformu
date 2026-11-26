@@ -83,9 +83,9 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
       setActiveTabState(adminActiveTab);
     }
   }, [adminActiveTab, initialTab]);
-  const [branchFilter, setBranchFilter] = useState('all'); // 'all' | 'student' | 'alumni' | 'company' | 'academic'
+  const [branchFilter, setBranchFilter] = useState('all'); // 'all' | 'alumni' | 'company'
   const [searchQuery, setSearchQuery] = useState('');
-  const [demandSubTab, setDemandSubTab] = useState('academic'); // 'academic' | 'company'
+  const [demandSubTab, setDemandSubTab] = useState('company'); // 'company'
 
   // Pending items for quick admin moderation
   const pendingJobs = (jobs || []).filter(j => j.status === 'Onay Bekliyor' || j.status === 'Pending');
@@ -274,8 +274,8 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                   <p className="text-[14px] font-black text-amber-600">{pendingJobs.length}</p>
                 </div>
                 <div className="border-l border-slate-100">
-                  <p className="text-slate-400 text-[9px] font-bold uppercase tracking-wider">Akademik</p>
-                  <p className="text-[14px] font-black text-purple-600">{pendingCounselingList.length}</p>
+                  <p className="text-slate-400 text-[9px] font-bold uppercase tracking-wider">Mezunlar</p>
+                  <p className="text-[14px] font-black text-emerald-600">{(alumni || []).length}</p>
                 </div>
                 <div className="border-l border-slate-100">
                   <p className="text-slate-400 text-[9px] font-bold uppercase tracking-wider">Firma Talep</p>
@@ -324,24 +324,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                   Portal Geçiş Noktaları
                 </p>
 
-                {/* 1. Öğrenci Kovanı */}
-                <button
-                  onClick={() => {
-                    const store = useAppStore.getState();
-                    if (store.setActivePortalBranch) store.setActivePortalBranch('student');
-                    setView('student');
-                  }}
-                  className="w-full flex items-center justify-between p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-[#990000] transition cursor-pointer group"
-                  title="Öğrenci Kovanına Geçiş Yap"
-                >
-                  <span className="flex items-center gap-2">
-                    <GraduationCap size={15} className="text-[#990000] group-hover:scale-110 transition-transform" /> 
-                    Öğrenci Kovanı
-                  </span>
-                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-[#990000]">KGB & Staj →</span>
-                </button>
-
-                {/* 2. Mezun Kovanı */}
+                {/* 1. Mezun Kovanı */}
                 <button
                   onClick={() => {
                     const store = useAppStore.getState();
@@ -349,33 +332,16 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                     setView('alumni');
                   }}
                   className="w-full flex items-center justify-between p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition cursor-pointer group"
-                  title="Mezun Kovanına Geçiş Yap"
+                  title="Mezun Portalına Geçiş Yap"
                 >
                   <span className="flex items-center gap-2">
                     <Award size={15} className="text-emerald-600 group-hover:scale-110 transition-transform" /> 
-                    Mezun Kovanı
+                    İESÜ Mezunlar Portalı
                   </span>
                   <span className="text-[10px] font-bold text-slate-400 group-hover:text-emerald-700">MBS & Harita →</span>
                 </button>
 
-                {/* 3. Akademik Kovan */}
-                <button
-                  onClick={() => {
-                    const store = useAppStore.getState();
-                    if (store.setActivePortalBranch) store.setActivePortalBranch('academic');
-                    setView('academic');
-                  }}
-                  className="w-full flex items-center justify-between p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-800 transition cursor-pointer group"
-                  title="Akademik Kovana Geçiş Yap"
-                >
-                  <span className="flex items-center gap-2">
-                    <Building2 size={15} className="text-purple-600 group-hover:scale-110 transition-transform" /> 
-                    Akademik Kovan
-                  </span>
-                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-purple-700">ResearchOS →</span>
-                </button>
-
-                {/* 4. Firma Kovanı */}
+                {/* 2. Firma Kovanı */}
                 <button
                   onClick={() => {
                     const store = useAppStore.getState();
@@ -383,11 +349,11 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                     setView('company');
                   }}
                   className="w-full flex items-center justify-between p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-800 transition cursor-pointer group"
-                  title="Firma Kovanına Geçiş Yap"
+                  title="Firma Portalına Geçiş Yap"
                 >
                   <span className="flex items-center gap-2">
                     <Briefcase size={15} className="text-blue-600 group-hover:scale-110 transition-transform" /> 
-                    Firma Kovanı
+                    Firma Portalı
                   </span>
                   <span className="text-[10px] font-bold text-slate-400 group-hover:text-blue-700">ATS & İlan →</span>
                 </button>
@@ -525,10 +491,8 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                 <div className="flex items-center gap-1.5 overflow-x-auto pb-1 px-1 scrollbar-none">
                   {[
                     { id: 'all', label: '👑 Tüm Portallar' },
-                    { id: 'student', label: '🎓 Öğrenci Portalı' },
                     { id: 'alumni', label: '🎓 Mezun Portalı' },
                     { id: 'company', label: '🏢 Firma & ATS' },
-                    { id: 'academic', label: '🏛️ Akademik Portal' },
                   ].map(b => (
                     <button
                       key={b.id}
@@ -545,7 +509,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                 </div>
               </div>
 
-              {/* 👑 KGM MASTER TALEP & ONAY MERKEZİ (AKADEMİK & FİRMA ÇİFT DAL DENETİMİ) */}
+              {/* 👑 KGM MASTER TALEP & ONAY MERKEZİ (FİRMA & MEZUN PORTALI DENETİMİ) */}
               <div className="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border-2 border-amber-400/80 rounded-3xl p-4 sm:p-5 space-y-4 shadow-sm">
                 
                 {/* Header & Sub-Tabs */}
@@ -558,11 +522,11 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                       <h3 className="font-black text-slate-900 text-sm flex items-center gap-2">
                         KGM Master Talep & Onay Masası
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-200 text-amber-900 border border-amber-300">
-                          {pendingCounselingList.length + pendingJobs.length + pendingFairApps.length} Bekleyen
+                          {pendingJobs.length + pendingFairApps.length} Bekleyen
                         </span>
                       </h3>
                       <p className="text-[11px] text-slate-600 font-medium">
-                        Akademik randevular ve kurumsal firma başvurularını tek merkezden yönetin.
+                        Kurumsal firma ilanlarını ve mezun etkinliği başvurularını tek merkezden yönetin.
                       </p>
                     </div>
                   </div>
@@ -576,27 +540,11 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                   </button>
                 </div>
 
-                {/* Sub-Tabs: Akademik vs Firma */}
+                {/* Sub-Tab: Firma İlan & Sponsorluk */}
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => setDemandSubTab('academic')}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
-                      demandSubTab === 'academic'
-                        ? 'bg-purple-700 text-white shadow-md shadow-purple-900/20'
-                        : 'bg-white text-purple-900 border border-purple-200 hover:bg-purple-50'
-                    }`}
-                  >
-                    <GraduationCap size={15} />
-                    <span>Akademik Randevu & Onay ({pendingCounselingList.length})</span>
-                  </button>
-
-                  <button
                     onClick={() => setDemandSubTab('company')}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
-                      demandSubTab === 'company'
-                        ? 'bg-blue-900 text-white shadow-md shadow-blue-950/30'
-                        : 'bg-white text-blue-900 border border-blue-200 hover:bg-blue-50'
-                    }`}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer bg-blue-900 text-white shadow-md shadow-blue-950/30"
                   >
                     <Building2 size={15} />
                     <span>Firma İlan & Sponsorluk ({pendingJobs.length + pendingFairApps.length})</span>

@@ -8,12 +8,12 @@ import {
 import { searchKnowledgeBase } from '../utils/searchIndex';
 
 const PORTAL_LINKS = [
-  { id: 'portal_lunch', title: 'Günün Yemekhane Menüsü (SKSDB)', category: 'Kampüs Yaşamı', icon: <Utensils size={18} className="text-amber-600" />, view: 'sksdb_lunch' },
-  { id: 'portal_clubs', title: 'Öğrenci Kulüpleri Dizini', category: 'Kulüpler & Topluluklar', icon: <Users size={18} className="text-teal-600" />, view: 'sksdb_clubs' },
-  { id: 'portal_wifi', title: 'BİDB Sistem Durumu & Wi-Fi', category: 'Bilişim & Altyapı', icon: <Server size={18} className="text-blue-600" />, view: 'bidb_status' },
-  { id: 'portal_helpdesk', title: 'BİDB Şifre Sıfırlama & Destek Bileti', category: 'Teknik Destek', icon: <Server size={18} className="text-indigo-600" />, view: 'bidb_helpdesk' },
-  { id: 'portal_obis', title: 'OBİS Öğrenci Bilgi Sistemi', category: 'Resmi Sistemler', icon: <ExternalLink size={18} className="text-rose-600" />, externalUrl: 'https://obis.esenyurt.edu.tr', isExternal: true },
-  { id: 'portal_edevlet', title: 'e-Devlet Kapısı / Öğrenci Belgesi', category: 'Resmi Sistemler', icon: <ExternalLink size={18} className="text-red-700" />, externalUrl: 'https://www.turkiye.gov.tr', isExternal: true }
+  { id: 'portal_mbs', title: 'Mezun Bilgi Sistemi (MBS)', category: 'Mezun Portalı', icon: <GraduationCap size={18} className="text-emerald-600" />, view: 'mbs' },
+  { id: 'portal_alumni_card', title: 'Dijital Mezun Kartım', category: 'Mezun Portalı', icon: <ShieldCheck size={18} className="text-teal-600" />, view: 'alumni_card' },
+  { id: 'portal_global_map', title: 'Küresel Mezun Haritası', category: 'Mezun Portalı', icon: <Globe size={18} className="text-cyan-600" />, view: 'global_map' },
+  { id: 'portal_birlik_agi', title: 'İESÜ Mezunlar Portalı & Komiteler', category: 'Mezun Portalı', icon: <Users size={18} className="text-emerald-700" />, view: 'birlik_agi' },
+  { id: 'portal_cv', title: 'Akıllı CV Stüdyosu', category: 'Kariyer Araçları', icon: <FileText size={18} className="text-[#990000]" />, view: 'cvbuilder' },
+  { id: 'portal_edevlet', title: 'e-Devlet Kapısı / Mezuniyet Belgesi', category: 'Resmi Sistemler', icon: <ExternalLink size={18} className="text-red-700" />, externalUrl: 'https://www.turkiye.gov.tr', isExternal: true }
 ];
 
 export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser }) {
@@ -51,22 +51,19 @@ export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser
   const isAdmin = role === 'admin' || currentUser?.academicRole === 'super_admin';
 
   const baseActions = useMemo(() => [
-    { id: 'home', title: 'Ana Sayfaya Git', category: 'Gezinme', icon: <Home size={18} className="text-blue-600" />, action: () => setView(role === 'admin' ? 'admin' : role === 'employer' ? 'company' : role) },
+    { id: 'home', title: 'Ana Sayfaya Git', category: 'Gezinme', icon: <Home size={18} className="text-blue-600" />, action: () => setView(role === 'admin' ? 'admin' : (role === 'employer' || role === 'company') ? 'company' : 'alumni') },
     ...(isAdmin ? [
       { id: 'super_admin', title: '🛡️ Süper Admin Kontrol Merkezi', category: 'Yönetim', icon: <ShieldAlert size={18} className="text-[#990000]" />, action: () => setView('admin_cms') },
       { id: 'site_editor', title: '🎨 Görsel Site Düzenleyici (CMS Pro)', category: 'Yönetim', icon: <Palette size={18} className="text-[#990000]" />, action: () => setView('admin_cms') },
       { id: 'audit_logs', title: '🔒 Denetim Logları & Güvenlik Takibi', category: 'Yönetim', icon: <ShieldCheck size={18} className="text-[#990000]" />, action: () => setView('audit_logs') },
       { id: 'idari_portal', title: '🏛️ İdari Birimler & Koordinatörlük Portalı', category: 'Yönetim', icon: <Building2 size={18} className="text-slate-700" />, action: () => setView('idari_portal') },
     ] : []),
-    { id: 'knowledge_portal', title: '📚 Kurumsal Bilgi Bankası & Mevzuat', category: 'Bilgi Merkezi', icon: <BookOpen size={18} className="text-blue-600" />, action: () => setView('knowledge_portal') },
-    { id: 'leaderboard', title: '🏆 İESÜ Başarı & Liderlik Sıralaması', category: 'Sosyal & Puan', icon: <Trophy size={18} className="text-amber-500" />, action: () => setView('leaderboard') },
-    { id: 'student_kgb', title: '🎓 KGB Kariyer Karnem & Yetenek Belgesi', category: 'Kariyer & Gelişim', icon: <GraduationCap size={18} className="text-[#990000]" />, action: () => setView('student_kgb') },
-    { id: 'jobs', title: 'İş ve Staj İlanları', category: 'Kariyer Fırsatları', icon: <Briefcase size={18} className="text-emerald-600" />, action: () => setView('jobs') },
+    { id: 'alumni_home', title: '🎓 İESÜ Mezunlar Portalı', category: 'Mezun Ağı', icon: <GraduationCap size={18} className="text-emerald-600" />, action: () => setView('alumni') },
+    { id: 'global_map', title: '🌍 Küresel Mezun Haritası', category: 'Mezun Ağı', icon: <Globe size={18} className="text-cyan-600" />, action: () => setView('global_map') },
+    { id: 'jobs', title: 'İş & Kariyer Fırsatları', category: 'Kariyer Fırsatları', icon: <Briefcase size={18} className="text-emerald-600" />, action: () => setView('jobs') },
     { id: 'company_ats', title: 'İşe Alım Panosu (ATS)', category: 'Kurumsal', icon: <Briefcase size={18} className="text-purple-600" />, action: () => setView('company_ats') },
-    { id: 'events', title: 'Yaklaşan Etkinlikler & Seminerler', category: 'Akademik & Sosyal', icon: <Calendar size={18} className="text-orange-600" />, action: () => setView('etkinlikler') },
+    { id: 'events', title: 'Mezun Buluşmaları & Etkinlikler', category: 'Etkinlikler', icon: <Calendar size={18} className="text-orange-600" />, action: () => setView('etkinlikler') },
     { id: 'news', title: 'Haberler ve Resmi Duyurular', category: 'Duyuru & Medya', icon: <FileText size={18} className="text-red-600" />, action: () => setView('haberler') },
-    { id: 'organization', title: 'Akademik Birimler & Fakülteler', category: 'Üniversite', icon: <GraduationCap size={18} className="text-indigo-600" />, action: () => setView('organization') },
-    { id: 'sem', title: 'SEM Sürekli Eğitim Merkezi Sertifikaları', category: 'Eğitim', icon: <BookOpen size={18} className="text-teal-600" />, action: () => setView('sem') },
     { id: 'profile', title: 'Profilimi Görüntüle', category: 'Hesap', icon: <User size={18} className="text-gray-700" />, action: () => {
       const store = useAppStore.getState();
       const selfId = currentUser?.id || 'self';

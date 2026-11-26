@@ -11,9 +11,9 @@ export default function AdminOmniDock({ activeTab, setActiveTab, setView, setSel
   const store = useAppStore.getState();
   const currentBranch = store.activePortalBranch;
   
-  const isEmerald = theme === 'emerald' || (theme !== 'amber' && theme !== 'red' && currentBranch === 'alumni');
-  const isRed = theme === 'red' || (theme !== 'amber' && theme !== 'emerald' && currentBranch === 'student');
-  const isAmber = !isEmerald && !isRed;
+  const isEmerald = theme === 'emerald' || (theme !== 'amber' && currentBranch !== 'admin');
+  const isRed = false;
+  const isAmber = !isEmerald;
 
   return (
     <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-[999] animate-fade-in-up w-[95%] max-w-[420px]">
