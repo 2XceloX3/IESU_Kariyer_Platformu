@@ -180,7 +180,7 @@ Sunduğumuz Olanaklar:
     };
 
     if (!newJob.companyId) {
-      window.toast?.error?.('Firma kimliği (auth uid) olmadan ilan kaydedilemez.');
+      window.toast?.error?.('İlan oluşturabilmek için kurumsal firma oturumunuzun aktif olması gerekir.');
       return;
     }
     // Prefer auth.uid as companyId (rules: create companyId == auth.uid)
@@ -190,7 +190,7 @@ Sunduğumuz Olanaklar:
       const { saveJobToFirestore } = await import('../services/jobsApplicationsFs');
       await saveJobToFirestore(newJob);
     } catch (e) {
-      window.toast?.error?.(e?.message || 'İlan Firestore\'a yazılamadı');
+      window.toast?.error?.('İlan kaydedilirken geçici bir bağlantı sorunu oluştu. Lütfen tekrar deneyin.');
       return;
     }
     setJobs([newJob, ...(jobs || [])]);

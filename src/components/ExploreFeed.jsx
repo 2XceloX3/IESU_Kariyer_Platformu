@@ -192,12 +192,9 @@ export default function ExploreFeed({
     });
   }, [featuredClubItems, searchQuery]);
 
-  const handleOpenClub = (clubId) => {
-    if (clubId) {
-      storeSetSelectedClubId?.(String(clubId));
-    }
+  const handleOpenClub = () => {
     if (setView) {
-      setView('club_portal');
+      setView('events_list');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };

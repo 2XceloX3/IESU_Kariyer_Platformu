@@ -986,7 +986,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
       onClose();
       return;
     }
-    const validViews = ['student', 'alumni', 'company', 'academic', 'admin'];
+    const validViews = ['student', 'alumni', 'company', 'staff', 'admin'];
     if (previousView && validViews.includes(previousView)) {
       if (typeof setView === 'function') setView(previousView);
       return;
@@ -995,7 +995,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
     let role = (rawRole || 'student').toString().toLowerCase().trim();
     if (role === 'employer') role = 'company';
     else if (role === 'student_user') role = 'student';
-    else if (role === 'academic_staff') role = 'academic';
+    else if (role === 'personel') role = 'staff';
     else if (role === 'alumni_user') role = 'alumni';
     else if (role === 'admin' || role === 'administrator') role = 'admin';
 
@@ -1370,7 +1370,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center bg-[#F0F2F5] text-center p-8">
-            <img src="https://cdni.iconscout.com/illustration/premium/thumb/empty-state-2130362-1800926.png" className="w-64 opacity-60 mb-6 grayscale" />
+            <div className="w-24 h-24 rounded-3xl bg-white shadow-md border border-slate-200 flex items-center justify-center mb-6 text-[#990000]"><ShieldCheck size={44} /></div>
             <h2 className="text-3xl font-light text-gray-700 mb-4">İESÜ Kariyer Web</h2>
             <p className="text-gray-500 max-w-md">Mesaj gönderin ve alın. Ağınızı genişletin, kariyer fırsatlarını yakalayın. Tüm mesajlar uçtan uca şifrelenmiştir.</p>
             <div className="mt-12 flex items-center gap-2 text-sm text-gray-400 font-medium">

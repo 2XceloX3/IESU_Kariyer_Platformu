@@ -82,12 +82,13 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
   const dayEvents = groupedEvents[selectedDateStr] || [];
   const roleTheme = {
     admin: { primary: 'bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 text-white', accent: 'text-amber-600', border: 'border-amber-200', bgSoft: 'bg-amber-50' },
+    staff: { primary: 'bg-indigo-700 text-white', accent: 'text-indigo-700', border: 'border-indigo-200', bgSoft: 'bg-indigo-50' },
     alumni: { primary: 'bg-emerald-700 text-white', accent: 'text-emerald-700', border: 'border-emerald-200', bgSoft: 'bg-emerald-50' },
-    academic: { primary: 'bg-purple-900 text-white', accent: 'text-purple-900', border: 'border-purple-200', bgSoft: 'bg-purple-50' },
     company: { primary: 'bg-blue-950 text-white', accent: 'text-blue-950', border: 'border-blue-200', bgSoft: 'bg-blue-50' },
     student: { primary: 'bg-[#990000] text-white', accent: 'text-[#990000]', border: 'border-red-200', bgSoft: 'bg-red-50' }
   };
-  const theme = roleTheme[userRole === 'admin' ? 'admin' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : (userRole === 'employer' || userRole === 'company') ? 'company' : 'student'];
+  const backTarget = userRole === 'admin' ? 'admin' : userRole === 'staff' ? 'staff' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : 'student';
+  const theme = roleTheme[backTarget] || roleTheme.student;
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20 font-sans">
@@ -98,14 +99,14 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
           {/* LEFT: Logo & Brand */}
           <div className="flex items-center gap-3 shrink-0">
             <button
-              onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}
+              onClick={() => setView(backTarget)}
               className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shrink-0"
               title="Geri"
             >
               <ArrowLeft size={18} />
             </button>
-            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
-              <Logo color={userRole === 'admin' ? 'amber' : 'red'} className="h-10 w-auto hover:scale-105 transition-transform" />
+            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(backTarget)}>
+              <Logo color={userRole === 'admin' ? 'amber' : userRole === 'staff' ? 'staff' : 'red'} className="h-10 w-auto hover:scale-105 transition-transform" />
               <div className="hidden sm:block text-left">
                 <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${userRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
                 <p className="text-[10px] font-bold text-gray-500 tracking-wider">Kariyer Geliştirme Koordinatörlüğü</p>

@@ -242,7 +242,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
       v = parts.length > 0 ? parts[parts.length - 1] : '';
     }
     if (!v) return null;
-    if (v === 'academic' || v === 'research_hub' || v === 'academic_onboarding' || v.startsWith('academic_')) return 'academic';
+    if (v === 'staff' || v === 'personel' || v === 'personel_portali') return 'staff';
     if (v === 'company' || v === 'company_ats' || v === 'create_job' || v.startsWith('company_')) return 'company';
     if (v === 'alumni' || v === 'mezun_dernek' || v === 'alumni_assoc_portal' || v === 'alumni_card' || v === 'alumni_dao' || v.startsWith('alumni_')) return 'alumni';
     if (v === 'admin' || v === 'admin_cms' || v === 'yonetim_konsolu' || v === 'admin_console' || v === 'audit_logs' || v.startsWith('cms_') || v.startsWith('admin_')) return 'admin';
@@ -258,30 +258,25 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
   const isSuperAdmin = currentUser?.role === 'admin' || currentUser?.id === 'admin_1513' || resolvedRole === 'admin';
 
   // Branch Context Retention & Kovan İzolasyonu (AGENTS.md Kural 4):
-  // 1. Müstakil bir portal dalındaysa (ör: /admin, /academic, /company, /alumni), o dal esastır.
-  // 2. Ortak/paylaşılan sayfalardaysa (/jobs, /feed, /user_profile, /calendar, /notifications vb.):
-  //    Kullanıcının o an bulunduğu kovan dalı (propsActiveBranch / preservedBranch) esastır.
-  // 3. Kullanıcı Süper Admin ise ve kasten başka bir kovan dalına geçmemişse dalı KESİNLİKLE 'admin'dir.
-  //    Öğrenci mesaj kutusu süper admin sayfasına ASLA sızamaz!
   const preservedBranch = propsActiveBranch || storeActiveBranch || localBranch;
   const branchContext = (() => {
     if (activePortal) return activePortal;
-    if (preservedBranch && ['admin', 'student', 'alumni', 'academic', 'company'].includes(preservedBranch)) {
+    if (preservedBranch && ['admin', 'staff', 'student', 'alumni', 'company'].includes(preservedBranch)) {
       if (isSuperAdmin && preservedBranch === 'admin') return 'admin';
       return preservedBranch;
     }
     if (isSuperAdmin) return 'admin';
     const r = currentUser?.role || userRole;
     if (r === 'employer') return 'company';
-    if (r === 'academic_staff') return 'academic';
+    if (r === 'staff' || r === 'personel') return 'staff';
     return r || 'student';
   })();
 
   const isCompany = branchContext === 'company' || branchContext === 'employer';
-  const isAcademic = branchContext === 'academic' || branchContext === 'academic_staff';
+  const isAcademic = false;
   const isAlumni = branchContext === 'alumni';
-  const isAdmin = branchContext === 'admin' || (isSuperAdmin && !['student', 'alumni', 'academic', 'company'].includes(branchContext));
-  const isStudent = (branchContext === 'student' || (!isCompany && !isAcademic && !isAlumni && !isAdmin)) && !isAdmin && !isSuperAdmin && currentUser?.role !== 'admin';
+  const isAdmin = branchContext === 'admin' || branchContext === 'staff' || (isSuperAdmin && !['student', 'alumni', 'company'].includes(branchContext));
+  const isStudent = (branchContext === 'student' || (!isCompany && !isAlumni && !isAdmin)) && !isAdmin && !isSuperAdmin && currentUser?.role !== 'admin' && currentUser?.role !== 'staff';
   const effectiveRole = isAdmin ? 'admin' : branchContext;
 
   // Mode:
@@ -1348,27 +1343,6 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
 
               <button 
                 onClick={() => { 
-                  setActiveMode('admin_academic'); 
-                  setSelectedEvalItem(null);
-                  setSelectedAdminCompanyMsg(null);
-                  setSelectedAdminAcademicMsg(null);
-                  setSelectedCandidateChat(null);
-                }}
-                className={`px-3 py-2 whitespace-nowrap transition-all rounded-xl flex items-center justify-center gap-1.5 cursor-pointer ${
-                  activeMode === 'admin_academic' 
-                    ? 'bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white font-black shadow-md border border-purple-300' 
-                    : 'text-purple-200 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <GraduationCap size={13} />
-                <span>Akademik Talepler</span>
-                <span className="text-[9px] opacity-85 font-black">
-                  ({(adminMessages || []).filter(m => m.senderType === 'academic' || m.type === 'academic').length})
-                </span>
-              </button>
-
-              <button 
-                onClick={() => { 
                   setActiveMode('admin_ats'); 
                   setSelectedEvalItem(null);
                   setSelectedAdminCompanyMsg(null);
@@ -1421,7 +1395,6 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                       {[
                         { id: 'all', label: 'Tümü' },
                         { id: 'company', label: '🏢 Firmalar' },
-                        { id: 'academic', label: '🏛️ Akademi' },
                         { id: 'student', label: '🎓 Öğrenciler' }
                       ].map(tab => (
                         <button

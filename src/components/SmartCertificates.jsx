@@ -116,7 +116,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
           <button 
             onClick={() => {
               if (setView) {
-                if (!userRole && !activePortalBranch) { setView('sem'); return; }
+                if (!userRole && !activePortalBranch) { setView('student'); return; }
                 setView(backTarget);
               }
             }} 

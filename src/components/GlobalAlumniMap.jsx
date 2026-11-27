@@ -471,12 +471,12 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
           <button 
             onClick={() => {
               if (onBack) { onBack(); return; }
-              const allowedBranches = ['student', 'company', 'academic', 'alumni', 'admin'];
+              const allowedBranches = ['student', 'company', 'staff', 'alumni', 'admin'];
               const store = useAppStore.getState();
               const isActualAdmin = userRole === 'admin' || currentUser?.role === 'admin' || store.userRole === 'admin' || store.currentUser?.role === 'admin';
               const roleFallback = currentUser?.role === 'student' ? 'student' 
                 : (currentUser?.role === 'company' || currentUser?.role === 'employer') ? 'company'
-                : (currentUser?.role === 'academic' || currentUser?.role === 'academic_staff') ? 'academic'
+                : (currentUser?.role === 'staff' || currentUser?.role === 'personel') ? 'staff'
                 : 'alumni';
 
               const safeBranch = (activePortalBranch === 'admin' && !isActualAdmin) ? null : activePortalBranch;

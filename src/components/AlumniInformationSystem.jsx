@@ -1485,8 +1485,8 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                               onChange={() => setAssocForm({...assocForm, type: 'Genel Üyelik'})}
                             />
                             <div>
-                              <span className="block text-xs font-black">Genel Dernek Üyeliği</span>
-                              <span className="block text-[10px] opacity-75 font-medium">Dernek ağında resmi üye olarak yer al</span>
+                              <span className="block text-xs font-black">İESÜ Mezunlar Portalı Üyeliği</span>
+                              <span className="block text-[10px] opacity-75 font-medium">Mezun ağında resmi üye olarak yer al</span>
                             </div>
                           </label>
 
@@ -1498,8 +1498,8 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                               onChange={() => setAssocForm({...assocForm, type: 'Yönetim Ekibi Adaylığı'})}
                             />
                             <div>
-                              <span className="block text-xs font-black">Yönetim Ekibi Adaylığı</span>
-                              <span className="block text-[10px] opacity-75 font-medium">Dernek projelerinde aktif görev üstlen</span>
+                              <span className="block text-xs font-black">Mezun Temsilcisi & Mentör Adaylığı</span>
+                              <span className="block text-[10px] opacity-75 font-medium">İESÜ Mezunlar Portalı projelerinde aktif görev üstlen</span>
                             </div>
                           </label>
                         </div>
@@ -1570,7 +1570,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           value={assocForm.notes} 
                           onChange={e => setAssocForm({...assocForm, notes: e.target.value})}
                           className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-emerald-500"
-                          placeholder="Dernek çatısı altında yürütmek istediğiniz projeler veya uzmanlık alanlarınız..."
+                          placeholder="İESÜ Mezunlar Portalı çatısı altında yürütmek istediğiniz projeler veya mentörlük alanlarınız..."
                         />
                       </div>
 

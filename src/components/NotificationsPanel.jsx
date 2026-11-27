@@ -248,7 +248,8 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
             <button
               onClick={() => {
                 if (userRole === 'admin' || previousView === 'admin') setView('admin');
-                else setView(previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : (isCompany ? 'company' : 'student'));
+                else if (userRole === 'staff' || previousView === 'staff') setView('staff');
+                else setView(previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : (isCompany ? 'company' : 'student'));
               }}
               className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-[#990000] dark:hover:text-rose-400 transition cursor-pointer shrink-0"
               title="Geri"
@@ -262,7 +263,8 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
               className="flex items-center gap-3 cursor-pointer" 
               onClick={() => {
                 if (userRole === 'admin' || previousView === 'admin') setView('admin');
-                else setView(previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : (isCompany ? 'company' : 'student'));
+                else if (userRole === 'staff' || previousView === 'staff') setView('staff');
+                else setView(previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : (isCompany ? 'company' : 'student'));
               }}
             >
               <Logo color={userRole === 'admin' ? 'amber' : 'red'} className="h-9 w-auto shrink-0" />

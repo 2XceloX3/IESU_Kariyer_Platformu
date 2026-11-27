@@ -78,7 +78,7 @@ export default function Footer({ setSelectedItem, legalData, setView }) {
               <li><a href="https://eslms.esenyurt.edu.tr/almsp" target="_blank" rel="noopener noreferrer" className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> Esuzemi (Uzaktan Eğitim)</a></li>
               <li><a href="https://kutuphane.esenyurt.edu.tr/" target="_blank" rel="noopener noreferrer" className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> Merkez Kütüphane</a></li>
               <li><button onClick={() => setView('staj')} className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> İsteğe Bağlı Staj Süreçleri</button></li>
-              <li><button onClick={() => setView('sem')} className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> SEM (Sürekli Eğitim Merkezi)</button></li>
+              <li><button onClick={() => setView('jobs')} className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> İş & Staj Fırsatları</button></li>
             </ul>
           </div>
 

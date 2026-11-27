@@ -477,31 +477,35 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
               </div>
             </div>
 
-            {/* Recommended Clubs */}
+            {/* Recommended Staj & Career Actions */}
             <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200 shadow-xs">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-extrabold text-gray-900 text-base flex items-center gap-2">
-                  <Users className="text-[#990000]" size={18} /> Gelişiminizi Destekleyecek İESÜ Kulüpleri
+                  <Briefcase className="text-[#990000]" size={18} /> Profilinize Özel Hızlı Kariyer Adımları
                 </h3>
                 <button 
-                  onClick={() => setView('club_portal')}
+                  onClick={() => setView('jobs')}
                   className="text-xs font-bold text-[#990000] hover:underline flex items-center gap-1 cursor-pointer"
                 >
-                  Tümünü Gör <ArrowRight size={13} />
+                  Tüm İlanları Gör <ArrowRight size={13} />
                 </button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {persona.recommendedClubs.map((club, idx) => (
+                {[
+                  { tag: 'Zorunlu & Gönüllü Staj', title: '3308 & SGK Güvenceli Stajlar', cta: 'Staj Masasına Git', target: 'staj' },
+                  { tag: 'Canlı İlan Havuzu', title: 'Bölümüne Uygun Açık Pozisyonlar', cta: 'İlanları İncele', target: 'jobs' },
+                  { tag: 'ATS & EuroPass', title: '2 Dakikada Profesyonel CV Oluştur', cta: 'CV Stüdyosunu Aç', target: 'cvbuilder' }
+                ].map((stepCard, idx) => (
                   <div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-col justify-between">
                     <div>
-                      <span className="text-[10px] font-bold text-slate-500 uppercase">Önerilen Kulüp</span>
-                      <h4 className="font-bold text-gray-900 text-sm mt-0.5">{club}</h4>
+                      <span className="text-[10px] font-bold text-slate-500 uppercase">{stepCard.tag}</span>
+                      <h4 className="font-bold text-gray-900 text-sm mt-0.5">{stepCard.title}</h4>
                     </div>
                     <button 
-                      onClick={() => setView('club_portal')}
+                      onClick={() => setView(stepCard.target)}
                       className="mt-3 px-3 py-1.5 bg-white border border-slate-200 hover:border-red-300 hover:text-[#990000] rounded-lg text-xs font-bold text-slate-700 transition cursor-pointer text-center"
                     >
-                      Kulübe Katıl
+                      {stepCard.cta}
                     </button>
                   </div>
                 ))}

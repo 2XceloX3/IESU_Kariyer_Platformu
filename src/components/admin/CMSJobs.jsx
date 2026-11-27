@@ -479,7 +479,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
                 </h4>
               </div>
               <span className="text-[11px] font-bold text-amber-300 bg-amber-500/20 px-2.5 py-1 rounded-lg border border-amber-400/30">
-                Çapraz Kovan Entegrasyonu Aktif
+                Çoklu Portal Yayını Aktif
               </span>
             </div>
 
@@ -514,7 +514,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
                     className="w-4 h-4 rounded text-red-600 focus:ring-red-500/20"
                   />
                 </div>
-                <span className="text-[10px] text-slate-300 leading-tight">İş, staj, akış kartları & KGB Karnesi entegrasyonu</span>
+                <span className="text-[10px] text-slate-300 leading-tight">İş, staj, akış kartları & KGB Karnesi yayını</span>
               </button>
 
               {/* 2. Mezun Kovanı */}

@@ -4,6 +4,7 @@ import Logo from './Logo';
 import { auth, db } from '../utils/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import useAppStore from '../store/useAppStore';
+import { IESU_FACULTIES, IESU_YUKSEKOKUL, IESU_MYO } from '../utils/universityData';
 
 /**
  * Student onboarding wizard. Writes onboardingCompleted on the users/{uid} doc,
@@ -21,26 +22,15 @@ export default function StudentOnboarding({ onComplete, currentUser, setView, is
     careerGoal: currentUser?.careerGoal || '',
   });
 
-  const DEPARTMENT_OPTIONS = [
-    'Bilgisayar Mühendisliği',
-    'Yazılım Mühendisliği',
-    'Elektrik-Elektronik Mühendisliği',
-    'Endüstri Mühendisliği',
-    'Yönetim Bilişim Sistemleri',
-    'İşletme',
-    'Uluslararası Ticaret ve Lojistik',
-    'Psikoloji',
-    'Sosyoloji',
-    'Siyaset Bilimi ve Uluslararası İlişkiler',
-    'Çocuk Gelişimi',
-    'Fizyoterapi ve Rehabilitasyon',
-    'Hemşirelik',
-    'Beslenme ve Diyetetik',
-    'Mimarlık',
-    'İç Mimarlık ve Çevre Tasarımı',
-    'Adalet',
-    'Diğer',
-  ];
+  const DEPARTMENT_OPTIONS = React.useMemo(() => {
+    const allDepts = [
+      ...IESU_FACULTIES.flatMap(f => f.departments || []),
+      ...IESU_YUKSEKOKUL.flatMap(y => y.departments || []),
+      ...IESU_MYO.flatMap(m => m.departments || []),
+    ];
+    const uniqueSorted = [...new Set(allDepts)].sort((a, b) => a.localeCompare(b, 'tr-TR'));
+    return [...uniqueSorted, 'Diğer'];
+  }, []);
 
   const persistComplete = async (payload) => {
     const uid = auth?.currentUser?.uid || currentUser?.uid || currentUser?.id || 'self';

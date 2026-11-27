@@ -52,11 +52,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
 
   const handleOpenClubProfile = (e) => {
     e?.stopPropagation?.();
-    if (post?.clubId) {
-      storeSetSelectedClubId?.(String(post.clubId));
-      useAppStore.getState().setSelectedClubId?.(String(post.clubId));
-    }
-    navigateToView('club_portal');
+    navigateToView('events_list');
   };
 
   const handleToggleClubFollow = (e) => {

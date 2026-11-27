@@ -726,10 +726,10 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                     <p className="text-xs text-gray-500 font-medium">İş ilanlarında talep oranı: <strong className="text-gray-700">{sk.demand}</strong></p>
                   </div>
                   <button 
-                    onClick={() => { setView('sem'); }} 
-                    className="mt-4 w-full bg-white border border-gray-200 hover:bg-red-50 hover:border-red-200 text-[#990000] font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm"
+                    onClick={() => { setView('skill_tree'); }} 
+                    className="mt-4 w-full bg-white border border-gray-200 hover:bg-red-50 hover:border-red-200 text-[#990000] font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                   >
-                    <BookOpen size={14} /> SEM Kursunu Tamamla
+                    <BookOpen size={14} /> Yetkinlik Ağacında Geliştir
                   </button>
                 </div>
               ))}
