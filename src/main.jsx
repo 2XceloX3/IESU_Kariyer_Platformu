@@ -46,6 +46,35 @@ if (typeof window !== 'undefined') {
       }
     }
   });
+
+  // PWA Service Worker yeni sürüm algıladığında eski önbelleği bekletmeden anında yenile
+  if ('serviceWorker' in navigator) {
+    let swRefreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (swRefreshing) return;
+      const swReloadKey = 'iesu_sw_reload_ts';
+      const lastSwReload = parseInt(sessionStorage.getItem(swReloadKey) || '0', 10);
+      const now = Date.now();
+      if (now - lastSwReload > 8000) {
+        swRefreshing = true;
+        sessionStorage.setItem(swReloadKey, String(now));
+        window.location.reload();
+      }
+    });
+
+    const checkSwUpdates = () => {
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        regs.forEach((reg) => {
+          reg.update().catch(() => {});
+        });
+      }).catch(() => {});
+    };
+
+    window.addEventListener('load', checkSwUpdates);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') checkSwUpdates();
+    });
+  }
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
