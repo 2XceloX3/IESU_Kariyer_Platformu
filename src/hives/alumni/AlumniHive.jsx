@@ -121,9 +121,9 @@ export default function AlumniHive({ currentUser, setView }) {
   const renderActiveView = () => {
     switch (currentView) {
       case 'mbs':
-        return <AlumniInformationSystem setView={handleSetView} currentUser={effectiveCurrentUser} />;
+        return <AlumniInformationSystem setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" previousView="alumni" setSelectedUserId={setSelectedUserId} />;
       case 'alumni_card':
-        return <AlumniCardWallet setView={handleSetView} currentUser={effectiveCurrentUser} />;
+        return <AlumniCardWallet setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" previousView="alumni" setSelectedUserId={setSelectedUserId} />;
       case 'alumni_assoc_portal':
         return <AlumniAssocPortal setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} academicRole="alumni" />;
       case 'mezun_dernek':
@@ -154,8 +154,8 @@ export default function AlumniHive({ currentUser, setView }) {
             setView={handleSetView}
             setSelectedUserId={setSelectedUserId}
             currentUser={effectiveCurrentUser}
-            userRole="alumni"
-            academicRole="alumni"
+            userRole={effectiveCurrentUser?.role === 'admin' ? 'admin' : effectiveCurrentUser?.role === 'staff' ? 'staff' : 'alumni'}
+            academicRole={effectiveCurrentUser?.role === 'admin' ? 'super_admin' : effectiveCurrentUser?.role === 'staff' ? 'staff' : 'alumni'}
             setSelectedGroupId={setSelectedGroupId}
           />
         );
@@ -176,11 +176,11 @@ export default function AlumniHive({ currentUser, setView }) {
         />;
       }
       case 'notifications':
-        return <NotificationsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} />;
+        return <NotificationsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" previousView="alumni" setSelectedUserId={setSelectedUserId} />;
       case 'calendar':
-        return <CalendarView setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} />;
+        return <CalendarView setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" previousView="alumni" setSelectedUserId={setSelectedUserId} />;
       case 'messaging':
-        return <MessagingInterface setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} selectedGroupId={useAppStore.getState().selectedGroupId} setSelectedGroupId={setSelectedGroupId} />;
+        return <MessagingInterface setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" previousView="alumni" setSelectedUserId={setSelectedUserId} selectedGroupId={useAppStore.getState().selectedGroupId} setSelectedGroupId={setSelectedGroupId} />;
       case 'live_rooms':
         return <LiveRoomsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'mentor_booking':

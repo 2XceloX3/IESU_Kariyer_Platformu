@@ -159,7 +159,7 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
           type: 'system',
           timestamp: Date.now() - 86400000,
           read: true,
-          link: 'research_hub'
+          link: 'events_list'
         }
       ];
     }

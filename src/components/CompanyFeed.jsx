@@ -262,8 +262,10 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between relative">
           {/* LEFT: Logo & University Title */}
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer" onClick={() => {
-            const currentRole = effectiveCurrentUser?.role || userRole;
-            setView?.(currentRole === 'admin' ? 'admin' : currentRole === 'staff' ? 'staff' : (currentRole === 'employer' || currentRole === 'company') ? 'company' : currentRole === 'alumni' ? 'alumni' : 'student');
+            useAppStore.getState().setActivePortalBranch?.('company');
+            setActiveTab('feed');
+            setView?.('company');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
           }}>
             <Logo color="blue" className="h-10 w-auto hover:scale-105 transition-transform shrink-0" />
             <div className="hidden sm:block text-left">
@@ -1403,12 +1405,12 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
 
       {/* ─── CORPORATE NAVY FLOATING 4-BUTTON DOCK (#0A2342) ─── */}
       <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
-        <div className="bg-white/95 backdrop-blur-2xl border-2 border-blue-200 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(10,35,66,0.22)] flex items-center justify-between px-4 text-slate-800">
+        <div className="bg-white/95 dark:bg-[#131c31]/95 backdrop-blur-2xl border-2 border-blue-200 dark:border-blue-500/40 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(10,35,66,0.22)] flex items-center justify-between px-4 text-slate-800 dark:text-slate-100">
           
           {/* HOME - CORPORATE NAVY */}
           <button 
-            onClick={() => setActiveTab('feed')} 
-            className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'bg-gradient-to-r from-slate-950 via-[#0A2342] to-blue-950 text-white shadow-md shadow-blue-950/40' : 'text-slate-600 hover:text-[#0A2342] hover:bg-blue-50'}`} 
+            onClick={() => { useAppStore.getState().setActivePortalBranch?.('company'); setActiveTab('feed'); setView?.('company'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+            className={`p-2.5 rounded-full transition-all flex items-center justify-center cursor-pointer ${activeTab === 'feed' ? 'bg-gradient-to-r from-slate-950 via-[#0A2342] to-blue-950 text-white shadow-md shadow-blue-950/40' : 'text-slate-600 dark:text-slate-300 hover:text-[#0A2342] dark:hover:text-sky-300 hover:bg-blue-50 dark:hover:bg-slate-800'}`} 
             title="Kurumsal Akış"
           >
             <Home size={22} strokeWidth={2.2} />
@@ -1416,7 +1418,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
           
           {/* YENİ İLAN YAYINLA - CORPORATE SAPPHIRE BLUE */}
           <button 
-            onClick={() => setIsCreatingJob(true)} 
+            onClick={() => { useAppStore.getState().setActivePortalBranch?.('company'); setIsCreatingJob(true); }} 
             className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-blue-700 via-[#0A2342] to-indigo-800 text-white shadow-lg shadow-blue-950/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-blue-300/40 cursor-pointer" 
             title="Yeni İlan Yayınla"
           >
@@ -1425,7 +1427,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
           
           {/* ADAY TAKİP / ATS HAVUZU */}
           <button 
-            onClick={() => setView('company_ats')} 
+            onClick={() => { useAppStore.getState().setActivePortalBranch?.('company'); setView('company_ats'); }} 
             className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 via-blue-600 to-sky-600 text-white shadow-lg shadow-blue-600/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/50 cursor-pointer" 
             title="ATS Aday Takip Panosu (Kanban)"
           >
@@ -1434,6 +1436,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
           
           <button 
             onClick={() => {
+              useAppStore.getState().setActivePortalBranch?.('company');
               const compId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
               if (setSelectedUserId) setSelectedUserId(compId);
               useAppStore.getState().setSelectedUserId?.(compId);

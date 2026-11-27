@@ -116,16 +116,18 @@ export default function CompanyHive({ currentUser, setView }) {
             setView={handleSetView}
             setSelectedUserId={setSelectedUserId}
             currentUser={effectiveCurrentUser}
+            userRole={effectiveCurrentUser?.role === 'admin' ? 'admin' : effectiveCurrentUser?.role === 'staff' ? 'staff' : 'company'}
+            academicRole={effectiveCurrentUser?.role === 'admin' ? 'super_admin' : effectiveCurrentUser?.role === 'staff' ? 'staff' : 'company'}
           />
         );
       case 'ats':
       case 'company_ats':
-        return <CompanyATSBoard setView={handleSetView} currentUser={effectiveCurrentUser} />;
+        return <CompanyATSBoard setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" previousView="company" />;
       case 'post-job':
       case 'post_job':
       case 'create_job':
       case 'job_creator':
-        return <JobCreator setView={handleSetView} currentUser={effectiveCurrentUser} />;
+        return <JobCreator setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" previousView="company" />;
       case 'jobs':
         return <JobsAndInternships setView={handleSetView} previousView={previousView || 'company'} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'profile':
@@ -145,11 +147,11 @@ export default function CompanyHive({ currentUser, setView }) {
       case 'virtual_fair':
         return <VirtualCareerFair setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'notifications':
-        return <NotificationsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
+        return <NotificationsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" previousView="company" setSelectedUserId={setSelectedUserId} />;
       case 'calendar':
-        return <CalendarView setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
+        return <CalendarView setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" previousView="company" setSelectedUserId={setSelectedUserId} />;
       case 'messaging':
-        return <MessagingInterface setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
+        return <MessagingInterface setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" previousView="company" setSelectedUserId={setSelectedUserId} />;
       case 'network':
       case 'career_network':
         return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" previousView={previousView || 'company'} setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;

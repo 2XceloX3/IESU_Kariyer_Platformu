@@ -2271,12 +2271,6 @@ export default function UserProfile({
                       <Settings size={15} /> Profili Düzenle
                     </button>
                     <button 
-                      onClick={() => setView('research_hub')} 
-                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-700 via-purple-700 to-indigo-800 hover:from-indigo-800 hover:to-purple-800 text-white rounded-xl font-bold text-xs shadow-md transition cursor-pointer border border-indigo-400/40"
-                    >
-                      <BookOpen size={15} /> Araştırma OS & Yayınlar
-                    </button>
-                    <button 
                       onClick={() => setView('calendar')} 
                       className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs shadow-md transition cursor-pointer border border-slate-700/40"
                     >
@@ -3632,7 +3626,7 @@ export default function UserProfile({
       ) : isCompanyBranch ? (
         /* 🏢 KURUMSAL FİRMAYA ÖZEL LACİVERT DOCK (Ana Akış ile Birebir Uyumlu #0A2342) */
         <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
-          <div className="bg-white/95 backdrop-blur-2xl border-2 border-blue-200 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(10,35,66,0.22)] flex items-center justify-between px-4 text-slate-800">
+          <div className="bg-white/95 dark:bg-[#131c31]/95 backdrop-blur-2xl border-2 border-blue-200 dark:border-blue-500/40 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(10,35,66,0.22)] flex items-center justify-between px-4 text-slate-800 dark:text-slate-100">
             {/* 1. Kurumsal Akış */}
             <button 
               onClick={() => {
@@ -3693,7 +3687,7 @@ export default function UserProfile({
       ) : isAlumniBranch ? (
         /* 🌿 MEZUNLAR AĞINA ÖZEL ZÜMRÜT DOCK (#064E3B) */
         <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
-          <div className="bg-white/95 backdrop-blur-2xl border-2 border-emerald-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(6,78,59,0.18)] flex items-center justify-between px-4 text-gray-800">
+          <div className="bg-white/95 dark:bg-[#131c31]/95 backdrop-blur-2xl border-2 border-emerald-100 dark:border-emerald-500/40 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(6,78,59,0.18)] flex items-center justify-between px-4 text-gray-800 dark:text-slate-100">
             {/* 1. Mezun Akışı */}
             <button 
               onClick={() => { const store = useAppStore.getState(); store.setActivePortalBranch?.('alumni'); setView('alumni'); }} 
@@ -3743,7 +3737,7 @@ export default function UserProfile({
       ) : (
         /* 🎓 ÖĞRENCİYE ÖZEL KIRMIZI DOCK (#990000) */
         <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
-          <div className="bg-white/95 backdrop-blur-2xl border-2 border-red-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(153,0,0,0.18)] flex items-center justify-between px-4 text-gray-800">
+          <div className="bg-white/95 dark:bg-[#131c31]/95 backdrop-blur-2xl border-2 border-red-100 dark:border-rose-500/40 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(153,0,0,0.18)] flex items-center justify-between px-4 text-gray-800 dark:text-slate-100">
             {/* 1. Öğrenci Akışı */}
             <button 
               onClick={() => { const store = useAppStore.getState(); store.setActivePortalBranch?.('student'); setView('student'); }} 

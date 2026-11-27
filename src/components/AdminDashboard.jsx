@@ -529,7 +529,9 @@ export default function AdminDashboard({
   );
 
   // Sıkı RBAC: Yalnızca gerçek Süper Yönetici (admin) oturumu superAdminOnly modüllere erişebilir; Personel (staff) sınırlı operasyonel yetkiye sahiptir
+  const fromStaffPortal = typeof window !== 'undefined' && sessionStorage.getItem('iesu_staff_cms_context') === '1';
   const isStaffSession = userRole === 'staff' || currentUser?.role === 'staff';
+  const isStaffCmsView = isStaffSession || fromStaffPortal;
   const isSuperAdmin = !isStaffSession && Boolean(
     userRole === 'superadmin' ||
     userRole === 'super_admin' ||
@@ -697,10 +699,10 @@ export default function AdminDashboard({
             title="Genel Bakışa Dön"
           >
             <h1 className="text-[14px] font-black text-gray-900 dark:text-slate-100 leading-tight group-hover:text-amber-800 dark:group-hover:text-amber-300 transition">
-              {isStaffSession ? 'Personel Çalışma Paneli' : 'Yönetici Paneli'}
+              {isStaffCmsView ? 'Personel Çalışma Paneli' : 'Yönetici Paneli'}
             </h1>
             <p className="text-[10px] text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <span>{isStaffSession ? (currentUser?.staffTitle || 'KURUMSAL PERSONEL') : (academicRole === 'super_admin' ? 'SÜPER YÖNETİCİ' : 'KARİYER OFİSİ')}</span>
+              <span>{isStaffCmsView ? (currentUser?.staffTitle || 'KURUMSAL PERSONEL') : (academicRole === 'super_admin' ? 'SÜPER YÖNETİCİ' : 'KARİYER OFİSİ')}</span>
             </p>
           </div>
         </div>
@@ -757,10 +759,14 @@ export default function AdminDashboard({
               </button>
             )}
           </div>
-          {isStaffSession && (
+          {isStaffCmsView && (
             <button
               type="button"
-              onClick={() => setView?.('staff')}
+              onClick={() => {
+                try { sessionStorage.removeItem('iesu_staff_cms_context'); } catch { /* intentional */ }
+                useAppStore.getState().setActivePortalBranch?.('staff');
+                setView?.('staff');
+              }}
               className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-[11px] font-black transition cursor-pointer"
             >
               ← Çalışma Masam

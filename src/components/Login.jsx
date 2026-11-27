@@ -616,7 +616,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
               >
                 <img src="/edevlet-vector.svg" alt="e-Devlet" className="h-4 w-auto object-contain" />
                 <span className="font-extrabold text-xs">
-                  {loginRole === 'student' ? 'e-Devlet ile Öğrenciliğini Doğrula & Giriş Yap' : 'e-Devlet ile Mezuniyetini Doğrula & Giriş Yap'}
+                  e-Devlet ile Giriş
                 </span>
               </button>
             </>

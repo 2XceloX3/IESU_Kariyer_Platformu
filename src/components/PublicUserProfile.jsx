@@ -406,25 +406,32 @@ export default function PublicUserProfile({
       badgeClass: 'bg-amber-50 text-[#b45309] border-amber-200 shadow-amber-900/5',
       dotClass: 'bg-[#b45309]',
       icon: '👑'
+    },
+    staff: {
+      label: 'Staff',
+      labelTr: 'Personel',
+      badgeClass: 'bg-indigo-50 text-indigo-800 border-indigo-200 shadow-indigo-900/5',
+      dotClass: 'bg-indigo-700',
+      icon: '🛡️'
     }
   };
 
   // ─── 2. HANGİ PANEL DALINDAN GELİNDİĞİNİ TESPİT ET (CRITICAL INVARIANT: FOLLOWS VIEWER) ───
   const currentBranch = useMemo(() => {
     // 0. If viewerHive prop is provided, it ALWAYS takes absolute priority
-    if (viewerHive && ['student', 'alumni', 'academic', 'company', 'admin'].includes(viewerHive)) {
+    if (viewerHive && ['student', 'alumni', 'staff', 'company', 'admin'].includes(viewerHive)) {
       return viewerHive;
     }
 
     // A. previousView ile doğrudan dal tespiti
-    if (['student', 'feed', 'club_portal', 'student_analytics', 'digital_portfolio', 'virtual_fair', 'career_roadmap', 'startup_incubator', 'sem', 'staj', 'career_test'].includes(previousView)) {
+    if (['student', 'feed', 'student_analytics', 'digital_portfolio', 'virtual_fair', 'career_roadmap', 'startup_incubator', 'staj', 'career_test'].includes(previousView)) {
       return 'student';
     }
     if (['alumni', 'mezun_dernek', 'alumni_assoc_portal', 'alumni_card', 'alumni_dao', 'global_map', 'mbs'].includes(previousView)) {
       return 'alumni';
     }
-    if (['academic', 'research_hub', 'academic_onboarding'].includes(previousView)) {
-      return 'academic';
+    if (['staff', 'personel', 'personel_portali'].includes(previousView)) {
+      return 'staff';
     }
     if (['company', 'company_ats', 'create_job'].includes(previousView)) {
       return 'company';
@@ -434,20 +441,20 @@ export default function PublicUserProfile({
     }
 
     // B. currentUser role/hive if available (viewer context!)
-    if (currentUser?.hive && ['student', 'alumni', 'academic', 'company', 'admin'].includes(currentUser.hive)) {
+    if (currentUser?.hive && ['student', 'alumni', 'staff', 'company', 'admin'].includes(currentUser.hive)) {
       return currentUser.hive;
     }
-    if (currentUser?.role && ['student', 'alumni', 'academic', 'company', 'admin', 'employer'].includes(currentUser.role)) {
+    if (currentUser?.role && ['student', 'alumni', 'staff', 'company', 'admin', 'employer'].includes(currentUser.role)) {
       return currentUser.role === 'employer' ? 'company' : currentUser.role;
     }
 
     // C. Zustand store activePortalBranch
-    if (['student', 'alumni', 'academic', 'company', 'admin'].includes(activePortalBranch)) {
+    if (['student', 'alumni', 'staff', 'company', 'admin'].includes(activePortalBranch)) {
       return activePortalBranch;
     }
 
     // D. Fallback: Görüntülenen profilin rolü
-    if (['student', 'alumni', 'academic', 'company', 'admin'].includes(userType)) {
+    if (['student', 'alumni', 'staff', 'company', 'admin'].includes(userType)) {
       return userType;
     }
 
@@ -474,19 +481,19 @@ export default function PublicUserProfile({
           actionBtn: 'bg-[#059669] hover:bg-emerald-700 text-white shadow-emerald-900/20',
           backBtnLabel: "Mezunlar Portalı'na Dön"
         };
-      case 'academic':
+      case 'staff':
         return {
-          branchId: 'academic',
-          logoColor: 'purple',
-          portalTitle: 'Akademik Kadro & Araştırma Portalı',
-          leafBadge: '🏛️ Akademik Kadro • Hoca Profili',
-          badgeClasses: 'bg-violet-50 text-[#7c3aed] border-violet-200 shadow-violet-900/5',
-          pulseColor: 'bg-[#7c3aed]',
-          titleColor: 'text-violet-950',
-          coverGradient: 'bg-gradient-to-r from-purple-950 via-[#7c3aed] to-indigo-950',
-          homeTitle: 'Akademik Akışa Dön',
-          actionBtn: 'bg-[#7c3aed] hover:bg-violet-800 text-white shadow-violet-900/20',
-          backBtnLabel: "Akademik Portala Dön"
+          branchId: 'staff',
+          logoColor: 'indigo',
+          portalTitle: 'Kurumsal Personel & KGM Portalı',
+          leafBadge: '🛡️ Kurumsal Personel Portalı • Profil',
+          badgeClasses: 'bg-indigo-50 text-indigo-800 border-indigo-200 shadow-indigo-900/5',
+          pulseColor: 'bg-indigo-700',
+          titleColor: 'text-indigo-900',
+          coverGradient: 'bg-gradient-to-r from-slate-950 via-indigo-800 to-blue-900',
+          homeTitle: 'Personel Portalına Dön',
+          actionBtn: 'bg-indigo-700 hover:bg-indigo-800 text-white shadow-indigo-900/20',
+          backBtnLabel: "Personel Portalı'na Dön"
         };
       case 'company':
         return {
@@ -540,9 +547,9 @@ export default function PublicUserProfile({
     if (currentBranch === 'alumni') {
       store.setActivePortalBranch?.('alumni');
       setView('alumni');
-    } else if (currentBranch === 'academic') {
-      store.setActivePortalBranch?.('academic');
-      setView('academic');
+    } else if (currentBranch === 'staff') {
+      store.setActivePortalBranch?.('staff');
+      setView('staff');
     } else if (currentBranch === 'company') {
       store.setActivePortalBranch?.('company');
       setView('company');
@@ -1474,11 +1481,11 @@ export default function PublicUserProfile({
       {currentBranch === 'admin' ? null : currentBranch === 'alumni' ? (
         /* 🌿 MEZUNLAR AĞINA ÖZEL ZÜMRÜT DOCK */
         <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
-          <div className="bg-white/95 backdrop-blur-2xl border-2 border-emerald-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(6,78,59,0.18)] flex items-center justify-between px-4 text-gray-800">
+          <div className="bg-white/95 dark:bg-[#131c31]/95 backdrop-blur-2xl border-2 border-emerald-100 dark:border-emerald-500/40 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(6,78,59,0.18)] flex items-center justify-between px-4 text-gray-800 dark:text-slate-100">
             {/* 1. Mezun Akışı */}
             <button 
               onClick={() => { const store = useAppStore.getState(); store.setActivePortalBranch?.('alumni'); setView('alumni'); }} 
-              className="p-2.5 rounded-full text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-all flex items-center justify-center cursor-pointer" 
+              className="p-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-slate-800 transition-all flex items-center justify-center cursor-pointer" 
               title="Mezun Akışına Dön"
             >
               <Home size={22} strokeWidth={2.2} />
@@ -1521,50 +1528,46 @@ export default function PublicUserProfile({
             </button>
           </div>
         </div>
-      ) : currentBranch === 'academic' ? (
-        /* 🏛️ AKADEMİK KADROYA ÖZEL ASİL MOR DOCK (Ana Akış ile Birebir Uyumlu #4C1D95) */
-        <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[340px]">
-          <div className="bg-white/95 backdrop-blur-2xl border-2 border-purple-200 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(76,29,149,0.2)] flex items-center justify-around px-4 text-gray-800">
-            {/* 1. Akademik Akış & Ana Sayfa */}
+      ) : currentBranch === 'staff' ? (
+        /* 🛡️ KURUMSAL PERSONELE ÖZEL İNDİGO DOCK (ASLA SÜPER ADMİNE ATMAZ) */
+        <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
+          <div className="bg-white/95 dark:bg-[#131c31]/95 backdrop-blur-2xl border-2 border-indigo-200 dark:border-indigo-500/40 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(49,46,129,0.22)] flex items-center justify-between px-4 text-gray-800 dark:text-slate-100">
             <button 
-              onClick={() => { const store = useAppStore.getState(); store.setActivePortalBranch?.('academic'); setView('academic'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
-              className="p-2.5 rounded-full bg-[#4C1D95] text-white shadow-md shadow-purple-900/30 flex items-center justify-center cursor-pointer hover:scale-105 transition-all" 
-              title="Akademik Akışa Dön"
+              onClick={() => { const store = useAppStore.getState(); store.setActivePortalBranch?.('staff'); setView('staff'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+              className="p-2.5 rounded-full bg-indigo-700 text-white shadow-md shadow-indigo-900/30 flex items-center justify-center cursor-pointer hover:scale-105 transition-all" 
+              title="Personel Portalına Dön"
             >
               <Home size={22} strokeWidth={2.2} />
             </button>
-            {/* 2. Staj & Evrak Onayı */}
             <button 
-              onClick={() => { const store = useAppStore.getState(); store.setActivePortalBranch?.('academic'); setView('academic'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
-              className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-[#4C1D95] via-purple-700 to-indigo-600 text-white shadow-lg shadow-purple-950/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-purple-300/40 cursor-pointer" 
-              title="Evrak & Staj Onayı"
+              onClick={() => { const store = useAppStore.getState(); store.setActivePortalBranch?.('staff'); setView('jobs'); }} 
+              className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-indigo-900 via-indigo-700 to-blue-700 text-white shadow-lg shadow-indigo-950/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-indigo-300/40 cursor-pointer" 
+              title="İlan & Staj Havuzu"
             >
-              <FileText size={22} strokeWidth={2.5} />
+              <Briefcase size={20} strokeWidth={2.5} />
             </button>
-            {/* 3. Araştırma OS Hub */}
             <button 
-              onClick={() => { const store = useAppStore.getState(); store.setActivePortalBranch?.('academic'); setView('research_hub'); }} 
-              className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-purple-50 to-indigo-100 text-purple-900 shadow-md flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-purple-300/60 cursor-pointer" 
-              title="Araştırma OS Hub"
+              onClick={() => { const store = useAppStore.getState(); store.setActivePortalBranch?.('staff'); setView('messaging'); }} 
+              className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-indigo-50 to-blue-100 text-indigo-800 shadow-md flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-indigo-300/60 cursor-pointer" 
+              title="Kurumsal Mesajlar"
             >
-              <BookOpen size={20} strokeWidth={2.5} />
+              <FileText size={20} strokeWidth={2.5} />
             </button>
-            {/* 4. Hoca Profilim */}
             <button 
               onClick={() => {
                 const store = useAppStore.getState();
-                store.setActivePortalBranch?.('academic');
-                const selfId = effectiveCurrentUser?.id || 'ACAD-001';
+                store.setActivePortalBranch?.('staff');
+                const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
                 if (setSelectedUserId) setSelectedUserId(selfId);
                 store.setSelectedUserId?.(selfId);
                 setView('user_profile');
               }} 
-              className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#4C1D95] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
-              title="Hoca Profilim"
+              className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-indigo-700 shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
+              title="Personel Profilim"
             >
               <SafeAvatar 
                 src={effectiveCurrentUser?.avatar || effectiveCurrentUser?.profileImage} 
-                name={effectiveCurrentUser?.name || 'Hoca'} 
+                name={effectiveCurrentUser?.name || 'Personel'} 
                 size="xs" 
                 alt="Profile" 
               />
@@ -1574,7 +1577,7 @@ export default function PublicUserProfile({
       ) : currentBranch === 'company' ? (
         /* 🏢 KURUMSAL FİRMAYA ÖZEL LACİVERT DOCK (Ana Akış ile Birebir Uyumlu #0A2342) */
         <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
-          <div className="bg-white/95 backdrop-blur-2xl border-2 border-blue-200 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(10,35,66,0.22)] flex items-center justify-between px-4 text-slate-800">
+          <div className="bg-white/95 dark:bg-[#131c31]/95 backdrop-blur-2xl border-2 border-blue-200 dark:border-blue-500/40 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(10,35,66,0.22)] flex items-center justify-between px-4 text-slate-800 dark:text-slate-100">
             {/* 1. Kurumsal Akış */}
             <button 
               onClick={() => { const store = useAppStore.getState(); store.setActivePortalBranch?.('company'); setView('company'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
@@ -1624,11 +1627,11 @@ export default function PublicUserProfile({
       ) : (
         /* 🎓 ÖĞRENCİYE ÖZEL KIRMIZI/CRIMSON DOCK */
         <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
-          <div className="bg-white/95 backdrop-blur-2xl border-2 border-red-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(153,0,0,0.18)] flex items-center justify-between px-4 text-gray-800">
+          <div className="bg-white/95 dark:bg-[#131c31]/95 backdrop-blur-2xl border-2 border-red-100 dark:border-rose-500/40 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(153,0,0,0.18)] flex items-center justify-between px-4 text-gray-800 dark:text-slate-100">
             {/* 1. Öğrenci Akışı */}
             <button 
               onClick={() => { const store = useAppStore.getState(); store.setActivePortalBranch?.('student'); setView('student'); }} 
-              className="p-2.5 rounded-full text-slate-600 hover:text-[#990000] hover:bg-red-50 transition-all flex items-center justify-center cursor-pointer" 
+              className="p-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:text-[#990000] dark:hover:text-rose-300 hover:bg-red-50 dark:hover:bg-slate-800 transition-all flex items-center justify-center cursor-pointer" 
               title="Öğrenci Akışına Dön"
             >
               <Home size={22} strokeWidth={2.2} />
@@ -1643,7 +1646,7 @@ export default function PublicUserProfile({
             </button>
             {/* 3. Keşfet & Sosyal Ağ */}
             <button 
-              onClick={() => { const store = useAppStore.getState(); store.setActivePortalBranch?.('student'); setView('student'); }} 
+              onClick={() => { const store = useAppStore.getState(); store.setActivePortalBranch?.('student'); setView('explore'); }} 
               className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 text-white shadow-lg shadow-red-900/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-red-300/40 cursor-pointer" 
               title="Keşfet & Sosyal Ağ Portalı"
             >

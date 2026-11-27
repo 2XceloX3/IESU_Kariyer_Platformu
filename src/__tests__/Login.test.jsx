@@ -90,4 +90,20 @@ describe('Login Firebase-only flow', () => {
     expect(setView).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: /^giriş yap$/i })).toBeEnabled();
   });
+
+  it('renders shortened e-Devlet CTA text on main login screen', () => {
+    useAppStore.setState({ setRegisterAccountType: vi.fn() });
+    render(
+      <Login
+        setView={vi.fn()}
+        setUserRole={vi.fn()}
+        setAcademicRole={vi.fn()}
+        setCurrentUser={vi.fn()}
+      />
+    );
+
+    const edevletBtn = screen.getByRole('button', { name: /e-devlet ile giriş/i });
+    expect(edevletBtn).toBeInTheDocument();
+    expect(edevletBtn.textContent.trim()).toBe('e-Devlet ile Giriş');
+  });
 });

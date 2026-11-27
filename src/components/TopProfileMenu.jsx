@@ -286,6 +286,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     role="menuitem" 
                     onClick={() => { 
                       setIsOpen(false); 
+                      try { sessionStorage.removeItem('iesu_staff_cms_context'); } catch { /* intentional */ }
                       const store = useAppStore.getState();
                       store.setActivePortalBranch?.('admin');
                       if (setSelectedUserId) setSelectedUserId('admin_1513');
@@ -308,6 +309,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     role="menuitem" 
                     onClick={() => { 
                       setIsOpen(false); 
+                      try { sessionStorage.removeItem('iesu_staff_cms_context'); } catch { /* intentional */ }
                       const store = useAppStore.getState();
                       store.setActivePortalBranch?.('admin');
                       if (setSelectedUserId) setSelectedUserId('admin_1513');

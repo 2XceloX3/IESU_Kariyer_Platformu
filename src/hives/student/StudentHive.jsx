@@ -32,7 +32,6 @@ const DigitalPortfolio = lazy(() => import('../../components/DigitalPortfolio'))
 const RewardStore = lazy(() => import('../../components/RewardStore'));
 const MetaverseLibrary = lazy(() => import('../../components/MetaverseLibrary'));
 const HackathonMarket = lazy(() => import('../../components/HackathonMarket'));
-const SemPanel = lazy(() => import('../../components/SemPanel'));
 const StajPanel = lazy(() => import('../../components/StajPanel'));
 const ExploreFeed = lazy(() => import('../../components/ExploreFeed'));
 const CareerNetwork = lazy(() => import('../../components/CareerNetwork'));
@@ -51,13 +50,8 @@ const CampusPulseFeed = lazy(() => import('../../components/CampusPulseFeed'));
 const IesuWallet = lazy(() => import('../../components/IesuWallet'));
 const CampusMap = lazy(() => import('../../components/CampusMap'));
 const AnkaChat = lazy(() => import('../../components/AnkaChat'));
-const BMICalculatorModal = lazy(() => import('../../components/BMICalculatorModal'));
-const SKSDBLunchWidget = lazy(() => import('../../components/SKSDBLunchWidget'));
-const BIDBSystemStatusCard = lazy(() => import('../../components/BIDBSystemStatusCard'));
-const BIDBHelpdeskModal = lazy(() => import('../../components/BIDBHelpdeskModal'));
 const KariyerJobBoard = lazy(() => import('../../components/KariyerJobBoard'));
 const KnowledgePortal = lazy(() => import('../../components/KnowledgePortal'));
-const IdariPortal = lazy(() => import('../../components/IdariPortal'));
 const SkillTree = lazy(() => import('../../components/SkillTree'));
 const OrganizationChart = lazy(() => import('../../components/OrganizationChart'));
 const NewsEvents = lazy(() => import('../../components/NewsEvents'));
@@ -233,8 +227,8 @@ export default function StudentHive({ currentUser, setView }) {
             setView={handleSetView}
             setSelectedUserId={setSelectedUserId}
             currentUser={effectiveCurrentUser}
-            userRole="student"
-            academicRole="student"
+            userRole={effectiveCurrentUser?.role === 'admin' ? 'admin' : effectiveCurrentUser?.role === 'staff' ? 'staff' : 'student'}
+            academicRole={effectiveCurrentUser?.role === 'admin' ? 'super_admin' : effectiveCurrentUser?.role === 'staff' ? 'staff' : 'student'}
             setSelectedGroupId={setSelectedGroupId}
           />
         );
@@ -255,11 +249,11 @@ export default function StudentHive({ currentUser, setView }) {
         />;
       }
       case 'notifications':
-        return <NotificationsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
+        return <NotificationsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView="student" setSelectedUserId={setSelectedUserId} />;
       case 'calendar':
-        return <CalendarView setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
+        return <CalendarView setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView="student" setSelectedUserId={setSelectedUserId} />;
       case 'messaging':
-        return <MessagingInterface setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
+        return <MessagingInterface setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView="student" setSelectedUserId={setSelectedUserId} />;
       case 'leaderboard':
         return <LeaderboardPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'live_rooms':

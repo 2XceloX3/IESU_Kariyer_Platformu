@@ -199,7 +199,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               <Star size={22} strokeWidth={activeTab === 'create_post' ? 2.5 : 2} className={activeTab === 'create_post' ? 'fill-current text-orange-500/10' : ''} />
             </button>
             
-            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => setView(isAdmin ? 'admin' : isStaff ? 'staff' : (userRole === 'employer' || userRole === 'company') ? 'company' : 'alumni')}>
+            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => { setActiveTab('feed'); setView('alumni'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
               <Logo color="emerald" className="h-10 w-auto hover:scale-105 transition-transform shrink-0" />
               <div className="hidden sm:block text-left">
                 <h1 className="text-[13px] font-black text-emerald-800 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
@@ -900,7 +900,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                       <input type="checkbox" required className="w-4 h-4 border-gray-300 rounded text-red-600 focus:ring-red-500 cursor-pointer" />
                     </div>
                     <span className="text-xs text-gray-500 font-medium leading-relaxed group-hover:text-gray-700 transition">
-                      Kişisel verilerimin Mezun Kartı basımı ve işlemleri amacıyla işlenmesine dair <button type="button" className="text-red-600 font-bold hover:underline">KVKK Aydınlatma Metni'ni</button> okudum ve onaylıyorum.
+                      Kişisel verilerimin Mezun Kartı basımı ve işlemleri amacıyla işlenmesine dair <button type="button" onClick={() => { setShowCardModal(false); setView?.('kvkk'); }} className="text-red-600 font-bold hover:underline cursor-pointer">KVKK Aydınlatma Metni&apos;ni</button> okudum ve onaylıyorum.
                     </span>
                   </label>
                 </div>
@@ -983,32 +983,33 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
       </div>
       {/* FLOATING DOCK (DEDICATED ALUMNI EMERALD DOCK - 100% INDEPENDENT BRANCH) */}
       <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
-        <div className="bg-white/95 backdrop-blur-2xl border-2 border-emerald-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(5,150,105,0.18)] flex items-center justify-between px-4 text-gray-800">
+        <div className="bg-white/95 dark:bg-[#131c31]/95 backdrop-blur-2xl border-2 border-emerald-100 dark:border-emerald-500/40 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(5,150,105,0.18)] flex items-center justify-between px-4 text-gray-800 dark:text-slate-100">
           
           {/* HOME - EMERALD GREEN */}
-          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center cursor-pointer ${activeTab === 'feed' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/30' : 'text-slate-600 hover:text-emerald-600 hover:bg-emerald-50'}`} title="Akış">
+          <button onClick={() => { useAppStore.getState().setActivePortalBranch?.('alumni'); setActiveTab('feed'); setView?.('alumni'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`p-2.5 rounded-full transition-all flex items-center justify-center cursor-pointer ${activeTab === 'feed' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/30' : 'text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-slate-800'}`} title="Mezun Akışı">
             <Home size={24} strokeWidth={2.2} />
           </button>
           
           {/* JOBS - VIBRANT GRADIENT EMERALD */}
-          <button onClick={() => setView('jobs')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-emerald-800 text-white shadow-lg shadow-emerald-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-emerald-300/40 cursor-pointer" title="İş & Kariyer Fırsatları">
+          <button onClick={() => { useAppStore.getState().setActivePortalBranch?.('alumni'); setView('jobs'); }} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-emerald-800 text-white shadow-lg shadow-emerald-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-emerald-300/40 cursor-pointer" title="İş & Kariyer Fırsatları">
             <Briefcase size={22} strokeWidth={2.5} />
           </button>
           
           {/* CENTER: SEARCH ICON (VIBRANT GRADIENT TEAL/EMERALD - KEŞFET & SOSYAL AĞ PORTALI) */}
-          <button onClick={() => { setActiveTab('search'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-teal-500 via-emerald-500 to-emerald-700 text-white shadow-lg shadow-teal-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/50 cursor-pointer ${activeTab === 'search' ? 'ring-2 ring-white/80 ring-offset-2' : ''}`} title="Keşfet & Sosyal Ağ Portalı">
+          <button onClick={() => { useAppStore.getState().setActivePortalBranch?.('alumni'); setActiveTab('search'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-teal-500 via-emerald-500 to-emerald-700 text-white shadow-lg shadow-teal-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/50 cursor-pointer ${activeTab === 'search' ? 'ring-2 ring-white/80 ring-offset-2' : ''}`} title="Keşfet & Sosyal Ağ Portalı">
             <Search size={22} strokeWidth={2.8} />
           </button>
           
           {/* PROFILE AVATAR */}
           <button 
             onClick={() => {
+              useAppStore.getState().setActivePortalBranch?.('alumni');
               if (setSelectedUserId) setSelectedUserId(alumniId);
               useAppStore.getState().setSelectedUserId?.(alumniId);
               setView('user_profile');
             }} 
             className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-emerald-500 shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
-            title="Profilim"
+            title="Mezun Profilim"
           >
             <SafeAvatar src={alumniAvatar} name={alumniName} size="xs" alt="Profile" />
           </button>

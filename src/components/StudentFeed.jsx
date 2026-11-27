@@ -218,7 +218,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               <Plus size={22} strokeWidth={2.5} />
             </button>
             
-            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => { setActiveTab('feed'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer" onClick={() => { useAppStore.getState().setActivePortalBranch?.('student'); setActiveTab('feed'); setView?.('student'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
               <Logo color="red" className="h-10 w-auto hover:scale-105 transition-transform shrink-0" />
               <div className="hidden sm:block text-left">
                 <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
@@ -1250,28 +1250,30 @@ groups={groups}
       </div>
       {/* FLOATING DOCK (DEDICATED STUDENT CRIMSON DOCK - 100% INDEPENDENT BRANCH) */}
       <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
-        <div className="bg-white/95 backdrop-blur-2xl border-2 border-red-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(153,0,0,0.18)] flex items-center justify-between px-4 text-gray-800">
+        <div className="bg-white/95 dark:bg-[#131c31]/95 backdrop-blur-2xl border-2 border-red-100 dark:border-rose-500/40 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(153,0,0,0.18)] flex items-center justify-between px-4 text-gray-800 dark:text-slate-100">
           
           {/* HOME - CRIMSON RED */}
-          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center cursor-pointer ${activeTab === 'feed' ? 'bg-[#990000] text-white shadow-md shadow-red-900/30' : 'text-slate-600 hover:text-[#990000] hover:bg-red-50'}`} title="Akış">
+          <button onClick={() => { useAppStore.getState().setActivePortalBranch?.('student'); setActiveTab('feed'); setView?.('student'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`p-2.5 rounded-full transition-all flex items-center justify-center cursor-pointer ${activeTab === 'feed' ? 'bg-[#990000] text-white shadow-md shadow-red-900/30' : 'text-slate-600 dark:text-slate-300 hover:text-[#990000] dark:hover:text-rose-300 hover:bg-red-50 dark:hover:bg-slate-800'}`} title="Akış">
             <Home size={24} strokeWidth={2.2} />
           </button>
           
           {/* JOBS - VIBRANT GRADIENT CRIMSON */}
-          <button onClick={() => setView('jobs')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 text-white shadow-lg shadow-red-900/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-red-300/40 cursor-pointer" title="İş & Staj Olanakları">
+          <button onClick={() => { useAppStore.getState().setActivePortalBranch?.('student'); setView('jobs'); }} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 text-white shadow-lg shadow-red-900/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-red-300/40 cursor-pointer" title="İş & Staj Olanakları">
             <Briefcase size={22} strokeWidth={2.5} />
           </button>
           
           {/* CENTER: SEARCH ICON (VIBRANT CRIMSON GRADIENT - KEŞFET & SOSYAL AĞ PORTALI) */}
-          <button onClick={() => { setActiveTab('search'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 text-white shadow-lg shadow-red-900/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-red-300/40 cursor-pointer ${activeTab === 'search' ? 'ring-2 ring-white/80 ring-offset-2' : ''}`} title="Keşfet & Sosyal Ağ Portalı">
+          <button onClick={() => { useAppStore.getState().setActivePortalBranch?.('student'); setActiveTab('search'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 text-white shadow-lg shadow-red-900/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-red-300/40 cursor-pointer ${activeTab === 'search' ? 'ring-2 ring-white/80 ring-offset-2' : ''}`} title="Keşfet & Sosyal Ağ Portalı">
             <Search size={22} strokeWidth={2.8} />
           </button>
           
           {/* PROFILE AVATAR */}
           <button 
             onClick={() => {
+              const store = useAppStore.getState();
+              store.setActivePortalBranch?.('student');
               if (setSelectedUserId) setSelectedUserId(studentId);
-              useAppStore.getState().setSelectedUserId?.(studentId);
+              store.setSelectedUserId?.(studentId);
               setView('user_profile');
             }} 
             className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 

@@ -83,12 +83,13 @@ export default function StaffPortal({
   const notifications = useAppStore(state => state.notifications) || [];
   const followedUserIds = useAppStore(state => state.followedUserIds) || [];
 
-  // Sadece gerçek personel oturumunda dalı 'staff' olarak işaretle; Süper Yönetici dalını ezme
+  // Personel portalı aktifken kovan dalını 'staff' olarak sabitle (Süper Admin önizlemesinde de geri dönüşler StaffPortal'a kalır)
   useEffect(() => {
-    if (!isSuperAdminViewing && setActivePortalBranch) {
+    if (setActivePortalBranch) {
       setActivePortalBranch('staff');
     }
-  }, [isSuperAdminViewing, setActivePortalBranch]);
+    try { sessionStorage.removeItem('iesu_staff_cms_context'); } catch { /* intentional */ }
+  }, [setActivePortalBranch]);
 
   // Yetki çözümleme (Süper Admin görüntülerken tüm 8 modül aktif; personel için yalnızca atanan yetkiler)
   const effectivePermIds = useMemo(() => {
@@ -279,11 +280,13 @@ export default function StaffPortal({
     return items;
   }, [posts, events, news, announcements, jobs, generalEvents, careerOpportunities, effectiveUser, followedUserIds, feedFilter]);
 
-  // Yetkili CMS sekmesine geçiş
+  // Yetkili CMS sekmesine geçiş (Personel bağlamını korur — geri dönüşte StaffPortal'a döner)
   const openCmsTab = (tabId) => {
     try {
       if (tabId) sessionStorage.setItem('iesu_cms_initial_tab', tabId);
+      sessionStorage.setItem('iesu_staff_cms_context', '1');
     } catch { /* intentional */ }
+    setActivePortalBranch?.('staff');
     setView?.('admin_cms');
   };
 
@@ -573,7 +576,10 @@ export default function StaffPortal({
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <button
               type="button"
-              onClick={() => setView?.('notifications')}
+              onClick={() => {
+                setActivePortalBranch?.('staff');
+                setView?.('notifications');
+              }}
               className="p-2 rounded-full transition-all flex items-center justify-center hover:bg-indigo-50 dark:hover:bg-slate-800 text-indigo-700 dark:text-indigo-400 cursor-pointer"
               title="Bildirimler"
             >

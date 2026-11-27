@@ -276,7 +276,10 @@ if (p && p.role !== 'admin') {
       try { useAppStore.getState().setCurrentUser(currentUser); } catch { /* store may not be ready */ }
       if (!userRole && currentUser.role) setUserRole(currentUser.role);
       const targetBranch = currentUser.role === 'admin' ? 'admin' : currentUser.role === 'staff' ? 'staff' : currentUser.role === 'student' ? 'student' : (currentUser.role === 'company' || currentUser.role === 'employer' ? 'company' : 'alumni');
-      if (targetBranch && targetBranch !== 'undefined') {
+      const currentStoredBranch = useAppStore.getState().activePortalBranch;
+      // Süper Admin kasten başka bir portal dalına (alumni, student, company, staff) geçtiyse ezme!
+      const keepSuperAdminBranch = currentUser.role === 'admin' && ['alumni', 'student', 'company', 'staff'].includes(currentStoredBranch);
+      if (targetBranch && targetBranch !== 'undefined' && !keepSuperAdminBranch) {
         setActivePortalBranch?.(targetBranch);
       }
     } else {
@@ -294,7 +297,10 @@ if (p && p.role !== 'admin') {
     else if (STUDENT_EXCLUSIVE_ROUTES.has(pathView) && (effectiveRole === 'student' || isAdmin || isStaff)) setActivePortalBranch?.('student');
     else if (ALUMNI_ROUTES.has(pathView) && (effectiveRole === 'alumni' || isAdmin || isStaff)) setActivePortalBranch?.('alumni');
     else if (STAFF_ROUTES.has(pathView) && (isStaff || isAdmin)) setActivePortalBranch?.('staff');
-    else if ((ADMIN_CMS.has(pathView) || pathView === 'admin') && isAdmin) setActivePortalBranch?.('admin');
+    else if ((ADMIN_CMS.has(pathView) || pathView === 'admin') && isAdmin) {
+      const fromStaffCms = typeof window !== 'undefined' && sessionStorage.getItem('iesu_staff_cms_context') === '1' && pathView !== 'admin';
+      setActivePortalBranch?.(fromStaffCms ? 'staff' : 'admin');
+    }
     else if (ADMIN_CMS.has(pathView) && isStaff) setActivePortalBranch?.('staff');
   }, [pathView, setActivePortalBranch, isAdmin, isStaff, effectiveRole, activePortalBranch]);
 

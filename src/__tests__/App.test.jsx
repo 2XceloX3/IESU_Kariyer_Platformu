@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, afterEach, beforeAll, beforeEach, vi } from 'vitest';
 import App from '../App';
@@ -246,6 +246,81 @@ describe('App Component', () => {
     expect(imgDark).toHaveAttribute('data-logo-variant', 'white');
     expect(imgDark.className).toContain('brightness-0 invert');
   });
+
+  it('routes authenticated Super Admin to Alumni Portal (/alumni) instead of AdminDashboard', async () => {
+    authState.user = { uid: 'firebase-admin-uid' };
+    window.localStorage.setItem('iesu_mock_user', JSON.stringify({
+      id: 'admin_1513',
+      uid: 'firebase-admin-uid',
+      name: 'Kariyer Geliştirme Koordinatörlüğü',
+      role: 'admin',
+    }));
+    useAppStore.setState({
+      userRole: 'admin',
+      activePortalBranch: 'alumni',
+      posts: [{ id: 'post-alumni-1', content: 'Mezun akışı paylaşımı' }],
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/alumni']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(/MEZUN AĞI & KARİYER PORTALI/i)).toBeInTheDocument();
+    }, { timeout: 10000 });
+
+    expect(screen.queryByText(/Yönetici Paneli/i)).not.toBeInTheDocument();
+    expect(useAppStore.getState().activePortalBranch).toBe('alumni');
+  }, 15000);
+
+  it('routes authenticated Super Admin to Staff Portal (/staff) and keeps StaffBottomDock inside StaffPortal', async () => {
+    authState.user = { uid: 'firebase-admin-uid' };
+    window.localStorage.setItem('iesu_mock_user', JSON.stringify({
+      id: 'admin_1513',
+      uid: 'firebase-admin-uid',
+      name: 'Kariyer Geliştirme Koordinatörlüğü',
+      role: 'admin',
+    }));
+    useAppStore.setState({
+      userRole: 'admin',
+      activePortalBranch: 'staff',
+      posts: [{ id: 'post-staff-1', content: 'Kurumsal personel paylaşımı' }],
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/staff']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(/KURUMSAL PERSONEL PORTALI/i)).toBeInTheDocument();
+      expect(screen.getByTestId('staff-bottom-dock')).toBeInTheDocument();
+    }, { timeout: 10000 });
+
+    const dock = screen.getByTestId('staff-bottom-dock');
+    fireEvent.click(within(dock).getByRole('button', { name: /Onaylar/i }));
+    await waitFor(() => {
+      expect(screen.getAllByText(/Onay & İşlem Kuyruğu/i).length).toBeGreaterThan(0);
+    });
+
+    fireEvent.click(within(dock).getByRole('button', { name: /Profilim/i }));
+    await waitFor(() => {
+      expect(screen.getByTestId('staff-profile-page')).toBeInTheDocument();
+      expect(screen.getByText(/Atanmış Yetki Haritam/i)).toBeInTheDocument();
+    });
+
+    fireEvent.click(within(dock).getByRole('button', { name: /Ana Sayfa/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/KURUMSAL PERSONEL PORTALI/i)).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText(/SÜPER YÖNETİCİ & KGM KONTROL PORTALI/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Yönetici Paneli/i)).not.toBeInTheDocument();
+    expect(useAppStore.getState().activePortalBranch).toBe('staff');
+  }, 15000);
 });
 
 
