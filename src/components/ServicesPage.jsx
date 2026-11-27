@@ -143,10 +143,10 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
       title: "Sertifikalı Gelişim Seminerleri",
       category: "Rehberlik & Koçluk",
       badge: "🎓 Akredite Eğitim",
-      desc: "Sürekli Eğitim Merkezi (SEM) ve uzman eğitmenler iş birliğiyle öğrencilerimizin mesleki ve kişisel becerilerini artıran sertifikalı seminerler.",
+      desc: "Kariyer Geliştirme Koordinatörlüğü ve sektör uzmanları iş birliğiyle öğrencilerimizin mesleki ve kişisel becerilerini artıran sertifikalı seminerler.",
       gradient: "from-amber-600 to-orange-900",
       icon: <BookOpen className="text-amber-600" size={26} />,
-      view: "sem",
+      view: "events_list",
       previewData: {
         subtitle: "Becerilerinizi Belgeleyen Sertifika Programları",
         stats: [

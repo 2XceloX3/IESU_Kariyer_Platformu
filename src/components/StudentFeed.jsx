@@ -1468,8 +1468,8 @@ groups={groups}
                         <strong className="text-white font-black">{myApps.length} Başvuru</strong>
                       </div>
                       <div className="flex items-center justify-between border-t border-white/10 pt-2">
-                        <span className="text-slate-300 font-semibold">Üye Olunan Kulüp</span>
-                        <strong className="text-emerald-300 font-black">{myClubsCount} Kulüp</strong>
+                        <span className="text-slate-300 font-semibold">Açık Staj & İlan</span>
+                        <strong className="text-emerald-300 font-black">{(jobs || []).filter(j => j.status !== 'Pasif' && j.status !== 'Reddedildi').length} Fırsat</strong>
                       </div>
                     </div>
                   </div>

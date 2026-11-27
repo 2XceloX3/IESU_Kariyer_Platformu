@@ -160,15 +160,8 @@ describe('Register production safety', () => {
     expect(screen.queryByLabelText('Mezuniyet Yılı')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Kurumsal Vergi No / MERSİS No')).not.toBeInTheDocument();
 
-    // 3. Switch to Staff / Academic (Akademik Personel)
-    fireEvent.click(screen.getByRole('button', { name: /Akademik Personel/i }));
-    expect(screen.getByTestId('role-specific-fields-academic')).toBeInTheDocument();
-    expect(screen.getByLabelText('Unvan')).toBeRequired();
-    expect(screen.getByLabelText('Bölüm / Fakülte')).toBeRequired();
-    expect(screen.queryByLabelText('Kurum Sicil / YÖKSİS No')).not.toBeInTheDocument();
-    expect(screen.queryByText(/Zorunlu Alanlar:/i)).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('Öğrenci Numarası')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('Kurumsal Vergi No / MERSİS No')).not.toBeInTheDocument();
+    // 3. Closed Academic Portal must NOT expose self-registration tab
+    expect(screen.queryByRole('button', { name: /Akademik Personel/i })).not.toBeInTheDocument();
 
     // 4. Switch to Employer (Firma Kaydı)
     fireEvent.click(screen.getByRole('button', { name: /Firma Kaydı/i }));

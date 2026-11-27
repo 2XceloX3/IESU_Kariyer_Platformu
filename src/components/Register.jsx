@@ -255,7 +255,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
         return normalizeRegisterType(requested);
       }
     } catch { /* intentional */ }
-    return normalizeRegisterType(registerAccountType || 'student');
+    return normalizeRegisterType(registerAccountType);
   }); // 'student', 'alumni', 'employer'
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);

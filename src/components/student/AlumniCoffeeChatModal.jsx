@@ -482,14 +482,34 @@ export default function AlumniCoffeeChatModal({
             </form>
           ) : (
             /* My Coffee Chats Tab */
+            (() => {
+              const uid = effectiveCurrentUser?.id || effectiveCurrentUser?.uid;
+              const isAdminOrStaff = ['admin', 'staff'].includes(userRole || effectiveCurrentUser?.role);
+              const scopedChats = isAdminOrStaff
+                ? coffeeChats
+                : coffeeChats.filter((chat) => {
+                    if (!uid) return true;
+                    return isAlumniUser
+                      ? (chat.alumnusId === uid || chat.alumnusName === effectiveCurrentUser?.name)
+                      : (chat.studentId === uid || chat.studentName === effectiveCurrentUser?.name);
+                  });
+              const visibleChats = scopedChats.length > 0 ? scopedChats : (isAlumniUser ? coffeeChats : []);
+              const filtered = visibleChats.filter((chat) => {
+                if (chatFilter === 'pending') return chat.status === 'PENDING';
+                if (chatFilter === 'confirmed') return chat.status === 'CONFIRMED';
+                if (chatFilter === 'completed') return chat.status === 'COMPLETED';
+                return true;
+              });
+
+              return (
             <div className="space-y-4">
               {/* Filter Sub-chips */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
                 {[
-                  { id: 'all', label: `Tümü (${coffeeChats.length})` },
-                  { id: 'pending', label: `Onay Bekleyen (${coffeeChats.filter((c) => c.status === 'PENDING').length})` },
-                  { id: 'confirmed', label: `Onaylanan (${coffeeChats.filter((c) => c.status === 'CONFIRMED').length})` },
-                  { id: 'completed', label: `Tamamlanan (${coffeeChats.filter((c) => c.status === 'COMPLETED').length})` }
+                  { id: 'all', label: `Tümü (${visibleChats.length})` },
+                  { id: 'pending', label: `Onay Bekleyen (${visibleChats.filter((c) => c.status === 'PENDING').length})` },
+                  { id: 'confirmed', label: `Onaylanan (${visibleChats.filter((c) => c.status === 'CONFIRMED').length})` },
+                  { id: 'completed', label: `Tamamlanan (${visibleChats.filter((c) => c.status === 'COMPLETED').length})` }
                 ].map((f) => (
                   <button
                     key={f.id}
@@ -506,26 +526,7 @@ export default function AlumniCoffeeChatModal({
                 ))}
               </div>
 
-              {(() => {
-                const uid = effectiveCurrentUser?.id || effectiveCurrentUser?.uid;
-                const isAdminOrStaff = ['admin', 'staff'].includes(userRole || effectiveCurrentUser?.role);
-                const scopedChats = isAdminOrStaff
-                  ? coffeeChats
-                  : coffeeChats.filter((chat) => {
-                      if (!uid) return true;
-                      return isAlumniUser
-                        ? (chat.alumnusId === uid || chat.alumnusName === effectiveCurrentUser?.name)
-                        : (chat.studentId === uid || chat.studentName === effectiveCurrentUser?.name);
-                    });
-                const filtered = scopedChats.filter((chat) => {
-                  if (chatFilter === 'pending') return chat.status === 'PENDING';
-                  if (chatFilter === 'confirmed') return chat.status === 'CONFIRMED';
-                  if (chatFilter === 'completed') return chat.status === 'COMPLETED';
-                  return true;
-                });
-
-                if (filtered.length === 0) {
-                  return (
+              {filtered.length === 0 ? (
                     <div className="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200">
                       <Coffee size={32} className="text-slate-300 mx-auto mb-2" />
                       <p className="text-sm font-black text-slate-900">Randevu Bulunamadı</p>
@@ -533,10 +534,8 @@ export default function AlumniCoffeeChatModal({
                         Seçilen kriterde aktif randevu bulunmamaktadır.
                       </p>
                     </div>
-                  );
-                }
-
-                return filtered.map((chat) => {
+                  ) : (
+                filtered.map((chat) => {
                   const statusObj = COFFEE_CHAT_STATUS[chat.status] || COFFEE_CHAT_STATUS.PENDING;
                   return (
                     <div
@@ -653,9 +652,11 @@ export default function AlumniCoffeeChatModal({
                       )}
                     </div>
                   );
-                });
-              })()}
+                })
+              )}
             </div>
+              );
+            })()
           )}
         </div>
       </div>

@@ -326,7 +326,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       } else if (loginRole === 'admin') {
         setError('Yönetici girişi başarısız. Bilgilerinizi kontrol edip tekrar deneyin.');
       } else {
-        setError('Giriş servisine şu anda ulaşılamıyor. Lütfen birkaç dakika sonra tekrar deneyin.');
+        setError('Giriş servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.');
       }
       setIsLoading(false);
     }
@@ -481,12 +481,12 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           {/* Login Form */}
           <form className="space-y-4" onSubmit={handleLogin}>
             <div className="relative">
-              <label htmlFor="username" className="sr-only">Kullanıcı Adı veya E-Posta</label>
+              <label htmlFor="username" className="sr-only">E-Posta veya Kullanıcı Adı</label>
               <User className="absolute left-4 top-3.5 text-slate-400" size={18} />
               <input 
                 id="username"
                 name="username"
-                aria-label="Kullanıcı Adı veya E-Posta"
+                aria-label="E-Posta veya Kullanıcı Adı"
                 type="text" 
                 placeholder={
                   loginRole === 'student'
