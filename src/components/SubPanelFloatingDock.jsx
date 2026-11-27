@@ -118,14 +118,14 @@ export default function SubPanelFloatingDock({
     'border-[#b45309]';
 
   // 2. Buton Hedefi ve Başlığı (Her Kovana Özgü Kimlik ve Eylem)
-  const action1View = isStudent ? 'staj' : isCompany ? 'company_ats' : isStaff ? 'admin_cms' : isAlumni ? 'global_map' : 'admin_cms';
-  const action1Title = isStudent ? 'Staj & Ulusal Staj Masası' : isCompany ? 'ATS Aday Takip Panosu' : isStaff ? 'Personel Çalışma Paneli (CMS)' : isAlumni ? 'Küresel Mezun Haritası' : 'Yönetim Konsolu (CMS)';
-  const Action1Icon = (isStudent || isCompany) ? Briefcase : (isStaff || isAdmin) ? LayoutDashboard : Globe;
+  const action1View = isStudent ? 'staj' : isCompany ? 'company_ats' : isStaff ? 'jobs' : isAlumni ? 'global_map' : 'admin_cms';
+  const action1Title = isStudent ? 'Staj & Ulusal Staj Masası' : isCompany ? 'ATS Aday Takip Panosu' : isStaff ? 'İlan & Staj Havuzu' : isAlumni ? 'Küresel Mezun Haritası' : 'Yönetim Konsolu (CMS)';
+  const Action1Icon = (isStudent || isCompany || isStaff) ? Briefcase : isAdmin ? LayoutDashboard : Globe;
 
   // 3. İkinci Buton Hedefi ve Başlığı
-  const action2View = isCompany ? 'create_job' : 'explore';
-  const action2Title = isCompany ? 'Yeni İlan Yayınla' : 'Keşfet & Sosyal Ağ Portalı';
-  const Action2Icon = isCompany ? Plus : Search;
+  const action2View = isCompany ? 'create_job' : isStaff ? 'staff' : 'explore';
+  const action2Title = isCompany ? 'Yeni İlan Yayınla' : isStaff ? 'Personel Çalışma Masam' : 'Keşfet & Sosyal Ağ Portalı';
+  const Action2Icon = isCompany ? Plus : isStaff ? LayoutDashboard : Search;
 
   return (
     <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">

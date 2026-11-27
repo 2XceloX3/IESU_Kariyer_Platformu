@@ -28,7 +28,7 @@ const PUBLIC_NEWS = new Set(['haberler', 'duyurular', 'etkinlikler', 'news', 'ev
 const ADMIN_CMS = new Set([
   'admin_cms', 'yonetim_konsolu', 'admin_console', 'idari_portal',
   'overview', 'operasyon', 'mesajlar',
-  'students', 'alumni', 'companies', 'cms_mezun_dernek', 'cms_alumni_assoc', 'kart', 'user_types', 'cms_staff',
+  'cms_students', 'cms_alumni', 'cms_companies', 'cms_mezun_dernek', 'cms_alumni_assoc', 'kart', 'user_types', 'cms_staff',
   'cms_ann', 'cms_news', 'etkinlik', 'cms_events', 'kariyer_gunleri', 'company_edu_requests',
   'ilan', 'basvuru_havuzu', 'gonullu', 'cms_corporate_partnerships', 'cms_jobs',
   'mentorluk', 'cms_mentorship_pool', 'cms_ssp', 'cms_career_counseling',
@@ -496,7 +496,7 @@ if (p && p.role !== 'admin') {
 
     // Admin & Staff branch handling for shared / other views
     if ((currentBranch === 'admin' && isAdmin) || (currentBranch === 'staff' && (isStaff || isAdmin))) {
-      const isStaffMode = Boolean(isStaff && !isAdmin);
+      const isStaffMode = Boolean((isStaff && !isAdmin) || currentBranch === 'staff');
       const workspaceRole = isStaffMode ? 'staff' : 'admin';
       const workspacePrev = isStaffMode ? 'staff' : 'admin';
       if (pathView === 'job_creator' || pathView === 'create_job' || pathView === 'post_job' || pathView === 'post-job') return <JobCreator setView={setView} currentUser={currentUser} userRole={workspaceRole} />;

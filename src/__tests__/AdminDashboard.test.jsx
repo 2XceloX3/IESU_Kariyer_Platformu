@@ -226,7 +226,8 @@ describe('AdminDashboard Component', () => {
     expect(screen.getByText(/KURUMSAL PERSONEL PORTALI/i)).toBeInTheDocument();
     expect(screen.getAllByText(/İçerik & Duyuru Masası/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Günlük Takip Notlarım/i)).toBeInTheDocument();
-    expect(screen.getByTitle(/Akış & Ana Sayfa/i)).toBeInTheDocument();
+    expect(screen.getByTestId('staff-bottom-dock')).toBeInTheDocument();
+    expect(screen.getByTitle(/Personel Ana Akışı/i)).toBeInTheDocument();
     expect(screen.queryByText(/Öğrenci & Staj Masası/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Firma, İlan & Protokol/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Süper Yönetici Modu/i)).not.toBeInTheDocument();
@@ -267,7 +268,7 @@ describe('AdminDashboard Component', () => {
     unmountMenu();
 
     // 3. AdminDashboard for content-only staff hides unauthorized categories/tabs (students, companies, alumni)
-    render(
+    const { unmount: unmountDash } = render(
       <AdminDashboard
         {...mockProps}
         currentUser={contentOnlyStaff}
@@ -278,5 +279,35 @@ describe('AdminDashboard Component', () => {
     );
     expect(screen.queryByRole('button', { name: /Öğrenci, Mezun & Firma/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Veri Havuzu & Excel/i })).not.toBeInTheDocument();
+    unmountDash();
+  });
+
+  it('keeps StaffBottomDock strictly inside StaffPortal native pages without bouncing to Super Admin', () => {
+    const spySetView = vi.fn();
+    render(
+      <StaffPortal
+        currentUser={{ id: 'STAFF-99', name: 'KGM Uzmanı', role: 'staff', allowedModules: ['jobs_applications', 'students_staj', 'messages'] }}
+        userRole="staff"
+        academicRole="staff"
+        setView={spySetView}
+        setSelectedUserId={mockSetSelectedUserId}
+      />
+    );
+
+    const dock = screen.getByTestId('staff-bottom-dock');
+    expect(dock).toBeInTheDocument();
+
+    // Clicking Onaylar opens Staff approvals page inside StaffPortal (no setView('admin'))
+    fireEvent.click(screen.getByTitle('Personel Onay & İşlem Kuyruğu'));
+    expect(screen.getByTestId('staff-approvals-page')).toBeInTheDocument();
+
+    // Clicking Profilim opens Staff identity & permission card inside StaffPortal
+    fireEvent.click(screen.getByTitle('Personel Profili & Yetki Kartım'));
+    expect(screen.getByTestId('staff-profile-page')).toBeInTheDocument();
+
+    // Clicking Ana Sayfa returns cleanly to Staff stream — never navigates to Super Admin
+    fireEvent.click(screen.getByTitle('Personel Ana Akışı'));
+    expect(spySetView).not.toHaveBeenCalledWith('admin');
+    expect(spySetView).not.toHaveBeenCalledWith('admin_cms');
   });
 });

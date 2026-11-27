@@ -989,24 +989,19 @@ export default function UserProfile({
                 </p>
               </div>
 
-              {/* TAKİP EDİLENLER (INSTAGRAM STYLE - FIRMA, HOCA, ÖĞRENCİ/MEZUN) */}
+              {/* TAKİP EDİLENLER (FİRMA & MEZUN AĞI) */}
               <div 
                 role="button"
                 onClick={() => setFollowersModal({ 
                   isOpen: true, 
-                  title: isSelf ? 'Takip Edilenler (Firmalar, Hocalar & Arkadaşlar)' : `${user?.name || 'Öğrenci'} Takip Ettikleri`, 
-                  users: [
-                    ...studentFollowedCompanies.map(c => ({ ...c, typeLabel: 'Kurumsal Partner' })),
-                    { id: 'ACM-001', name: 'Dr. Öğr. Üyesi Mehmet Selim', department: 'Bilgisayar Mühendisliği', role: 'academic', typeLabel: 'Akademisyen Hoca' },
-                    { id: 'ACM-002', name: 'Prof. Dr. Ayşe Yılmaz', department: 'Yazılım Mühendisliği', role: 'academic', typeLabel: 'Akademisyen Hoca' },
-                    { id: 'STU-002', name: 'Caner Öztürk', department: 'Bilgisayar Mühendisliği', role: 'student', typeLabel: 'Öğrenci', isMutual: true }
-                  ] 
+                  title: isSelf ? 'Takip Edilen Firmalar & Bağlantılar' : `${user?.name || 'Öğrenci'} Takip Ettikleri`, 
+                  users: studentFollowedCompanies.map(c => ({ ...c, typeLabel: 'Kurumsal Partner' }))
                 })}
                 className="p-3.5 bg-gradient-to-br from-purple-50/80 to-white border border-purple-100 rounded-2xl text-center shadow-sm cursor-pointer hover:bg-purple-100/50 transition group"
-                title="Takip ettiğiniz firma, akademisyen ve mezunları görün"
+                title="Takip ettiğiniz kurumsal partnerleri görün"
               >
                 <p className="text-lg font-black text-purple-700 group-hover:scale-105 transition">
-                  {followedCompanyIds.length + followedAcademicIds.length + 3}
+                  {studentFollowedCompanies.length}
                 </p>
                 <p className="text-[10px] font-bold text-purple-800 uppercase tracking-wider mt-0.5 flex items-center justify-center gap-1">
                   <UserCheck size={12} /> Takip Edilen
@@ -1736,7 +1731,7 @@ export default function UserProfile({
                     onChange={e => setMentorshipReqForm({ ...mentorshipReqForm, mode: e.target.value })}
                     className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#990000]"
                   >
-                    <option value="Yüz Yüze Kampüs Görüşmesi">Yüz Yüze Kampüs Görüşmesi (Akademisyen Ofisi)</option>
+                    <option value="Yüz Yüze Kampüs Görüşmesi">Yüz Yüze Kampüs Görüşmesi (KGM Görüşme Odası)</option>
                     <option value="Resmî Kurumsal E-Posta">Resmî Kurumsal E-Posta İletişimi</option>
                   </select>
                 </div>

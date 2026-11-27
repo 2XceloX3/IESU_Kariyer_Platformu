@@ -77,7 +77,8 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [recordingState, setRecordingState] = useState('idle'); // idle, recording, processing, feedback
   const [timer, setTimer] = useState(0);
-  const [isVREnabled, setIsVREnabled] = useState(false);
+  const [answerMode, setAnswerMode] = useState('voice'); // 'voice' | 'written'
+  const [writtenAnswer, setWrittenAnswer] = useState('');
   const videoRef = useRef(null);
   const [stream, setStream] = useState(null);
   const [feedbackData, setFeedbackData] = useState(null);
@@ -86,10 +87,57 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
   const backTarget = previousView || (
     activePortalBranch === 'student' ? 'student' :
     activePortalBranch === 'alumni' ? 'alumni' :
-    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'staff' ? 'staff' :
     activePortalBranch === 'company' ? 'company' :
-    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'staff' ? 'staff' : 'student')
   );
+
+  const handleEvaluateWrittenAnswer = () => {
+    const clean = (writtenAnswer || '').trim();
+    if (clean.length < 25) {
+      window.toast?.error?.('Lütfen STAR analizi için en az birkaç cümlelik yanıt yazın.');
+      return;
+    }
+    setRecordingState('processing');
+    const lower = clean.toLocaleLowerCase('tr-TR');
+    const words = clean.split(/\s+/).filter(Boolean).length;
+    const hasSituation = /(durum|proje|staj|ders|eki|müşteri|süreç|problem|sorun|hedef)/i.test(lower);
+    const hasAction = /(yaptım|geliştirdim|tasarladım|çözdüm|kurdum|yönettim|uyguladım|planladım|analiz)/i.test(lower);
+    const hasResult = /(sonuç|%|artış|azaldı|kazand|başarı|hızlan|iyileş|teslim|memnun)/i.test(lower);
+    const hasNumbers = /\d+/.test(clean);
+
+    const starHits = [hasSituation, hasAction, hasResult].filter(Boolean).length;
+    const commScore = Math.min(96, Math.max(58, 56 + Math.min(words, 80) * 0.45 + (hasNumbers ? 6 : 0)));
+    const techScore = Math.min(95, Math.max(55, 58 + starHits * 10 + (words >= 40 ? 8 : 0)));
+    const starScore = Math.min(98, Math.max(52, 46 + starHits * 15 + (hasNumbers ? 7 : 0)));
+
+    const strengths = [];
+    const growth = [];
+    if (hasSituation) strengths.push('Bağlam ve durum (Situation) anlatımınız açık ve takip edilebilir.');
+    else growth.push('Cevabın başında hangi projede/durumda bu olayın yaşandığını (Situation) 1 cümleyle netleştirin.');
+    if (hasAction) strengths.push('Bireysel aksiyonlarınızı (Action) etken fiillerle güçlü biçimde vurguladınız.');
+    else growth.push('"Yaptım, geliştirdim, çözdüm" gibi somut bireysel eylem fiilleriyle kendi rolünüzü öne çıkarın.');
+    if (hasResult || hasNumbers) strengths.push('Çıktı ve ölçülebilir sonuç (Result) vurgusu İK değerlendirmesinde güven oluşturur.');
+    else growth.push('Cevabınızı mutlaka somut bir sonuç veya sayısal metrik (ör. %20 hızlanma, 3 gün erken teslim) ile kapatın.');
+    if (words < 35) growth.push(`Yanıtınız ${words} kelime ile biraz kısa kaldı; ideal STAR yanıtı 50-120 kelime aralığındadır.`);
+    else strengths.push(`Yanıt uzunluğunuz (${words} kelime) kurumsal mülakat ritmine dengeli uyum sağlıyor.`);
+
+    const dynFeedback = {
+      commScore: Math.round(commScore),
+      techScore: Math.round(techScore),
+      starScore: Math.round(starScore),
+      strengths,
+      growth,
+      starAdvice: hasResult
+        ? 'STAR(L) akışınız dengeli! Bir adım ileri taşımak için son cümleye "Bu deneyimden şunu öğrendim..." (Learning) vurgusu ekleyin.'
+        : 'STAR(L) metodunda en çok puan getiren kısım Sonuç (Result) adımıdır: yaptığınız eylemin ekibe veya kuruma sağladığı ölçülebilir faydayı ekleyin.'
+    };
+
+    setTimeout(() => {
+      setFeedbackData(dynFeedback);
+      setRecordingState('feedback');
+    }, 650);
+  };
 
   useEffect(() => {
     let interval;
@@ -420,6 +468,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
               setCurrentQuestionIndex(prev => prev + 1);
               setRecordingState('idle');
               setTimer(0);
+              setWrittenAnswer('');
             } else {
               handleCompleteInterview();
             }
@@ -524,19 +573,55 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
                             <Glasses size={20} />
                           </div>
                           <div>
-                            <h4 className="text-white font-bold text-sm">Holografik Mülakat (WebXR)</h4>
-                            <p className="text-indigo-200 text-xs">Adayı ve Mülakatçıyı 3D Sanal Odada Simüle Et</p>
+                            <h4 className="text-white font-bold text-sm">Mülakat Pratik Modu</h4>
+                            <p className="text-indigo-200 text-xs">Kampüste veya kütüphanede isen kamerasız Yazılı STAR modunu seçebilirsin</p>
                           </div>
                         </div>
-                        <button 
-                          onClick={() => setIsVREnabled(!isVREnabled)}
-                          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${isVREnabled ? 'bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-white/10 text-white hover:bg-white/20'}`}
-                        >
-                          {isVREnabled ? <><CheckCircle size={14} /> VR Aktif</> : <><Zap size={14} /> VR Başlat</>}
-                        </button>
+                        <div className="flex items-center gap-1.5 bg-black/25 p-1 rounded-xl shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => setAnswerMode('voice')}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${answerMode === 'voice' ? 'bg-white text-slate-900 shadow-xs' : 'text-white/80 hover:text-white'}`}
+                          >
+                            <Mic size={13} /> Sesli / Kamera
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setAnswerMode('written')}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${answerMode === 'written' ? 'bg-emerald-500 text-white shadow-xs' : 'text-white/80 hover:text-white'}`}
+                          >
+                            <MessageSquare size={13} /> Yazılı STAR
+                          </button>
+                        </div>
                       </div>
                     </div>
 
+                    {answerMode === 'written' ? (
+                      <div className="w-full max-w-2xl mx-auto space-y-4">
+                        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-xs font-black text-slate-800 uppercase tracking-wider">STAR(L) Yazılı Cevabınız</span>
+                            <span className="text-[11px] font-bold text-slate-500">
+                              {(writtenAnswer || '').trim() ? `${writtenAnswer.trim().split(/\s+/).length} kelime` : '0 kelime'} (Önerilen: 50-120)
+                            </span>
+                          </div>
+                          <textarea
+                            rows={6}
+                            value={writtenAnswer}
+                            onChange={(e) => setWrittenAnswer(e.target.value)}
+                            placeholder="Durum (Situation): Hangi proje veya olaydı?&#10;Görev (Task): Sorumluluğun neydi?&#10;Eylem (Action): Somut olarak ne yaptın?&#10;Sonuç (Result): Ölçülebilir çıktı ne oldu?"
+                            className="w-full bg-white border border-slate-200 rounded-xl p-3.5 text-sm text-slate-800 focus:border-[#990000] focus:ring-2 focus:ring-red-100 outline-none resize-y leading-relaxed"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleEvaluateWrittenAnswer}
+                          className="w-full py-3.5 rounded-2xl bg-[#990000] hover:bg-red-800 text-white font-black text-sm transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <Zap size={16} /> Cevabımı STAR(L) Kriterleriyle Değerlendir
+                        </button>
+                      </div>
+                    ) : (
                     <div className="flex flex-col items-center justify-center">
                       {recordingState === 'recording' && (
                         <div className="relative mb-6 w-64 h-44 bg-slate-900 rounded-2xl overflow-hidden border-2 border-[#990000] shadow-lg flex items-center justify-center">
@@ -592,6 +677,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
                         {recordingState === 'idle' ? 'Cevabınızı kaydetmek için mikrofona dokunun' : 'Kaydı durdurmak ve analize göndermek için dokunun'}
                       </p>
                     </div>
+                    )}
                   </div>
                 </div>
               ) : recordingState === 'processing' ? (

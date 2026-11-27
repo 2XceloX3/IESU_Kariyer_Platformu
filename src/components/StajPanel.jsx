@@ -33,6 +33,51 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
   const [internshipLoading, setInternshipLoading] = useState(true);
   const [isForm1ModalOpen, setIsForm1ModalOpen] = useState(false);
 
+  // İnteraktif Staj & Ulusal Staj (USP) Uygunluk Asistanı
+  const [assistDegree, setAssistDegree] = useState(() => {
+    const fac = String(effectiveCurrentUser?.faculty || '').toLocaleLowerCase('tr-TR');
+    return fac.includes('meslek yüksek') || fac.includes('myo') ? 'onlisans' : 'lisans';
+  });
+  const [assistYear, setAssistYear] = useState(() => {
+    const raw = String(effectiveCurrentUser?.year || effectiveCurrentUser?.classLevel || '2');
+    const m = raw.match(/[1-4]/);
+    return m ? Number(m[0]) : 2;
+  });
+  const [assistGpa, setAssistGpa] = useState(() => {
+    const g = Number(effectiveCurrentUser?.gpa ?? effectiveCurrentUser?.agno);
+    return Number.isFinite(g) && g > 0 && g <= 4 ? g : 2.75;
+  });
+  const [assistType, setAssistType] = useState('usp'); // 'zorunlu' | 'usp' | 'gonullu'
+  const [checkedDocs, setCheckedDocs] = useState({ form1: false, sgk: false, isg: false, kimlik: false });
+
+  const uspEligibility = React.useMemo(() => {
+    const gpaNum = Number(assistGpa) || 0;
+    if (assistDegree === 'onlisans') {
+      if (assistYear === 1) {
+        return { eligible: true, title: 'Ulusal Staj Programına (USP) Uygun (1. Sınıf GANO Muaf)', detail: 'Ön lisans 1. sınıf öğrencileri GANO şartı aranmaksızın T.C. Ulusal Staj Programına başvurabilir.' };
+      }
+      if (assistYear === 2 && gpaNum >= 2.0) {
+        return { eligible: true, title: 'Ulusal Staj Programına (USP) Tam Uygun', detail: `GANO (${gpaNum.toFixed(2)}) ≥ 2.00 şartını karşılıyorsunuz. Kariyer Kapısı üzerinden başvurunuzu tamamlayabilirsiniz.` };
+      }
+      return { eligible: false, title: 'USP İçin GANO ≥ 2.00 Şartı Gerekli', detail: 'Ön lisans 2. sınıfta USP için GANO en az 2.00 olmalıdır. Ancak Zorunlu veya Gönüllü Staj başvurunuzu hemen başlatabilirsiniz.' };
+    }
+    if (assistYear < 2) {
+      return { eligible: false, title: 'USP Lisans 2, 3 ve 4. Sınıflara Açıktır', detail: 'Lisans 1. sınıfta gönüllü staj ve CV hazırlığına başlayabilir, 2. sınıfa geçerken USP başvurusu yapabilirsiniz.' };
+    }
+    if (gpaNum >= 2.0) {
+      return { eligible: true, title: 'Ulusal Staj Programına (USP) Tam Uygun', detail: `Lisans ${assistYear}. sınıf ve GANO ${gpaNum.toFixed(2)} ile hem USP hem de 3308 güvenceli kurum stajlarına uygunsunuz.` };
+    }
+    return { eligible: false, title: 'USP İçin GANO ≥ 2.00 Şartı Gerekli', detail: 'GANO 2.00 altında iken USP puanlamasına girilemez; ancak bölüm onaylı Zorunlu/Gönüllü stajınızı SGK güvencesiyle yapabilirsiniz.' };
+  }, [assistDegree, assistYear, assistGpa]);
+
+  const docChecklistItems = [
+    { id: 'form1', label: 'Form-1 Staj Kabul & SGK Taahhüt Formu (İşletme + Öğrenci onaylı)' },
+    { id: 'sgk', label: 'e-Devlet Barkodlu SGK Müstehaklık Belgesi (SPAS)' },
+    { id: 'isg', label: 'İş Sağlığı ve Güvenliği (İSG) Eğitim / Katılım Belgesi' },
+    { id: 'kimlik', label: 'Güncel T.C. Kimlik Kartı Fotokopisi & Öğrenci Belgesi' }
+  ];
+  const readyDocsCount = Object.values(checkedDocs).filter(Boolean).length;
+
   // Local state for all internships, fallback to enterprise samples if store is empty
   const [internshipsList, setInternshipsList] = useState(() => {
     if (Array.isArray(storeInternships) && storeInternships.length > 0) {
@@ -371,6 +416,136 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
           
           {/* TAB: SÜREÇ ADIMLARI */}
           {activeTab === 'surec' && (
+            <div className="space-y-10">
+              {/* İNTERAKTİF STAJ & ULUSAL STAJ (USP) UYGUNLUK VE HAZIRLIK ASİSTANI */}
+              <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="bg-gradient-to-r from-slate-900 via-[#5c0808] to-[#990000] px-6 py-5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-300 bg-white/10 px-2.5 py-1 rounded-full mb-1.5">
+                      <Award size={12} /> 10 Saniyede Kişisel Staj Kontrolü
+                    </span>
+                    <h2 className="text-lg sm:text-xl font-black tracking-tight">Staj, Ulusal Staj (USP) & 3308 SGK Uygunluk Asistanı</h2>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setIsForm1ModalOpen(true)}
+                      className="px-4 py-2 rounded-xl bg-white text-[#990000] hover:bg-red-50 text-xs font-black transition shadow-sm flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Plus size={14} /> Form-1 Başlat
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setView?.('jobs')}
+                      className="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/20 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+                    >
+                      3308 Staj İlanları <ArrowRight size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  {/* Left: Controls */}
+                  <div className="lg:col-span-5 space-y-4">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-[11px] font-black text-slate-600 uppercase tracking-wider block mb-1.5">Program Düzeyi</label>
+                        <div className="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-xl">
+                          <button type="button" onClick={() => setAssistDegree('lisans')} className={`py-2 rounded-lg text-xs font-black transition cursor-pointer ${assistDegree === 'lisans' ? 'bg-[#990000] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}>Lisans</button>
+                          <button type="button" onClick={() => { setAssistDegree('onlisans'); if (assistYear > 2) setAssistYear(2); }} className={`py-2 rounded-lg text-xs font-black transition cursor-pointer ${assistDegree === 'onlisans' ? 'bg-[#990000] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}>MYO</button>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-black text-slate-600 uppercase tracking-wider block mb-1.5">Sınıfın</label>
+                        <select
+                          value={assistYear}
+                          onChange={(e) => setAssistYear(Number(e.target.value))}
+                          className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-slate-800 outline-none focus:border-[#990000]"
+                        >
+                          {(assistDegree === 'onlisans' ? [1, 2] : [1, 2, 3, 4]).map((y) => (
+                            <option key={y} value={y}>{y}. Sınıf</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-[11px] font-black text-slate-600 uppercase tracking-wider block mb-1.5">GANO (4.00 üzerinden)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="4"
+                          step="0.05"
+                          value={assistGpa}
+                          onChange={(e) => setAssistGpa(Math.max(0, Math.min(4, Number(e.target.value) || 0)))}
+                          className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-slate-800 outline-none focus:border-[#990000]"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-black text-slate-600 uppercase tracking-wider block mb-1.5">Hedef Staj Türü</label>
+                        <select
+                          value={assistType}
+                          onChange={(e) => setAssistType(e.target.value)}
+                          className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-slate-800 outline-none focus:border-[#990000]"
+                        >
+                          <option value="usp">Ulusal Staj (USP)</option>
+                          <option value="zorunlu">Zorunlu Bölüm Stajı</option>
+                          <option value="gonullu">İsteğe Bağlı (Gönüllü)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Result Banner */}
+                    <div className={`p-4 rounded-2xl border ${uspEligibility.eligible ? 'bg-emerald-50 border-emerald-200 text-emerald-950' : 'bg-amber-50 border-amber-200 text-amber-950'}`}>
+                      <div className="flex items-center gap-2 font-black text-xs mb-1">
+                        {uspEligibility.eligible ? <CheckCircle2 size={16} className="text-emerald-600 shrink-0" /> : <AlertCircle size={16} className="text-amber-600 shrink-0" />}
+                        <span>{uspEligibility.title}</span>
+                      </div>
+                      <p className="text-[11px] font-medium leading-relaxed opacity-90">{uspEligibility.detail}</p>
+                    </div>
+                  </div>
+
+                  {/* Right: Rights & Interactive Document Checklist */}
+                  <div className="lg:col-span-7 flex flex-col justify-between gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="p-3.5 rounded-2xl bg-red-50/70 border border-red-100">
+                        <span className="text-[10px] font-black text-[#990000] uppercase tracking-wider block">SGK 5510/5-b Primi</span>
+                        <p className="text-sm font-black text-slate-900 mt-0.5">%100 İESÜ Tarafından Ödenir</p>
+                        <p className="text-[11px] text-slate-600 mt-0.5">İş kazası ve meslek hastalığı sigortası üniversite güvencesindedir.</p>
+                      </div>
+                      <div className="p-3.5 rounded-2xl bg-blue-50/70 border border-blue-100">
+                        <span className="text-[10px] font-black text-blue-800 uppercase tracking-wider block">3308 Sayılı Kanun Ücreti</span>
+                        <p className="text-sm font-black text-slate-900 mt-0.5">Net Asgari Ücretin En Az %30&apos;u</p>
+                        <p className="text-[11px] text-slate-600 mt-0.5">{assistType === 'gonullu' ? 'Gönüllü stajda ücret işletme politikasına göre belirlenir.' : '20+ çalışanlı işletmelerde yasal stajyer ücreti zorunludur.'}</p>
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/90">
+                      <div className="flex items-center justify-between mb-2.5">
+                        <span className="text-xs font-black text-slate-900">Evrak Hazırlık Kontrol Listem</span>
+                        <span className="text-[11px] font-black text-[#990000] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-100">
+                          {readyDocsCount} / {docChecklistItems.length} Hazır
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {docChecklistItems.map((item) => (
+                          <label key={item.id} className={`flex items-start gap-2 p-2.5 rounded-xl border text-[11px] font-bold cursor-pointer transition ${checkedDocs[item.id] ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'}`}>
+                            <input
+                              type="checkbox"
+                              checked={Boolean(checkedDocs[item.id])}
+                              onChange={() => setCheckedDocs(prev => ({ ...prev, [item.id]: !prev[item.id] }))}
+                              className="mt-0.5 accent-[#990000] cursor-pointer"
+                            />
+                            <span className={checkedDocs[item.id] ? 'line-through opacity-75' : ''}>{item.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10">
               <div className="lg:col-span-8 space-y-8">
                 <div className="flex items-center gap-3">
@@ -438,6 +613,7 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
                   </div>
                 </div>
               </div>
+            </div>
             </div>
           )}
 

@@ -43,7 +43,7 @@ const DEFAULT_ROADMAPS = {
           'HTML5, Modern CSS, Responsive Design ve Tailwind temellerini öğren',
           'JavaScript (ES6+) ve TypeScript temel syntax pratiklerini bitir',
           'GitHub profili aç, temel komutları öğren ve ilk 3 açık kaynak depoyu yayınla',
-          'Üniversite Yazılım Kulübü teknik etkinliklerine ve hackathonlara katıl'
+          'İESÜ Kariyer Günleri teknik atölyelerine ve sektör hackathonlarına katıl'
         ] 
       },
       { 
@@ -214,7 +214,7 @@ const DEFAULT_ROADMAPS = {
           'Meta Ads, Google Ads ve SEO teknik denetim temellerini öğren',
           'Kullanılabilirlik testleri (Usability Testing) uygulayarak geri bildirim topla',
           'Mikro etkileşimler ve prototipleme animasyonları geliştir',
-          'Üniversite tasarım ve iletişim kulüplerinde proje yöneticiliği üstlen'
+          'İESÜ Kariyer etkinlikleri ve vaka analizi atölyelerinde proje sunumu yap'
         ]
       },
       {
@@ -396,7 +396,7 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
       setRoadmap({
         title: `${dreamRole} Yol Haritası`,
         phases: [
-          { id: 1, title: 'Temeller ve İlk Adımlar', timeframe: '0 - 6 Ay', desc: 'Sektörün temellerini öğrenmek ve ilk portfolyoyu oluşturmak.', tasks: ['İlgili temel eğitimleri tamamla', 'Profesyonel platformlarda profil aç', 'İlk küçük projeni yayınla', 'Üniversite kulüplerine dahil ol'] },
+          { id: 1, title: 'Temeller ve İlk Adımlar', timeframe: '0 - 6 Ay', desc: 'Sektörün temellerini öğrenmek ve ilk portfolyoyu oluşturmak.', tasks: ['İlgili temel eğitimleri tamamla', 'Profesyonel platformlarda profil aç', 'İlk küçük projeni yayınla', 'İESÜ Mezun Ağı üzerinden 15 dk kahve sohbeti planla'] },
           { id: 2, title: 'Gelişim ve Derinleşme', timeframe: '6 - 12 Ay', desc: 'İleri düzey kavramları öğrenmek ve mentor bulmak.', tasks: ['İleri seviye kurslara katıl', 'Mezun ağından bir mentor bul', 'Gönüllü staj başvuruları yap', 'Teknik sertifikasyonları tamamla'] },
           { id: 3, title: 'Saha Deneyimi', timeframe: '1 - 2 Yıl', desc: 'Gerçek dünya projelerinde yer almak ve sektörle tanışmak.', tasks: ['Kariyer Fuarında staj ayarla', 'Freelance / Açık kaynak projelere katkı yap', 'Mülakat simülasyonları ile pratik yap', 'Sektör ağını genişlet'] },
           { id: 4, title: 'Zirve ve Hedef', timeframe: '2+ Yıl', desc: 'Açık pozisyonlara başvuru ve profesyonel kariyerin başlangıcı.', tasks: ['CV ve Portfolyoyu son haline getir', 'Şirketlerin Senior İK çalışanları ile bağlantı kur', 'Hedef rol için resmi başvurulara başla', 'Kariyer merkezinden teklif danışmanlığı al'] },
@@ -441,9 +441,9 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
 
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
   const backTarget = (
-    previousView && ['student', 'alumni', 'academic', 'company', 'admin'].includes(previousView) ? previousView :
-    activePortalBranch && ['student', 'alumni', 'academic', 'company', 'admin'].includes(activePortalBranch) ? activePortalBranch :
-    (userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+    previousView && ['student', 'alumni', 'staff', 'company', 'admin'].includes(previousView) ? previousView :
+    activePortalBranch && ['student', 'alumni', 'staff', 'company', 'admin'].includes(activePortalBranch) ? activePortalBranch :
+    (userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'staff' ? 'staff' : 'student')
   );
 
   return (

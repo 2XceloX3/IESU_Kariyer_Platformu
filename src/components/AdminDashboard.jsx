@@ -343,6 +343,9 @@ const PANEL_CATEGORIES = [
 ];
 
 const TAB_ALIASES = {
+  cms_students: 'students',
+  cms_alumni: 'alumni',
+  cms_companies: 'companies',
   cms_ment: 'mentorluk',
   cms_alumni_assoc: 'cms_mezun_dernek',
   mezun_dernek: 'cms_mezun_dernek',

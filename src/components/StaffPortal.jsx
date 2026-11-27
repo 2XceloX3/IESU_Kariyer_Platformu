@@ -8,7 +8,7 @@ import PostCard from './PostCard';
 import ExploreFeed from './ExploreFeed';
 import BranchNewsWidget from './BranchNewsWidget';
 import ConnectionSuggestions from './ConnectionSuggestions';
-import AdminOmniDock from './AdminOmniDock';
+import StaffBottomDock from './StaffBottomDock';
 import FooterModals from './FooterModals';
 import { combineFeedItems } from '../utils/feedCombiner';
 import {
@@ -104,7 +104,8 @@ export default function StaffPortal({
 
   // Navigasyon & Görünüm Durumu
   const [activeTab, setActiveTab] = useState('feed'); // 'feed' | 'search'
-  const [activeDesk, setActiveDesk] = useState('stream'); // 'stream' | 'students_staj' | 'alumni' | 'companies_jobs' | 'content' | 'messages' | 'reports_export'
+  const [activeDesk, setActiveDesk] = useState('stream'); // 'stream' | 'approvals' | 'students_staj' | 'alumni' | 'companies_jobs' | 'content' | 'messages' | 'reports_export' | 'staff_profile'
+  const [approvalFilter, setApprovalFilter] = useState('all'); // 'all' | 'jobs' | 'staj' | 'protocols' | 'other'
   const [feedFilter, setFeedFilter] = useState('all'); // 'all' | 'announcements' | 'jobs' | 'community'
   const [visibleFeedCount, setVisibleFeedCount] = useState(10);
   const [globalSearch, setGlobalSearch] = useState('');
@@ -408,7 +409,8 @@ export default function StaffPortal({
   // Yetkili operasyon masaları
   const deskNavItems = useMemo(() => {
     const items = [
-      { id: 'stream', label: 'Akış & Onaylar', icon: Newspaper, badge: totalPendingCount }
+      { id: 'stream', label: 'Personel Ana Akışı', icon: Newspaper, badge: 0 },
+      { id: 'approvals', label: 'Onay & İşlem Kuyruğu', icon: CheckCircle2, badge: totalPendingCount }
     ];
     if (allowedSet.has('students_staj')) {
       items.push({ id: 'students_staj', label: 'Öğrenci & Staj Masası', icon: GraduationCap, badge: pendingInternships.length });
@@ -433,6 +435,7 @@ export default function StaffPortal({
     if (allowedSet.has('reports_export')) {
       items.push({ id: 'reports_export', label: 'Rapor & Excel Merkezi', icon: Download, badge: 0 });
     }
+    items.push({ id: 'staff_profile', label: 'Personel Profilim', icon: ShieldCheck, badge: 0 });
     return items;
   }, [allowedSet, totalPendingCount, pendingInternships.length, pendingJobs.length, pendingProtocols.length, pendingMessages.length]);
 
@@ -613,14 +616,14 @@ export default function StaffPortal({
                 role="button"
                 tabIndex={0}
                 onClick={() => {
-                  const selfId = effectiveUser?.id || 'self';
-                  setSelectedUserId?.(selfId);
-                  setView?.('user_profile');
+                  setActiveTab('feed');
+                  setActiveDesk('staff_profile');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    setSelectedUserId?.(effectiveUser?.id || 'self');
-                    setView?.('user_profile');
+                    setActiveTab('feed');
+                    setActiveDesk('staff_profile');
                   }
                 }}
                 className="text-[16px] font-black text-slate-900 dark:text-white hover:text-indigo-700 dark:hover:text-indigo-300 transition cursor-pointer leading-snug"
@@ -764,7 +767,7 @@ export default function StaffPortal({
                     {totalPendingCount > 0 && (
                       <button
                         type="button"
-                        onClick={() => setActiveDesk('stream')}
+                        onClick={() => setActiveDesk('approvals')}
                         className="px-3 py-1.5 rounded-xl bg-amber-400/20 border border-amber-300/40 text-amber-200 text-xs font-black flex items-center gap-1.5 cursor-pointer hover:bg-amber-400/30 transition"
                       >
                         <CheckCircle2 size={14} /> {totalPendingCount} Bekleyen İşlem
@@ -1384,6 +1387,213 @@ export default function StaffPortal({
                   </div>
                 </div>
               )}
+
+              {/* ═══ ÖZEL PERSONEL SAYFASI 1: ONAY & İŞLEM KUYRUĞU ═══ */}
+              {activeDesk === 'approvals' && (
+                <div className="bg-white dark:bg-[#131c31] rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-xs space-y-5" data-testid="staff-approvals-page">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+                    <div>
+                      <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+                        <CheckCircle2 size={18} className="text-indigo-600" /> Personel Onay & İşlem Kuyruğu
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        Yetkili olduğunuz tüm bekleyen ilan, staj, protokol ve fuar taleplerini buradan sonuçlandırın.
+                      </p>
+                    </div>
+                    <span className="px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-700/40 text-xs font-black text-indigo-700 dark:text-indigo-300">
+                      {totalPendingCount} Bekleyen
+                    </span>
+                  </div>
+
+                  {/* Kategori Filtre Hapları */}
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { id: 'all', label: `Tümü (${totalPendingCount})` },
+                      ...(allowedSet.has('jobs_applications') ? [{ id: 'jobs', label: `İlanlar (${pendingJobs.length})` }] : []),
+                      ...(allowedSet.has('students_staj') ? [{ id: 'staj', label: `Stajlar (${pendingInternships.length})` }] : []),
+                      ...(allowedSet.has('companies_protocols') ? [{ id: 'protocols', label: `Protokoller (${pendingProtocols.length})` }] : []),
+                      ...((allowedSet.has('companies_protocols') || allowedSet.has('mentorship')) ? [{ id: 'other', label: `Fuar & Mentörlük (${(allowedSet.has('companies_protocols') ? pendingFairApps.length : 0) + (allowedSet.has('mentorship') ? pendingMentorships.length : 0)})` }] : [])
+                    ].map(tab => (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => setApprovalFilter(tab.id)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
+                          approvalFilter === tab.id
+                            ? 'bg-indigo-700 text-white shadow-xs'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700'
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {totalPendingCount === 0 ? (
+                    <div className="py-10 text-center bg-emerald-50/60 dark:bg-emerald-950/20 rounded-2xl border border-emerald-200/70 dark:border-emerald-800/40 space-y-2">
+                      <CheckCircle2 size={36} className="text-emerald-600 mx-auto" />
+                      <h4 className="text-sm font-black text-slate-900 dark:text-white">Bekleyen Onay Kalmadı</h4>
+                      <p className="text-xs text-slate-600 dark:text-slate-400">Yetkili olduğunuz tüm operasyon kuyrukları güncel durumda.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {/* Bekleyen İlanlar */}
+                      {(approvalFilter === 'all' || approvalFilter === 'jobs') && allowedSet.has('jobs_applications') && pendingJobs.map(job => (
+                        <div key={job.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-amber-100 text-amber-800">Firma İlanı Onayı</span>
+                            <h4 className="text-sm font-black text-slate-900 dark:text-white mt-1 truncate">{job.title}</h4>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{job.company || job.companyName} • {job.location || 'İstanbul'} • {job.type || 'İlan'}</p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <button type="button" onClick={() => handleRejectJob(job.id)} className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold cursor-pointer">Reddet</button>
+                            <button type="button" onClick={() => handleApproveJob(job.id)} className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black cursor-pointer">Onayla & Yayınla</button>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Bekleyen Staj Başvuruları */}
+                      {(approvalFilter === 'all' || approvalFilter === 'staj') && allowedSet.has('students_staj') && pendingInternships.map(staj => (
+                        <div key={staj.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-rose-100 text-rose-800">Staj / SGK Başvurusu</span>
+                            <h4 className="text-sm font-black text-slate-900 dark:text-white mt-1 truncate">{staj.studentName || 'Öğrenci'} — {staj.companyName || staj.company || 'İşletme'}</h4>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{staj.department || 'İESÜ'} • {staj.type || 'Staj'} • {staj.startDate || 'Yakın Tarih'}</p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <button type="button" onClick={() => handleRejectInternship(staj.id)} className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold cursor-pointer">Reddet</button>
+                            <button type="button" onClick={() => handleApproveInternship(staj.id)} className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black cursor-pointer">Onayla</button>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Bekleyen Kurumsal Protokoller */}
+                      {(approvalFilter === 'all' || approvalFilter === 'protocols') && allowedSet.has('companies_protocols') && pendingProtocols.map(proto => (
+                        <div key={proto.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-800">Üniversite-Sanayi Protokolü</span>
+                            <h4 className="text-sm font-black text-slate-900 dark:text-white mt-1 truncate">{proto.companyName || proto.title}</h4>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">Kontenjan: {proto.internshipQuota || 0} Stajyer • Bitiş: {proto.endDate || '-'}</p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                            <button type="button" onClick={() => exportBilateralProtocolDraftPdf?.(proto)} className="px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-xs font-bold cursor-pointer">PDF</button>
+                            <button type="button" onClick={() => handleProtocolDecision(proto.id, 'REVISION_REQUIRED')} className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold cursor-pointer">Revizyon</button>
+                            <button type="button" onClick={() => handleProtocolDecision(proto.id, 'ACTIVE')} className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black cursor-pointer">Yürürlüğe Al</button>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Fuar & Mentörlük */}
+                      {(approvalFilter === 'all' || approvalFilter === 'other') && allowedSet.has('companies_protocols') && pendingFairApps.map(app => (
+                        <div key={app.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-purple-100 text-purple-800">Kariyer Fuarı Stant Talebi</span>
+                            <h4 className="text-sm font-black text-slate-900 dark:text-white mt-1 truncate">{app.companyName || 'Kurumsal Firma'}</h4>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{app.contactName || 'Yetkili'} • {app.sector || 'Sektör'}</p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <button type="button" onClick={() => handleFairDecision(app.id, 'Reddedildi')} className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold cursor-pointer">Reddet</button>
+                            <button type="button" onClick={() => handleFairDecision(app.id, 'Onaylandı')} className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black cursor-pointer">Onayla</button>
+                          </div>
+                        </div>
+                      ))}
+
+                      {(approvalFilter === 'all' || approvalFilter === 'other') && allowedSet.has('mentorship') && pendingMentorships.map(m => (
+                        <div key={m.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-teal-100 text-teal-800">Mentörlük Eşleştirmesi</span>
+                            <h4 className="text-sm font-black text-slate-900 dark:text-white mt-1 truncate">{m.studentName || 'Öğrenci'} ↔ {m.mentorName || 'Mezun Mentör'}</h4>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{m.topic || 'Kariyer Mentörlüğü'}</p>
+                          </div>
+                          <button type="button" onClick={() => handleMatchMentorship(m.id)} className="px-3.5 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-black cursor-pointer shrink-0">Eşleştir</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ═══ ÖZEL PERSONEL SAYFASI 2: PERSONEL PROFİLİ, YETKİ HARİTASI & ÖZET ═══ */}
+              {activeDesk === 'staff_profile' && (
+                <div className="space-y-5" data-testid="staff-profile-page">
+                  <div className="bg-white dark:bg-[#131c31] rounded-3xl border border-slate-200/80 dark:border-slate-800 overflow-hidden shadow-xs">
+                    <div className="h-24 bg-gradient-to-r from-slate-900 via-indigo-800 to-blue-800 relative px-6 flex items-end pb-3">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-indigo-200 bg-white/10 px-3 py-1 rounded-full border border-white/15">
+                        İESÜ Kurumsal Personel Kimlik Kartı
+                      </span>
+                    </div>
+                    <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-16 h-16 rounded-2xl border-2 border-indigo-200 bg-white overflow-hidden shadow-sm shrink-0">
+                          <SafeAvatar src={effectiveUser?.avatar} name={staffName} size="lg" className="w-full h-full object-cover" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-black text-slate-900 dark:text-white">{staffName}</h3>
+                          <p className="text-xs font-extrabold text-indigo-600 dark:text-indigo-400">{staffTitle}</p>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                            {effectiveUser?.email || 'kariyer@esenyurt.edu.tr'} {effectiveUser?.username ? `• @${effectiveUser.username}` : ''}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => openCmsTab(allowedGroups[0]?.primaryTab || 'overview')}
+                          className="px-4 py-2.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-black transition shadow-sm cursor-pointer flex items-center gap-1.5"
+                        >
+                          <Sliders size={14} /> Yetkili CMS Modülleri
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Personel Yetki Matrisi */}
+                  <div className="bg-white dark:bg-[#131c31] rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-xs space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-sm font-black text-slate-900 dark:text-white">Atanmış Yetki Haritam</h4>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">Yalnızca Kariyer Geliştirme Koordinatörlüğü tarafından size tanımlanan modüller aktiftir.</p>
+                      </div>
+                      <span className="text-xs font-black text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-3 py-1 rounded-full">
+                        {allowedGroups.length} / {STAFF_PERMISSION_GROUPS.length} Aktif
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {STAFF_PERMISSION_GROUPS.map(group => {
+                        const isAllowed = allowedSet.has(group.id);
+                        return (
+                          <div
+                            key={group.id}
+                            className={`p-4 rounded-2xl border transition ${
+                              isAllowed
+                                ? 'bg-indigo-50/50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-700/50'
+                                : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200/70 dark:border-slate-800 opacity-60'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-2 mb-1">
+                              <span className="text-xs font-black text-slate-900 dark:text-white">{group.label}</span>
+                              <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${isAllowed ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'}`}>
+                                {isAllowed ? 'Yetkili' : 'Kapalı'}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">{group.desc}</p>
+                            {isAllowed && (
+                              <button
+                                type="button"
+                                onClick={() => openCmsTab(group.primaryTab)}
+                                className="mt-2.5 text-[11px] font-black text-indigo-700 dark:text-indigo-300 hover:underline flex items-center gap-1 cursor-pointer"
+                              >
+                                Modülü Aç <ArrowUpRight size={12} />
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </main>
@@ -1507,15 +1717,45 @@ export default function StaffPortal({
         </aside>
       </div>
 
-      {/* ── SİTEYE ÖZGÜ İNDİGO YÜZEN ALT DOCK ── */}
-      <AdminOmniDock
+      {/* ── SADECE PERSONELE ÖZEL İNDİGO YÜZEN ALT PANEL ── */}
+      <StaffBottomDock
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        setView={setView}
-        setSelectedUserId={setSelectedUserId}
-        currentUser={effectiveUser}
-        theme="indigo"
-        homeView="staff"
+        activeDesk={activeDesk}
+        onSelectDesk={(deskId) => {
+          setActiveTab('feed');
+          setActiveDesk(deskId);
+          setTableSearch('');
+        }}
+        pendingCount={totalPendingCount}
+        unreadMessagesCount={pendingMessages.length}
+        primaryOpsDesk={
+          (allowedSet.has('companies_protocols') || allowedSet.has('jobs_applications'))
+            ? 'companies_jobs'
+            : allowedSet.has('students_staj')
+              ? 'students_staj'
+              : allowedSet.has('alumni')
+                ? 'alumni'
+                : allowedSet.has('reports_export')
+                  ? 'reports_export'
+                  : allowedSet.has('content')
+                    ? 'content'
+                    : 'approvals'
+        }
+        primaryOpsLabel={
+          (allowedSet.has('companies_protocols') || allowedSet.has('jobs_applications'))
+            ? 'İlan & Firma'
+            : allowedSet.has('students_staj')
+              ? 'Stajlar'
+              : allowedSet.has('alumni')
+                ? 'Mezunlar'
+                : allowedSet.has('reports_export')
+                  ? 'Raporlar'
+                  : allowedSet.has('content')
+                    ? 'İçerikler'
+                    : 'Masam'
+        }
+        commDesk={allowedSet.has('messages') ? 'messages' : allowedSet.has('content') ? 'content' : 'approvals'}
+        commLabel={allowedSet.has('messages') ? 'Mesajlar' : allowedSet.has('content') ? 'Duyurular' : 'Onaylar'}
       />
 
       {activeModal && <FooterModals activeModal={activeModal} setActiveModal={setActiveModal} />}
