@@ -1762,6 +1762,8 @@ export default function StaffPortal({
         }
         commDesk={allowedSet.has('messages') ? 'messages' : allowedSet.has('content') ? 'content' : 'approvals'}
         commLabel={allowedSet.has('messages') ? 'Mesajlar' : allowedSet.has('content') ? 'Duyurular' : 'Onaylar'}
+        staffAvatar={effectiveUser?.avatar}
+        staffName={staffName}
       />
 
       {activeModal && <FooterModals activeModal={activeModal} setActiveModal={setActiveModal} />}
