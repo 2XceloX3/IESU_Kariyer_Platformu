@@ -9,6 +9,8 @@ import NavIcon from './shared/NavIcon';
 import useAppStore from '../store/useAppStore';
 import SafeAvatar from './shared/SafeAvatar';
 import AdminOmniDock from './AdminOmniDock';
+import StaffBottomDock from './StaffBottomDock';
+import { STAFF_PERMISSION_GROUPS, resolveStaffPermissions } from '../utils/staffAuth';
 import { generateStudents, generateAlumni, generateCompanies, generateAcademicStaff } from '../utils/mockData';
 import { maskSensitiveData, maskEmail, OBS_STANDARDS, getObsVerificationBadge } from '../services/obsVerificationWorkflow';
 
@@ -3614,14 +3616,32 @@ export default function UserProfile({
       )}
 
       {/* ─── DİNAMİK ALT NAVİGASYON DOCK'U (HER DALA ÖZEL EGEMEN DOCK) ─── */}
-      {(isAdminBranch || isStaffBranch) ? (
+      {isStaffBranch ? (
+        <StaffBottomDock
+          activeTab="profile"
+          activeDesk="staff_profile"
+          isProfilePage={true}
+          allowedModules={isViewerAdmin ? STAFF_PERMISSION_GROUPS.map(g => g.id) : resolveStaffPermissions(effectiveCurrentUser)}
+          onSelectDesk={(deskId) => {
+            try { sessionStorage.setItem('iesu_staff_initial_desk', deskId); } catch { /* intentional */ }
+            const store = useAppStore.getState();
+            store.setActivePortalBranch?.('staff');
+            if (setView) setView('staff');
+          }}
+          onOpenProfile={() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          staffAvatar={effectiveCurrentUser?.avatar || effectiveCurrentUser?.profileImage}
+          staffName={effectiveCurrentUser?.name || 'Kurumsal Personel'}
+        />
+      ) : isAdminBranch ? (
         <AdminOmniDock 
           currentUser={effectiveCurrentUser} 
           setView={setView} 
           setSelectedUserId={setSelectedUserId} 
           activeTab="profile"
-          theme={isStaffBranch ? 'indigo' : 'amber'}
-          homeView={isStaffBranch ? 'staff' : 'admin'}
+          theme="amber"
+          homeView="admin"
         />
       ) : isCompanyBranch ? (
         /* 🏢 KURUMSAL FİRMAYA ÖZEL LACİVERT DOCK (Ana Akış ile Birebir Uyumlu #0A2342) */

@@ -123,7 +123,24 @@ export default function StaffPortal({
 
   // Navigasyon & Görünüm Durumu
   const [activeTab, setActiveTab] = useState('feed'); // 'feed' | 'search'
-  const [activeDesk, setActiveDesk] = useState('stream'); // 'stream' | 'approvals' | 'students_staj' | 'alumni' | 'companies_jobs' | 'content' | 'messages' | 'reports_export' | 'staff_profile'
+  const [activeDesk, setActiveDesk] = useState(() => {
+    try {
+      const queued = sessionStorage.getItem('iesu_staff_initial_desk');
+      if (queued) {
+        sessionStorage.removeItem('iesu_staff_initial_desk');
+        return queued;
+      }
+    } catch { /* intentional */ }
+    return 'stream';
+  }); // 'stream' | 'approvals' | 'students_staj' | 'alumni' | 'companies_jobs' | 'content' | 'messages' | 'reports_export'
+
+  const openOwnProfile = () => {
+    const selfId = effectiveUser?.role === 'admin' ? 'admin_1513' : (effectiveUser?.id || effectiveUser?.uid || 'self');
+    setActivePortalBranch?.('staff');
+    if (setSelectedUserId) setSelectedUserId(selfId);
+    useAppStore.getState().setSelectedUserId?.(selfId);
+    setView?.('user_profile');
+  };
   const [approvalFilter, setApprovalFilter] = useState('all'); // 'all' | 'jobs' | 'staj' | 'protocols' | 'other'
   const [studentsSubTab, setStudentsSubTab] = useState('students'); // 'students' | 'staj'
   const [companiesSubTab, setCompaniesSubTab] = useState('protocols'); // 'protocols' | 'companies' | 'jobs'
@@ -491,7 +508,6 @@ export default function StaffPortal({
     if (allowedSet.has('reports_export')) {
       items.push({ id: 'reports_export', label: 'Rapor & Excel Merkezi', icon: Download, badge: 0 });
     }
-    items.push({ id: 'staff_profile', label: 'Personel Profilim', icon: ShieldCheck, badge: 0 });
     return items;
   }, [allowedSet, totalPendingCount, pendingInternships.length, pendingJobs.length, pendingProtocols.length, pendingMessages.length]);
 
@@ -570,6 +586,8 @@ export default function StaffPortal({
   const staffName = effectiveUser?.name || 'Kariyer Geliştirme Merkezi Personeli';
   const staffTitle = effectiveUser?.staffTitle || effectiveUser?.department || 'Kariyer Geliştirme Merkezi';
   const openTasksCount = dailyTasks.filter(t => !t.done).length;
+  const isFullWidthWorkspace = activeTab !== 'search' && activeDesk !== 'stream';
+  const currentDeskMeta = deskNavItems.find(i => i.id === activeDesk);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0b1120] text-slate-900 dark:text-slate-100 font-sans antialiased">
@@ -655,10 +673,11 @@ export default function StaffPortal({
         </div>
       </nav>
 
-      {/* ── 3 SÜTUNLU SİTE ANA AKIŞ YERLEŞİMİ ── */}
+      {/* ── ANA AKIŞTA 3 SÜTUN, İŞ MASALARINDA TAM GENİŞLİK ÖZGÜN ÇALIŞMA SAYFASI ── */}
       <div className="pt-24 max-w-[1320px] mx-auto px-4 flex items-start justify-center gap-6 pb-28 sm:pb-24">
 
-        {/* SOL SÜTUN: PERSONEL KİMLİK KARTI & YETKİLİ MASALAR (Bağımsız Kaydırılabilir) */}
+        {/* SOL SÜTUN: Yalnızca Ana Akışta görünür (İş masaları dar alana sıkışmaz!) */}
+        {!isFullWidthWorkspace && (
         <aside className="hidden lg:flex w-[280px] shrink-0 flex-col gap-4 sticky top-24 self-start max-h-[calc(100vh-6.5rem)] overflow-y-auto overscroll-contain custom-scrollbar pr-1.5 z-20 pb-24">
           <div className="bg-white dark:bg-[#131c31] rounded-3xl border border-slate-200/80 dark:border-slate-800 overflow-hidden shadow-xs">
             <div className="h-24 bg-gradient-to-r from-slate-900 via-indigo-800 to-blue-900 relative">
@@ -674,16 +693,9 @@ export default function StaffPortal({
               <h2
                 role="button"
                 tabIndex={0}
-                onClick={() => {
-                  setActiveTab('feed');
-                  setActiveDesk('staff_profile');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
+                onClick={openOwnProfile}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    setActiveTab('feed');
-                    setActiveDesk('staff_profile');
-                  }
+                  if (e.key === 'Enter') openOwnProfile();
                 }}
                 className="text-[16px] font-black text-slate-900 dark:text-white hover:text-indigo-700 dark:hover:text-indigo-300 transition cursor-pointer leading-snug"
               >
@@ -703,7 +715,7 @@ export default function StaffPortal({
                   <div className="text-base font-black text-slate-900 dark:text-white">{totalPendingCount}</div>
                   <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400">Onay</div>
                 </button>
-                <button type="button" onClick={() => setActiveDesk('staff_profile')} className="border-x border-slate-100 dark:border-slate-800 hover:bg-indigo-50/60 dark:hover:bg-slate-800 py-1 transition cursor-pointer">
+                <button type="button" onClick={openOwnProfile} className="border-x border-slate-100 dark:border-slate-800 hover:bg-indigo-50/60 dark:hover:bg-slate-800 py-1 transition cursor-pointer">
                   <div className="text-base font-black text-indigo-700 dark:text-indigo-400">{allowedGroups.length}</div>
                   <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400">Yetki</div>
                 </button>
@@ -715,21 +727,21 @@ export default function StaffPortal({
 
               <button
                 type="button"
-                onClick={() => {
-                  setActiveTab('feed');
-                  setActiveDesk('staff_profile');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
+                onClick={openOwnProfile}
                 className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-indigo-700 to-blue-700 hover:from-indigo-800 hover:to-blue-800 text-white text-xs font-black transition shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <ShieldCheck size={14} /> Profilim & Yetki Kartım
+                <ShieldCheck size={14} /> Profilimi Görüntüle
               </button>
             </div>
           </div>
         </aside>
+        )}
 
-        {/* ORTA SÜTUN: ANA AKIŞ, ONAY KARTLARI & YETKİLİ MASALAR */}
-        <main className="w-full max-w-[640px] shrink-0 space-y-5">
+        {/* ORTA / TAM GENİŞLİK ÇALIŞMA ALANI */}
+        <main
+          data-testid={isFullWidthWorkspace ? 'staff-fullwidth-workspace' : 'staff-stream-main'}
+          className={`w-full space-y-5 ${isFullWidthWorkspace ? 'max-w-[1320px]' : 'max-w-[640px] shrink-0'}`}
+        >
           {activeTab === 'search' ? (
             <ExploreFeed
               posts={posts}
@@ -741,41 +753,67 @@ export default function StaffPortal({
             />
           ) : (
             <>
-              {/* Mobil (< lg) Hızlı Personel Kokpiti */}
-              <div className="lg:hidden bg-gradient-to-r from-slate-950 via-indigo-900 to-blue-950 text-white rounded-3xl p-4 shadow-lg border border-indigo-500/30 space-y-3">
-                <div className="flex items-center justify-between gap-3">
+              {/* Tam Genişlik Çalışma Masası Üst Başlığı (Sadece İş Masalarında) */}
+              {isFullWidthWorkspace && (
+                <div className="bg-gradient-to-r from-slate-950 via-[#1E1B4B] to-blue-950 text-white rounded-3xl px-5 py-4 sm:px-6 sm:py-5 shadow-xl border border-indigo-500/30 flex flex-wrap items-center justify-between gap-4">
                   <div className="flex items-center gap-3 min-w-0">
-                    <SafeAvatar src={effectiveUser?.avatar} name={staffName} size="md" className="w-11 h-11 rounded-full border-2 border-indigo-300 shrink-0" />
+                    <button
+                      type="button"
+                      onClick={() => { setActiveDesk('stream'); setTableSearch(''); }}
+                      className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-black transition cursor-pointer shrink-0"
+                    >
+                      ← Ana Akış
+                    </button>
                     <div className="min-w-0">
-                      <p className="text-sm font-black truncate">{staffName}</p>
-                      <p className="text-[11px] text-indigo-200 truncate">{staffTitle}</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-sky-300">İESÜ Personel Çalışma Sayfası</p>
+                      <h2 className="text-base sm:text-xl font-black text-white truncate">
+                        {currentDeskMeta?.label || 'Operasyon Masası'}
+                      </h2>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setActiveDesk('approvals')}
-                    className="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-[11px] font-black shrink-0 cursor-pointer"
-                  >
-                    Onaylar ({totalPendingCount})
-                  </button>
-                </div>
-                <div className="flex gap-1.5 overflow-x-auto hide-scrollbar pb-0.5">
-                  {deskNavItems.map(item => (
+                  <div className="flex items-center gap-2 shrink-0">
+                    {totalPendingCount > 0 && activeDesk !== 'approvals' && (
+                      <button
+                        type="button"
+                        onClick={() => setActiveDesk('approvals')}
+                        className="px-3 py-1.5 rounded-xl bg-amber-400/20 border border-amber-300/40 text-amber-200 text-xs font-black cursor-pointer hover:bg-amber-400/30 transition"
+                      >
+                        {totalPendingCount} Bekleyen Onay
+                      </button>
+                    )}
                     <button
-                      key={item.id}
                       type="button"
-                      onClick={() => { setActiveDesk(item.id); setTableSearch(''); }}
-                      className={`px-3 py-1.5 rounded-xl text-[11px] font-bold whitespace-nowrap transition cursor-pointer ${
-                        activeDesk === item.id ? 'bg-white text-indigo-900 font-black' : 'bg-white/10 text-indigo-100'
-                      }`}
+                      onClick={openOwnProfile}
+                      className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-indigo-100 text-xs font-bold cursor-pointer transition"
                     >
-                      {item.label} {item.badge > 0 ? `(${item.badge})` : ''}
+                      Profilim
                     </button>
-                  ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              {/* Şık İndigo Karşılama & Yetkili Anlık Arama Kartı */}
+              {/* Mobil (< lg) Hızlı Personel Kokpiti — Yalnızca Ana Akışta */}
+              {!isFullWidthWorkspace && (
+              <div className="lg:hidden bg-gradient-to-r from-slate-950 via-indigo-900 to-blue-950 text-white rounded-3xl p-4 shadow-lg border border-indigo-500/30 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <SafeAvatar src={effectiveUser?.avatar} name={staffName} size="md" className="w-11 h-11 rounded-full border-2 border-indigo-300 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-black truncate">{staffName}</p>
+                    <p className="text-[11px] text-indigo-200 truncate">{staffTitle}</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveDesk('approvals')}
+                  className="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-[11px] font-black shrink-0 cursor-pointer"
+                >
+                  Onaylar ({totalPendingCount})
+                </button>
+              </div>
+              )}
+
+              {/* Şık İndigo Karşılama & Yetkili Anlık Arama Kartı — Yalnızca Ana Akışta */}
+              {!isFullWidthWorkspace && (
               <div className="bg-gradient-to-br from-slate-950 via-[#1E1B4B] to-blue-950 text-white rounded-3xl p-5 sm:p-6 shadow-xl border border-indigo-500/30 relative overflow-hidden">
                 <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none" />
                 <div className="relative z-10 space-y-4">
@@ -839,6 +877,7 @@ export default function StaffPortal({
                   </div>
                 </div>
               </div>
+              )}
 
               {/* İçerik Yetkisi Varsa Doğrudan Akış Gönderi Oluşturucu */}
               {activeDesk === 'stream' && allowedSet.has('content') && (
@@ -849,36 +888,6 @@ export default function StaffPortal({
                   setPosts={setPosts}
                 />
               )}
-
-              {/* Masa Geçiş Şeridi (Masaüstü & Mobil Ortak Hızlı Geçiş) */}
-              <div className="bg-white dark:bg-[#131c31] rounded-2xl p-2 border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center gap-1.5 overflow-x-auto hide-scrollbar">
-                {deskNavItems.map(item => {
-                  const Icon = item.icon;
-                  const isActive = activeDesk === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => { setActiveDesk(item.id); setTableSearch(''); }}
-                      className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
-                        isActive
-                          ? 'bg-gradient-to-r from-indigo-700 via-indigo-600 to-blue-700 text-white shadow-sm'
-                          : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-                      }`}
-                    >
-                      <Icon size={13} />
-                      <span>{item.label}</span>
-                      {item.badge > 0 && (
-                        <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-black ${
-                          isActive ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-700'
-                        }`}>
-                          {item.badge}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
 
               {/* ── MASA 1: AKIŞ & BEKLEYEN ONAYLAR ── */}
               {activeDesk === 'stream' && (
@@ -2087,7 +2096,8 @@ export default function StaffPortal({
           )}
         </main>
 
-        {/* SAĞ SÜTUN: İNDİGO BENTO ÖZET, GÜNLÜK TAKİP NOTLARI & KGM HABERLERİ (Bağımsız Kaydırılabilir) */}
+        {/* SAĞ SÜTUN: Yalnızca Ana Akışta görünür (İş masaları tam genişlikte açılır!) */}
+        {!isFullWidthWorkspace && (
         <aside className="hidden xl:block w-[300px] shrink-0 space-y-5 sticky top-24 self-start max-h-[calc(100vh-6.5rem)] overflow-y-auto overscroll-contain custom-scrollbar pr-1.5 pb-24">
           {/* Dark Indigo Canlı Özet Kartı */}
           <div className="bg-gradient-to-br from-slate-950 via-[#1E1B4B] to-blue-950 text-white rounded-3xl p-5 shadow-xl border border-indigo-500/40 space-y-4">
@@ -2204,44 +2214,23 @@ export default function StaffPortal({
             <span className="w-full text-[10px] mt-1">İESÜ Kariyer Geliştirme Koordinatörlüğü © 2026</span>
           </div>
         </aside>
+        )}
       </div>
 
-      {/* ── SADECE PERSONELE ÖZEL 4'LÜ İNDİGO YÜZEN ALT PANEL (Mesajlar sağ alttaki Personel Mesaj Alanında) ── */}
+      {/* ── SADECE PERSONELE ÖZEL İKONİK YÜZEN ALT PANEL (Akışlar ve Tam Genişlik Masalar Arası Geçiş) ── */}
       <StaffBottomDock
         activeTab={activeTab}
         activeDesk={activeDesk}
+        allowedModules={effectivePermIds}
         onSelectDesk={(deskId) => {
           setActiveTab('feed');
           setActiveDesk(deskId);
           setTableSearch('');
         }}
+        onOpenProfile={openOwnProfile}
         pendingCount={totalPendingCount}
-        primaryOpsDesk={
-          (allowedSet.has('companies_protocols') || allowedSet.has('jobs_applications'))
-            ? 'companies_jobs'
-            : allowedSet.has('students_staj')
-              ? 'students_staj'
-              : allowedSet.has('alumni')
-                ? 'alumni'
-                : allowedSet.has('reports_export')
-                  ? 'reports_export'
-                  : allowedSet.has('content')
-                    ? 'content'
-                    : 'approvals'
-        }
-        primaryOpsLabel={
-          (allowedSet.has('companies_protocols') || allowedSet.has('jobs_applications'))
-            ? 'İlan & Firma'
-            : allowedSet.has('students_staj')
-              ? 'Stajlar'
-              : allowedSet.has('alumni')
-                ? 'Mezunlar'
-                : allowedSet.has('reports_export')
-                  ? 'Raporlar'
-                  : allowedSet.has('content')
-                    ? 'İçerikler'
-                    : 'Masam'
-        }
+        pendingStajCount={pendingInternships.length}
+        pendingBizCount={(allowedSet.has('jobs_applications') ? pendingJobs.length : 0) + (allowedSet.has('companies_protocols') ? pendingProtocols.length : 0)}
         staffAvatar={effectiveUser?.avatar}
         staffName={staffName}
       />

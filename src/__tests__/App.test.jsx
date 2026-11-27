@@ -301,9 +301,9 @@ describe('App Component', () => {
     }, { timeout: 10000 });
 
     const dock = screen.getByTestId('staff-bottom-dock');
-    // 4-icon symmetrical dock without duplicate message button (messages moved to bottom-right staff chat widget)
-    expect(within(dock).getAllByRole('button')).toHaveLength(4);
+    // Icon-only dock without duplicate message button (messages moved to bottom-right staff chat widget)
     expect(within(dock).queryByRole('button', { name: /Mesajlar/i })).not.toBeInTheDocument();
+    expect(screen.queryByText(/Personel Profilim/i)).not.toBeInTheDocument();
 
     // Bottom-right floating widget renders Indigo Staff Messaging Area (not Super Admin Crown)
     const staffChatBtn = screen.getByTestId('staff-floating-chat-btn');
@@ -314,18 +314,22 @@ describe('App Component', () => {
       expect(screen.getByText(/Personel Mesaj Alanı/i)).toBeInTheDocument();
     });
 
+    // Clicking Onaylar opens dedicated full-width workspace (not squeezed in 3-column feed)
     fireEvent.click(within(dock).getByRole('button', { name: /Onaylar/i }));
     await waitFor(() => {
+      expect(screen.getByTestId('staff-fullwidth-workspace')).toBeInTheDocument();
       expect(screen.getAllByText(/Onay & İşlem Kuyruğu/i).length).toBeGreaterThan(0);
     });
 
+    // Clicking Profilim navigates to dedicated full-screen UserProfile page (staying in staff branch)
     fireEvent.click(within(dock).getByRole('button', { name: /Profilim/i }));
     await waitFor(() => {
-      expect(screen.getByTestId('staff-profile-page')).toBeInTheDocument();
-      expect(screen.getByText(/Atanmış Yetki Haritam/i)).toBeInTheDocument();
+      expect(screen.getByTestId('staff-bottom-dock')).toBeInTheDocument();
+      expect(screen.getAllByText(/Kurumsal Personel & KGM Portalı/i).length).toBeGreaterThan(0);
     });
 
-    fireEvent.click(within(dock).getByRole('button', { name: /Ana Sayfa/i }));
+    // Returning via Ana Sayfa in StaffBottomDock comes straight back to StaffPortal stream
+    fireEvent.click(within(screen.getByTestId('staff-bottom-dock')).getByRole('button', { name: /Ana Sayfa/i }));
     await waitFor(() => {
       expect(screen.getByText(/KURUMSAL PERSONEL PORTALI/i)).toBeInTheDocument();
     });

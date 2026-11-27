@@ -1,29 +1,109 @@
 import React from 'react';
-import { Home, CheckCircle2, Briefcase } from 'lucide-react';
+import {
+  Home, CheckCircle2, GraduationCap, Award, Building2, Megaphone, FileSpreadsheet
+} from 'lucide-react';
 import SafeAvatar from './shared/SafeAvatar';
 
 /**
- * StaffBottomDock — Yalnızca Kurumsal Personel Portalına (StaffPortal) özel,
- * yazısız, sade 4'lü ikonik yüzen alt menü (Safir / İndigo imza teması).
- * Mesajlaşma sağ alttaki özel Personel Mesaj Alanı (FloatingChatWidget) üzerinden yürütülür.
+ * StaffBottomDock — Yalnızca Kurumsal Personel Portalına (StaffPortal & Personel Profili) özel,
+ * yazısız, sade ve akışlar arası tam ekran geçiş sağlayan ikonik yüzen alt panel.
+ * Personel yalnızca yetkili olduğu çalışma sayfalarının ikonlarını görür;
+ * mesajlaşma sağ alttaki özel Personel Mesaj Alanı (FloatingChatWidget) üzerinden yürütülür.
  */
 export default function StaffBottomDock({
-  activeTab,
-  activeDesk,
+  activeTab = 'feed',
+  activeDesk = 'stream',
   onSelectDesk,
+  onOpenProfile,
+  isProfilePage = false,
+  allowedModules = [],
   pendingCount = 0,
-  primaryOpsDesk = 'companies_jobs',
-  primaryOpsLabel = 'İşlemler',
+  pendingStajCount = 0,
+  pendingBizCount = 0,
   staffAvatar = null,
   staffName = 'Personel'
 }) {
-  const isStreamActive = activeTab === 'feed' && activeDesk === 'stream';
-  const isApprovalsActive = activeTab === 'feed' && activeDesk === 'approvals';
-  const isOpsActive = activeTab === 'feed' && ['companies_jobs', 'students_staj', 'alumni', 'reports_export', 'content'].includes(activeDesk);
-  const isProfileActive = activeTab === 'feed' && activeDesk === 'staff_profile';
+  const allowedSet = allowedModules instanceof Set ? allowedModules : new Set(allowedModules || []);
+
+  const navButtons = [
+    {
+      id: 'stream',
+      label: 'Ana Sayfa',
+      title: 'Personel Ana Akışı',
+      icon: Home,
+      badge: 0,
+      hero: false
+    },
+    {
+      id: 'approvals',
+      label: 'Onaylar',
+      title: 'Personel Onay & İşlem Kuyruğu',
+      icon: CheckCircle2,
+      badge: pendingCount,
+      hero: true
+    }
+  ];
+
+  if (allowedSet.has('students_staj')) {
+    navButtons.push({
+      id: 'students_staj',
+      label: 'Öğrenci & Staj',
+      title: 'Öğrenci & Staj Masası',
+      icon: GraduationCap,
+      badge: pendingStajCount,
+      hero: false
+    });
+  }
+  if (allowedSet.has('alumni')) {
+    navButtons.push({
+      id: 'alumni',
+      label: 'Mezun & MBS',
+      title: 'Mezun & MBS Masası',
+      icon: Award,
+      badge: 0,
+      hero: false
+    });
+  }
+  if (allowedSet.has('companies_protocols') || allowedSet.has('jobs_applications')) {
+    navButtons.push({
+      id: 'companies_jobs',
+      label: 'İlan & Firma',
+      title: 'Firma, İlan & Protokol Stüdyosu',
+      icon: Building2,
+      badge: pendingBizCount,
+      hero: true
+    });
+  }
+  if (allowedSet.has('content')) {
+    navButtons.push({
+      id: 'content',
+      label: 'İçerik & Duyuru',
+      title: 'İçerik & Duyuru Masası',
+      icon: Megaphone,
+      badge: 0,
+      hero: false
+    });
+  }
+  if (allowedSet.has('reports_export')) {
+    navButtons.push({
+      id: 'reports_export',
+      label: 'Rapor & Excel',
+      title: 'Rapor, Excel & PDF Merkezi',
+      icon: FileSpreadsheet,
+      badge: 0,
+      hero: false
+    });
+  }
+
+  const isProfileActive = Boolean(isProfilePage);
 
   const selectDesk = (deskId) => {
-    onSelectDesk(deskId);
+    onSelectDesk?.(deskId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleProfileClick = () => {
+    if (onOpenProfile) onOpenProfile();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -31,73 +111,75 @@ export default function StaffBottomDock({
     <nav
       aria-label="Personel Alt Menüsü"
       data-testid="staff-bottom-dock"
-      className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[90%] max-w-[330px]"
+      className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up max-w-[94vw]"
     >
-      <div className="bg-white/95 dark:bg-[#131c31]/95 backdrop-blur-2xl border-2 border-indigo-200/80 dark:border-indigo-500/40 shadow-[0_18px_45px_rgba(49,46,129,0.22)] dark:shadow-[0_18px_45px_rgba(15,23,42,0.65)] px-4 py-2 sm:py-2.5 rounded-full flex items-center justify-between gap-2">
-        {/* 1. Ana Sayfa / Personel Akışı */}
-        <button
-          type="button"
-          onClick={() => selectDesk('stream')}
-          aria-label="Ana Sayfa"
-          title="Personel Ana Akışı"
-          aria-current={isStreamActive ? 'page' : undefined}
-          className={`relative w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer shrink-0 active:scale-95 ${
-            isStreamActive
-              ? 'bg-gradient-to-tr from-indigo-700 via-indigo-600 to-blue-600 text-white shadow-md shadow-indigo-600/35'
-              : 'text-slate-600 dark:text-slate-300 hover:text-indigo-700 dark:hover:text-indigo-300 hover:bg-indigo-50/90 dark:hover:bg-slate-800/80'
-          }`}
-        >
-          <Home size={22} strokeWidth={isStreamActive ? 2.4 : 2.1} />
-        </button>
-
-        {/* 2. Onay & İşlem Kuyruğu */}
-        <button
-          type="button"
-          onClick={() => selectDesk('approvals')}
-          aria-label="Onaylar"
-          title="Personel Onay & İşlem Kuyruğu"
-          aria-current={isApprovalsActive ? 'page' : undefined}
-          className={`relative w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-slate-900 via-indigo-700 to-blue-700 text-white shadow-lg shadow-indigo-900/30 border border-indigo-300/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shrink-0 ${
-            isApprovalsActive ? 'ring-2 ring-indigo-400 dark:ring-indigo-300 ring-offset-2 dark:ring-offset-[#131c31] scale-105' : ''
-          }`}
-        >
-          <CheckCircle2 size={21} strokeWidth={2.4} />
-          {pendingCount > 0 && (
-            <span
-              aria-hidden="true"
-              className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-600 text-white text-[9px] font-black flex items-center justify-center leading-none border-2 border-white dark:border-[#131c31] shadow-sm"
+      <div className="bg-white/95 dark:bg-[#131c31]/95 backdrop-blur-2xl border-2 border-indigo-200/80 dark:border-indigo-500/40 shadow-[0_18px_45px_rgba(49,46,129,0.22)] dark:shadow-[0_18px_45px_rgba(15,23,42,0.65)] px-3 sm:px-4 py-2 sm:py-2.5 rounded-full flex items-center justify-center gap-1.5 sm:gap-2">
+        {navButtons.map((btn) => {
+          const Icon = btn.icon;
+          const isActive = !isProfilePage && activeTab === 'feed' && activeDesk === btn.id;
+          return (
+            <button
+              key={btn.id}
+              type="button"
+              onClick={() => selectDesk(btn.id)}
+              aria-label={btn.label}
+              title={btn.title}
+              aria-current={isActive ? 'page' : undefined}
+              className={`group relative flex items-center justify-center transition-all duration-200 cursor-pointer shrink-0 active:scale-95 ${
+                btn.hero
+                  ? `w-11 h-10 sm:w-12 sm:h-11 rounded-2xl bg-gradient-to-tr ${
+                      btn.id === 'approvals'
+                        ? 'from-slate-900 via-indigo-700 to-blue-700 shadow-indigo-900/30 border-indigo-300/40'
+                        : 'from-indigo-800 via-indigo-600 to-sky-600 shadow-indigo-700/30 border-sky-300/40'
+                    } text-white shadow-lg border hover:scale-105 ${
+                      isActive ? 'ring-2 ring-indigo-400 dark:ring-indigo-300 ring-offset-2 dark:ring-offset-[#131c31] scale-105' : ''
+                    }`
+                  : `w-10 h-10 sm:w-11 sm:h-11 rounded-full ${
+                      isActive
+                        ? 'bg-gradient-to-tr from-indigo-700 via-indigo-600 to-blue-600 text-white shadow-md shadow-indigo-600/35'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-indigo-700 dark:hover:text-indigo-300 hover:bg-indigo-50/90 dark:hover:bg-slate-800/80'
+                    }`
+              }`}
             >
-              {pendingCount > 99 ? '99+' : pendingCount}
-            </span>
-          )}
-        </button>
+              <Icon size={btn.hero ? 20 : 20} strokeWidth={isActive || btn.hero ? 2.4 : 2.1} />
+              {btn.badge > 0 && (
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-1 -right-1 min-w-[17px] h-[17px] px-1 rounded-full bg-rose-600 text-white text-[9px] font-black flex items-center justify-center leading-none border-2 border-white dark:border-[#131c31] shadow-sm"
+                >
+                  {btn.badge > 99 ? '99+' : btn.badge}
+                </span>
+              )}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-slate-900 text-white text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hidden sm:block"
+              >
+                {btn.label}
+              </span>
+            </button>
+          );
+        })}
 
-        {/* 3. Yetkili Operasyon Masası (İlan & Firma / Staj / Mezun / Rapor) */}
+        {/* Personel Profili (Özgün Tam Sayfa Profil) */}
         <button
           type="button"
-          onClick={() => selectDesk(primaryOpsDesk)}
-          aria-label={primaryOpsLabel}
-          title={primaryOpsLabel}
-          aria-current={isOpsActive ? 'page' : undefined}
-          className={`relative w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-indigo-800 via-indigo-600 to-sky-600 text-white shadow-lg shadow-indigo-700/30 border border-sky-300/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shrink-0 ${
-            isOpsActive ? 'ring-2 ring-sky-400 dark:ring-sky-300 ring-offset-2 dark:ring-offset-[#131c31] scale-105' : ''
-          }`}
-        >
-          <Briefcase size={20} strokeWidth={2.4} />
-        </button>
-
-        {/* 4. Personel Profili & Yetki Kartı */}
-        <button
-          type="button"
-          onClick={() => selectDesk('staff_profile')}
+          onClick={handleProfileClick}
           aria-label="Profilim"
-          title="Personel Profili & Yetki Kartım"
+          title="Profilimi Görüntüle"
           aria-current={isProfileActive ? 'page' : undefined}
-          className={`relative w-10 h-10 rounded-full flex items-center justify-center bg-white dark:bg-slate-900 border-2 border-indigo-600 dark:border-indigo-400 shadow-sm hover:scale-105 active:scale-95 transition-all duration-200 shrink-0 p-0.5 overflow-hidden cursor-pointer ${
+          className={`group relative w-10 h-10 rounded-full flex items-center justify-center bg-white dark:bg-slate-900 border-2 border-indigo-600 dark:border-indigo-400 shadow-sm hover:scale-105 active:scale-95 transition-all duration-200 shrink-0 p-0.5 overflow-visible cursor-pointer ${
             isProfileActive ? 'ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-[#131c31] scale-105' : ''
           }`}
         >
-          <SafeAvatar src={staffAvatar} name={staffName} size="xs" alt="Personel Profilim" />
+          <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center">
+            <SafeAvatar src={staffAvatar} name={staffName} size="xs" alt="Personel Profilim" />
+          </div>
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-slate-900 text-white text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hidden sm:block"
+          >
+            Profilim
+          </span>
         </button>
       </div>
     </nav>
