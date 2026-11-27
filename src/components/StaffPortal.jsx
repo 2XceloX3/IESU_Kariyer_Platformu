@@ -17,15 +17,19 @@ import {
 } from '../utils/staffAuth';
 import {
   calculateProtocolStatus,
-  exportBilateralProtocolDraftPdf
+  exportBilateralProtocolDraftPdf,
+  exportBilateralProtocolWord,
+  exportPrintableReportHtml,
+  PROTOCOL_STATUS_LABELS
 } from '../services/protocolWorkflow';
+import ProtocolEditorModal from './protocol/ProtocolEditorModal';
 import { exportToCSV } from '../utils/export';
 import {
   Bell, Briefcase, Building2, GraduationCap, Award,
   CheckCircle2, XCircle, Search, MessageSquare, FileText,
   Download, Plus, Trash2, CheckSquare, Square, Star,
-  Sliders, Send, Megaphone, Sparkles, ArrowUpRight,
-  Users, Newspaper, ShieldCheck, Layers, Filter
+  Send, Megaphone, Sparkles, ArrowUpRight,
+  Users, Newspaper, ShieldCheck, Layers, Eye, Edit3, Printer, X, Settings2, Paperclip
 } from 'lucide-react';
 
 /**
@@ -107,12 +111,16 @@ export default function StaffPortal({
   const [activeTab, setActiveTab] = useState('feed'); // 'feed' | 'search'
   const [activeDesk, setActiveDesk] = useState('stream'); // 'stream' | 'approvals' | 'students_staj' | 'alumni' | 'companies_jobs' | 'content' | 'messages' | 'reports_export' | 'staff_profile'
   const [approvalFilter, setApprovalFilter] = useState('all'); // 'all' | 'jobs' | 'staj' | 'protocols' | 'other'
+  const [studentsSubTab, setStudentsSubTab] = useState('students'); // 'students' | 'staj'
+  const [companiesSubTab, setCompaniesSubTab] = useState('protocols'); // 'protocols' | 'companies' | 'jobs'
   const [feedFilter, setFeedFilter] = useState('all'); // 'all' | 'announcements' | 'jobs' | 'community'
   const [visibleFeedCount, setVisibleFeedCount] = useState(10);
   const [globalSearch, setGlobalSearch] = useState('');
   const [tableSearch, setTableSearch] = useState('');
   const [alumniFilter, setAlumniFilter] = useState('all');
   const [activeModal, setActiveModal] = useState(null);
+  const [detailRecord, setDetailRecord] = useState(null); // { kind, title, subtitle, badge, fields: [{label, value}], body, raw }
+  const [protocolEditorState, setProtocolEditorState] = useState({ open: false, mode: 'protocol', protocol: null });
 
   // Hızlı duyuru formu
   const [contentForm, setContentForm] = useState({
@@ -280,14 +288,45 @@ export default function StaffPortal({
     return items;
   }, [posts, events, news, announcements, jobs, generalEvents, careerOpportunities, effectiveUser, followedUserIds, feedFilter]);
 
-  // Yetkili CMS sekmesine geçiş (Personel bağlamını korur — geri dönüşte StaffPortal'a döner)
-  const openCmsTab = (tabId) => {
-    try {
-      if (tabId) sessionStorage.setItem('iesu_cms_initial_tab', tabId);
-      sessionStorage.setItem('iesu_staff_cms_context', '1');
-    } catch { /* intentional */ }
-    setActivePortalBranch?.('staff');
-    setView?.('admin_cms');
+  // Personel yetki grubundan doğrudan StaffPortal içi kendi masasına geçiş (Yönetici paneline atmaz!)
+  const resolveDeskForPermissionGroup = (groupId) => {
+    switch (groupId) {
+      case 'students_staj': return 'students_staj';
+      case 'alumni': return 'alumni';
+      case 'companies_protocols':
+      case 'jobs_applications': return 'companies_jobs';
+      case 'content': return 'content';
+      case 'messages': return 'messages';
+      case 'reports_export': return 'reports_export';
+      case 'mentorship':
+      default: return 'approvals';
+    }
+  };
+
+  // Protokol oluşturma / güncelleme (doğrudan Personel Portalı içinden)
+  const handleSaveProtocol = (savedProtocol) => {
+    setCorporateProtocols?.(prev => {
+      const list = prev || [];
+      const exists = list.some(p => p.id === savedProtocol.id);
+      if (exists) {
+        return list.map(p => (p.id === savedProtocol.id ? { ...p, ...savedProtocol } : p));
+      }
+      return [savedProtocol, ...list];
+    });
+    window.toast?.success?.(`${savedProtocol.companyName} protokolü kaydedildi.`);
+  };
+
+  // Tekil kayıt detayını indirme/yazdırma
+  const handlePrintDetailRecord = (record) => {
+    if (!record) return;
+    const rows = (record.fields || []).map(f => [f.label, f.value || '—']);
+    if (record.body) rows.push(['Açıklama / İçerik', record.body]);
+    exportPrintableReportHtml({
+      title: record.title || 'Kayıt Detayı',
+      subtitle: record.subtitle || 'İESÜ Personel Portalı Kayıt Kartı',
+      headers: ['Alan', 'Bilgi'],
+      rows
+    });
   };
 
   // Satır içi operasyon aksiyonları
@@ -605,8 +644,8 @@ export default function StaffPortal({
       {/* ── 3 SÜTUNLU SİTE ANA AKIŞ YERLEŞİMİ ── */}
       <div className="pt-24 max-w-[1320px] mx-auto px-4 flex items-start justify-center gap-6 pb-28 sm:pb-24">
 
-        {/* SOL SÜTUN: PERSONEL KİMLİK KARTI & YETKİLİ MASALAR */}
-        <aside className="hidden lg:flex w-[280px] shrink-0 flex-col gap-4 sticky top-24 self-start h-fit max-h-[calc(100vh-7rem)] overflow-y-auto no-scrollbar z-20 pb-6">
+        {/* SOL SÜTUN: PERSONEL KİMLİK KARTI & YETKİLİ MASALAR (Bağımsız Kaydırılabilir) */}
+        <aside className="hidden lg:flex w-[280px] shrink-0 flex-col gap-4 sticky top-24 self-start max-h-[calc(100vh-6.5rem)] overflow-y-auto overscroll-contain custom-scrollbar pr-1.5 z-20 pb-24">
           <div className="bg-white dark:bg-[#131c31] rounded-3xl border border-slate-200/80 dark:border-slate-800 overflow-hidden shadow-xs">
             <div className="h-24 bg-gradient-to-r from-slate-900 via-indigo-800 to-blue-900 relative">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(129,140,248,0.35),transparent_65%)]" />
@@ -695,14 +734,6 @@ export default function StaffPortal({
                   );
                 })}
               </div>
-
-              <button
-                type="button"
-                onClick={() => openCmsTab(allowedGroups[0]?.primaryTab || 'overview')}
-                className="mt-4 w-full py-2.5 px-3 bg-gradient-to-r from-slate-900 via-indigo-700 to-blue-700 hover:from-slate-800 hover:to-blue-800 text-white rounded-xl text-xs font-black transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Sliders size={14} /> Yetkili CMS Modülleri
-              </button>
             </div>
           </div>
         </aside>
@@ -732,10 +763,10 @@ export default function StaffPortal({
                   </div>
                   <button
                     type="button"
-                    onClick={() => openCmsTab(allowedGroups[0]?.primaryTab || 'overview')}
+                    onClick={() => setActiveDesk('approvals')}
                     className="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-[11px] font-black shrink-0 cursor-pointer"
                   >
-                    CMS
+                    Onaylar ({totalPendingCount})
                   </button>
                 </div>
                 <div className="flex gap-1.5 overflow-x-auto hide-scrollbar pb-0.5">
@@ -872,7 +903,7 @@ export default function StaffPortal({
                         </h3>
                         <button
                           type="button"
-                          onClick={() => openCmsTab('operasyon')}
+                          onClick={() => setActiveDesk('approvals')}
                           className="text-xs font-bold text-indigo-700 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer"
                         >
                           Tümünü Aç <ArrowUpRight size={13} />
@@ -916,6 +947,8 @@ export default function StaffPortal({
                               <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">Kontenjan: {p.committedQuota || 0}</p>
                             </div>
                             <div className="flex items-center gap-1.5 shrink-0">
+                              <button type="button" onClick={() => setProtocolEditorState({ open: true, mode: 'protocol', protocol: p })} className="px-2 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-black cursor-pointer">Düzenle</button>
+                              <button type="button" onClick={() => exportBilateralProtocolWord(p)} className="px-2 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-bold cursor-pointer">Word</button>
                               <button type="button" onClick={() => exportBilateralProtocolDraftPdf(p)} className="px-2 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white text-[11px] font-bold cursor-pointer">PDF</button>
                               <button type="button" onClick={() => handleProtocolDecision(p.id, 'ACTIVE')} className="px-2.5 py-1.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-[11px] font-black cursor-pointer">Onayla</button>
                             </div>
@@ -996,60 +1029,171 @@ export default function StaffPortal({
                 </div>
               )}
 
-              {/* ── MASA 2: ÖĞRENCİ & STAJ MASASI ── */}
+              {/* ── MASA 2: ÖĞRENCİ & STAJ MASASI (TAM İNCELEME & İNDİRME) ── */}
               {activeDesk === 'students_staj' && allowedSet.has('students_staj') && (
                 <div className="bg-white dark:bg-[#131c31] rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-xs space-y-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <h3 className="text-base font-black text-slate-900 dark:text-white">Öğrenci & Staj Masası</h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{filteredStudents.length} kayıtlı öğrenci • {pendingInternships.length} bekleyen staj</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{filteredStudents.length} kayıtlı öğrenci • {voluntaryInternships.length} staj dosyası ({pendingInternships.length} onay bekleyen)</p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <button
                         type="button"
-                        onClick={() => exportToCSV(filteredStudents, 'IESU_Ogrenci_Listesi.csv')}
+                        onClick={() => exportToCSV(studentsSubTab === 'staj' ? voluntaryInternships : filteredStudents, studentsSubTab === 'staj' ? 'IESU_Staj_Basvurulari.csv' : 'IESU_Ogrenci_Listesi.csv')}
                         className="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-black flex items-center gap-1.5 cursor-pointer"
                       >
-                        <Download size={13} /> Excel
+                        <Download size={13} /> Excel (.csv)
                       </button>
                       <button
                         type="button"
-                        onClick={() => openCmsTab('gonullu')}
-                        className="px-3 py-1.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-black cursor-pointer"
+                        onClick={() => {
+                          if (studentsSubTab === 'staj') {
+                            exportPrintableReportHtml({
+                              title: 'Staj & SGK Başvuru Raporu',
+                              headers: ['Öğrenci', 'Kurum / İşletme', 'Pozisyon', 'Dönem / Tarih', 'Durum'],
+                              rows: voluntaryInternships.map(v => [v.student || v.studentName || '—', v.company || v.companyName || '—', v.position || v.type || 'Staj', v.startDate || v.date || '—', v.status || 'Beklemede'])
+                            });
+                          } else {
+                            exportPrintableReportHtml({
+                              title: 'Öğrenci Havuzu Raporu',
+                              headers: ['Ad Soyad', 'Bölüm', 'Sınıf / GNO', 'E-Posta', 'Staj Durumu'],
+                              rows: filteredStudents.map(s => [s.name || '—', s.department || '—', `${s.year ? `${s.year}. Sınıf` : 'Aktif'}${s.gpa ? ` • ${s.gpa}` : ''}`, s.email || '—', s.internshipStatus || 'Staj Arayışında'])
+                            });
+                          }
+                        }}
+                        className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-black flex items-center gap-1.5 cursor-pointer"
                       >
-                        Staj CMS →
+                        <Printer size={13} /> PDF Rapor
                       </button>
                     </div>
+                  </div>
+
+                  {/* Alt Sekmeler: Öğrenciler | Staj & SGK Dosyaları */}
+                  <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl w-fit">
+                    <button
+                      type="button"
+                      onClick={() => setStudentsSubTab('students')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer transition ${studentsSubTab === 'students' ? 'bg-indigo-700 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'}`}
+                    >
+                      Öğrenciler ({filteredStudents.length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setStudentsSubTab('staj')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer transition ${studentsSubTab === 'staj' ? 'bg-indigo-700 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'}`}
+                    >
+                      Staj & SGK ({voluntaryInternships.length})
+                    </button>
                   </div>
 
                   <input
                     type="text"
                     value={tableSearch}
                     onChange={(e) => setTableSearch(e.target.value)}
-                    placeholder="Öğrenci adı, bölüm veya e-posta ara..."
+                    placeholder={studentsSubTab === 'staj' ? 'Öğrenci veya staj kurumu ara...' : 'Öğrenci adı, bölüm veya e-posta ara...'}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold"
                   />
 
-                  <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
-                    {filteredStudents.slice(0, 25).map(s => (
-                      <div key={s.id} className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700 flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <SafeAvatar src={s.avatar} name={s.name} size="sm" className="w-9 h-9 rounded-full shrink-0" />
-                          <div className="min-w-0">
-                            <p className="text-xs font-black text-slate-900 dark:text-white truncate">{s.name}</p>
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{s.department || 'Bölüm'} • {s.year ? `${s.year}. Sınıf` : 'Aktif'}</p>
+                  {studentsSubTab === 'students' ? (
+                    <div className="space-y-2 max-h-[460px] overflow-y-auto custom-scrollbar pr-1">
+                      {filteredStudents.slice(0, 40).map(s => (
+                        <div key={s.id} className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700 flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <SafeAvatar src={s.avatar} name={s.name} size="sm" className="w-9 h-9 rounded-full shrink-0" />
+                            <div className="min-w-0">
+                              <p className="text-xs font-black text-slate-900 dark:text-white truncate">{s.name}</p>
+                              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{s.department || 'Bölüm'} • {s.year ? `${s.year}. Sınıf` : 'Aktif'}{s.gpa ? ` • GNO: ${s.gpa}` : ''}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <span className="hidden sm:inline-block px-2.5 py-1 rounded-lg text-[10px] font-black bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300">
+                              {s.internshipStatus || 'Staj Arayışında'}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setDetailRecord({
+                                kind: 'student',
+                                title: s.name || 'Öğrenci Kaydı',
+                                subtitle: `${s.department || 'İESÜ'} • Öğrenci Kartı`,
+                                badge: s.internshipStatus || 'Aktif Öğrenci',
+                                fields: [
+                                  { label: 'Öğrenci No / ID', value: s.studentNo || s.id },
+                                  { label: 'Fakülte / Bölüm', value: `${s.faculty ? `${s.faculty} / ` : ''}${s.department || '—'}` },
+                                  { label: 'Sınıf / GNO', value: `${s.year || s.grade || '—'} • GNO: ${s.gpa || '—'}` },
+                                  { label: 'E-Posta', value: s.email || '—' },
+                                  { label: 'Telefon', value: s.phone || '—' },
+                                  { label: 'Staj Durumu', value: s.internshipStatus || 'Staj Arayışında' },
+                                  { label: 'Yetenekler', value: Array.isArray(s.skills) ? s.skills.join(', ') : (s.skills || '—') }
+                                ],
+                                body: s.bio || s.about || '',
+                                raw: s
+                              })}
+                              className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-indigo-700 dark:text-indigo-300 text-[11px] font-black hover:bg-indigo-50 flex items-center gap-1 cursor-pointer"
+                            >
+                              <Eye size={12} /> İncele
+                            </button>
                           </div>
                         </div>
-                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-black bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 shrink-0">
-                          {s.internshipStatus || 'Staj Arayışında'}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-[460px] overflow-y-auto custom-scrollbar pr-1">
+                      {voluntaryInternships
+                        .filter(v => {
+                          const q = tableSearch.trim().toLocaleLowerCase('tr-TR');
+                          return !q || (v.student || v.studentName || '').toLocaleLowerCase('tr-TR').includes(q) || (v.company || v.companyName || '').toLocaleLowerCase('tr-TR').includes(q);
+                        })
+                        .map(v => (
+                          <div key={v.id} className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <p className="text-xs font-black text-slate-900 dark:text-white truncate">{v.student || v.studentName || 'Öğrenci'} — {v.company || v.companyName || 'Kurum'}</p>
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-black shrink-0 ${
+                                  v.status === 'Onaylı' ? 'bg-emerald-100 text-emerald-800' : v.status === 'Reddedildi' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'
+                                }`}>{v.status || 'Beklemede'}</span>
+                              </div>
+                              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{v.position || v.type || 'Gönüllü / Zorunlu Staj'} • {v.startDate || v.date || 'Dönem Belirtilmedi'}</p>
+                            </div>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => setDetailRecord({
+                                  kind: 'staj',
+                                  title: `${v.student || v.studentName || 'Öğrenci'} — Staj Dosyası`,
+                                  subtitle: `${v.company || v.companyName || 'İşletme'} • ${v.position || 'Staj'}`,
+                                  badge: v.status || 'Beklemede',
+                                  fields: [
+                                    { label: 'Dosya No', value: v.id },
+                                    { label: 'Öğrenci', value: v.student || v.studentName || '—' },
+                                    { label: 'Bölüm', value: v.department || '—' },
+                                    { label: 'İşletme / Kurum', value: v.company || v.companyName || '—' },
+                                    { label: 'Pozisyon / Tür', value: `${v.position || '—'} (${v.type || 'Staj'})` },
+                                    { label: 'Tarih / Süre', value: `${v.startDate || v.date || '—'}${v.endDate ? ` — ${v.endDate}` : ''}` },
+                                    { label: 'SGK / Durum', value: v.status || 'Beklemede' }
+                                  ],
+                                  body: v.notes || v.description || '',
+                                  raw: v
+                                })}
+                                className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-indigo-700 dark:text-indigo-300 text-[11px] font-black flex items-center gap-1 cursor-pointer"
+                              >
+                                <Eye size={12} /> Oku
+                              </button>
+                              {v.status !== 'Onaylı' && (
+                                <button type="button" onClick={() => handleApproveInternship(v.id)} className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black cursor-pointer">Onayla</button>
+                              )}
+                              {v.status !== 'Reddedildi' && (
+                                <button type="button" onClick={() => handleRejectInternship(v.id)} className="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-bold cursor-pointer">Reddet</button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
                 </div>
               )}
 
-              {/* ── MASA 3: MEZUN & MBS MASASI ── */}
+              {/* ── MASA 3: MEZUN & MBS MASASI (TAM İNCELEME & İNDİRME) ── */}
               {activeDesk === 'alumni' && allowedSet.has('alumni') && (
                 <div className="bg-white dark:bg-[#131c31] rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-xs space-y-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1063,14 +1207,18 @@ export default function StaffPortal({
                         onClick={() => exportToCSV(filteredAlumni, 'IESU_Mezun_Listesi.csv')}
                         className="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-black flex items-center gap-1.5 cursor-pointer"
                       >
-                        <Download size={13} /> Excel
+                        <Download size={13} /> Excel (.csv)
                       </button>
                       <button
                         type="button"
-                        onClick={() => openCmsTab('alumni')}
-                        className="px-3 py-1.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-black cursor-pointer"
+                        onClick={() => exportPrintableReportHtml({
+                          title: 'İESÜ Mezun Bilgi Sistemi (MBS) Raporu',
+                          headers: ['Ad Soyad', 'Bölüm', 'Mezuniyet', 'Çalıştığı Kurum / Pozisyon', 'Şehir / E-Posta'],
+                          rows: filteredAlumni.map(a => [a.name || '—', a.department || '—', a.graduationYear || a.gradYear || '—', `${a.currentCompany || '—'}${a.position ? ` (${a.position})` : ''}`, `${a.city || a.location || '—'} • ${a.email || '—'}`])
+                        })}
+                        className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-black flex items-center gap-1.5 cursor-pointer"
                       >
-                        Mezun CMS →
+                        <Printer size={13} /> PDF Rapor
                       </button>
                     </div>
                   </div>
@@ -1101,8 +1249,8 @@ export default function StaffPortal({
                     ))}
                   </div>
 
-                  <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
-                    {filteredAlumni.slice(0, 25).map(a => (
+                  <div className="space-y-2 max-h-[440px] overflow-y-auto custom-scrollbar pr-1">
+                    {filteredAlumni.slice(0, 40).map(a => (
                       <div key={a.id} className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700 flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3 min-w-0">
                           <SafeAvatar src={a.avatar} name={a.name} size="sm" className="w-9 h-9 rounded-full shrink-0" />
@@ -1111,37 +1259,141 @@ export default function StaffPortal({
                             <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{a.department || 'Mezun'} • {a.currentCompany || 'Kariyer Ağı'}</p>
                           </div>
                         </div>
-                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-black bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 shrink-0">
-                          {a.graduationYear || a.gradYear || 'Mezun'}
-                        </span>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span className="hidden sm:inline-block px-2.5 py-1 rounded-lg text-[10px] font-black bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">
+                            {a.graduationYear || a.gradYear || 'Mezun'}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setDetailRecord({
+                              kind: 'alumni',
+                              title: a.name || 'Mezun Kaydı',
+                              subtitle: `${a.department || 'İESÜ Mezunu'} • MBS Kartı`,
+                              badge: a.graduationYear || a.gradYear ? `${a.graduationYear || a.gradYear} Mezunu` : 'Mezun',
+                              fields: [
+                                { label: 'Mezun ID', value: a.id },
+                                { label: 'Bölüm / Program', value: a.department || '—' },
+                                { label: 'Mezuniyet Yılı', value: a.graduationYear || a.gradYear || '—' },
+                                { label: 'Çalıştığı Kurum', value: a.currentCompany || '—' },
+                                { label: 'Pozisyon / Unvan', value: a.position || a.title || '—' },
+                                { label: 'Şehir / Ülke', value: a.city || a.location || '—' },
+                                { label: 'E-Posta / Telefon', value: `${a.email || '—'}${a.phone ? ` • ${a.phone}` : ''}` },
+                                { label: 'Mentörlük Durumu', value: (a.isMentor || a.mentorActive) ? 'Aktif Mentör' : 'Standart Üye' }
+                              ],
+                              body: a.bio || a.about || '',
+                              raw: a
+                            })}
+                            className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-indigo-700 dark:text-indigo-300 text-[11px] font-black hover:bg-indigo-50 flex items-center gap-1 cursor-pointer"
+                          >
+                            <Eye size={12} /> İncele
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* ── MASA 4: FİRMA, İLAN & PROTOKOL MASASI ── */}
+              {/* ── MASA 4: FİRMA, İLAN & ÖZELLEŞTİRİLEBİLİR PROTOKOL STÜDYOSU ── */}
               {activeDesk === 'companies_jobs' && (allowedSet.has('companies_protocols') || allowedSet.has('jobs_applications')) && (
                 <div className="bg-white dark:bg-[#131c31] rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-xs space-y-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <h3 className="text-base font-black text-slate-900 dark:text-white">Firma, İlan & Protokol Masası</h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{companies.length} firma • {corporateProtocols.length} protokol</p>
+                      <h3 className="text-base font-black text-slate-900 dark:text-white">Firma, İlan & Protokol Stüdyosu</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{corporateProtocols.length} protokol • {companies.length} firma • {jobs.length} ilan</p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {allowedSet.has('companies_protocols') && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setProtocolEditorState({ open: true, mode: 'template', protocol: null })}
+                            className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-black flex items-center gap-1.5 cursor-pointer"
+                          >
+                            <Settings2 size={13} /> Şablonu Düzenle
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setProtocolEditorState({ open: true, mode: 'protocol', protocol: null })}
+                            className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-700 to-blue-700 hover:from-indigo-800 hover:to-blue-800 text-white text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-xs"
+                          >
+                            <Plus size={13} /> Yeni Protokol
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Alt Sekmeler: Protokoller | Firmalar | İlanlar */}
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl">
+                      {allowedSet.has('companies_protocols') && (
+                        <button
+                          type="button"
+                          onClick={() => setCompaniesSubTab('protocols')}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer transition ${companiesSubTab === 'protocols' ? 'bg-indigo-700 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'}`}
+                        >
+                          Protokoller ({corporateProtocols.length})
+                        </button>
+                      )}
+                      {allowedSet.has('companies_protocols') && (
+                        <button
+                          type="button"
+                          onClick={() => setCompaniesSubTab('companies')}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer transition ${companiesSubTab === 'companies' ? 'bg-indigo-700 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'}`}
+                        >
+                          Firmalar ({companies.length})
+                        </button>
+                      )}
+                      {allowedSet.has('jobs_applications') && (
+                        <button
+                          type="button"
+                          onClick={() => setCompaniesSubTab('jobs')}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer transition ${companiesSubTab === 'jobs' ? 'bg-indigo-700 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'}`}
+                        >
+                          İlanlar ({jobs.length})
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
                       <button
                         type="button"
-                        onClick={() => exportToCSV(filteredCompanies, 'IESU_Firma_Listesi.csv')}
-                        className="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-black flex items-center gap-1.5 cursor-pointer"
+                        onClick={() => {
+                          if (companiesSubTab === 'protocols') exportToCSV(corporateProtocols, 'IESU_Protokoller.csv');
+                          else if (companiesSubTab === 'jobs') exportToCSV(jobs, 'IESU_Ilanlar.csv');
+                          else exportToCSV(filteredCompanies, 'IESU_Firmalar.csv');
+                        }}
+                        className="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-black flex items-center gap-1 cursor-pointer"
                       >
-                        <Download size={13} /> Excel
+                        <Download size={12} /> Excel
                       </button>
                       <button
                         type="button"
-                        onClick={() => openCmsTab('cms_corporate_partnerships')}
-                        className="px-3 py-1.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-black cursor-pointer"
+                        onClick={() => {
+                          if (companiesSubTab === 'protocols') {
+                            exportPrintableReportHtml({
+                              title: 'Kurumsal İş Birliği Protokolleri',
+                              headers: ['Kod', 'Firma / Kurum', 'Tür', 'Kontenjan', 'Geçerlilik', 'Durum'],
+                              rows: corporateProtocols.map(p => [p.protocolCode || p.id, p.companyName || '—', p.protocolType || 'İş Birliği', p.committedQuota ?? p.internshipQuota ?? 0, `${p.signedDate || '—'} / ${p.validUntil || p.endDate || '—'}`, PROTOCOL_STATUS_LABELS[calculateProtocolStatus(p)] || p.status])
+                            });
+                          } else if (companiesSubTab === 'jobs') {
+                            exportPrintableReportHtml({
+                              title: 'İş & Staj İlanları Listesi',
+                              headers: ['İlan Başlığı', 'Firma', 'Tür', 'Konum', 'Durum'],
+                              rows: jobs.map(j => [j.title || '—', j.company || j.companyName || '—', j.type || 'İlan', j.location || 'İstanbul', j.status || 'Yayında'])
+                            });
+                          } else {
+                            exportPrintableReportHtml({
+                              title: 'Kayıtlı Kurumsal Firmalar',
+                              headers: ['Firma Adı', 'Sektör', 'Konum', 'İletişim', 'Durum'],
+                              rows: filteredCompanies.map(c => [c.name || '—', c.sector || '—', c.location || 'İstanbul', c.email || c.phone || '—', c.status || 'Onaylı'])
+                            });
+                          }
+                        }}
+                        className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[11px] font-black flex items-center gap-1 cursor-pointer"
                       >
-                        Protokol CRM →
+                        <Printer size={12} /> PDF
                       </button>
                     </div>
                   </div>
@@ -1150,34 +1402,186 @@ export default function StaffPortal({
                     type="text"
                     value={tableSearch}
                     onChange={(e) => setTableSearch(e.target.value)}
-                    placeholder="Firma adı veya sektör ara..."
+                    placeholder={companiesSubTab === 'protocols' ? 'Protokol kodu veya firma ara...' : companiesSubTab === 'jobs' ? 'İlan başlığı veya firma ara...' : 'Firma adı veya sektör ara...'}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold"
                   />
 
-                  <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1">
-                    {filteredCompanies.slice(0, 20).map(c => (
-                      <div key={c.id} className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700 flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <SafeAvatar src={c.logo} name={c.name} size="sm" className="w-9 h-9 rounded-xl shrink-0" />
-                          <div className="min-w-0">
-                            <p className="text-xs font-black text-slate-900 dark:text-white truncate">{c.name}</p>
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{c.sector || 'Sektör'} • {c.location || 'İstanbul'}</p>
+                  {/* ALT SEKME 4A: PROTOKOL STÜDYOSU LİSTESİ */}
+                  {companiesSubTab === 'protocols' && allowedSet.has('companies_protocols') && (
+                    <div className="space-y-2.5 max-h-[460px] overflow-y-auto custom-scrollbar pr-1">
+                      {corporateProtocols
+                        .filter(p => {
+                          const q = tableSearch.trim().toLocaleLowerCase('tr-TR');
+                          return !q || (p.companyName || '').toLocaleLowerCase('tr-TR').includes(q) || (p.protocolCode || '').toLocaleLowerCase('tr-TR').includes(q);
+                        })
+                        .map(p => {
+                          const st = calculateProtocolStatus(p);
+                          return (
+                            <div key={p.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700 space-y-2.5">
+                              <div className="flex flex-wrap items-start justify-between gap-2">
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-200">{p.protocolCode || p.id}</span>
+                                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                                      st === 'ACTIVE' ? 'bg-emerald-100 text-emerald-800' : st === 'EXPIRED' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'
+                                    }`}>
+                                      {PROTOCOL_STATUS_LABELS[st] || p.status}
+                                    </span>
+                                    {p.attachedFile && (
+                                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 flex items-center gap-1">
+                                        <Paperclip size={10} /> {p.attachedFile.name}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <h4 className="text-sm font-black text-slate-900 dark:text-white mt-1">{p.companyName}</h4>
+                                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                                    {p.protocolType || 'İş Birliği Protokolü'} • Kontenjan: {p.committedQuota ?? p.internshipQuota ?? 0} • Bitiş: {p.validUntil || p.endDate || '—'}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-200/70 dark:border-slate-700">
+                                <button
+                                  type="button"
+                                  onClick={() => setProtocolEditorState({ open: true, mode: 'protocol', protocol: p })}
+                                  className="px-3 py-1.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-[11px] font-black flex items-center gap-1 cursor-pointer"
+                                >
+                                  <Edit3 size={12} /> Protokolü Düzenle
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => exportBilateralProtocolWord(p)}
+                                  className="px-2.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 text-[11px] font-black flex items-center gap-1 cursor-pointer"
+                                >
+                                  <Download size={12} /> Word (.doc)
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => exportBilateralProtocolDraftPdf(p)}
+                                  className="px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold flex items-center gap-1 cursor-pointer"
+                                >
+                                  <Printer size={12} /> PDF
+                                </button>
+                                {st !== 'ACTIVE' && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleProtocolDecision(p.id, 'ACTIVE')}
+                                    className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black cursor-pointer ml-auto"
+                                  >
+                                    Yürürlüğe Al
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  )}
+
+                  {/* ALT SEKME 4B: FİRMALAR */}
+                  {companiesSubTab === 'companies' && allowedSet.has('companies_protocols') && (
+                    <div className="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1">
+                      {filteredCompanies.slice(0, 30).map(c => (
+                        <div key={c.id} className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700 flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <SafeAvatar src={c.logo} name={c.name} size="sm" className="w-9 h-9 rounded-xl shrink-0" />
+                            <div className="min-w-0">
+                              <p className="text-xs font-black text-slate-900 dark:text-white truncate">{c.name}</p>
+                              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{c.sector || 'Sektör'} • {c.location || 'İstanbul'}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => setDetailRecord({
+                                kind: 'company',
+                                title: c.name || 'Firma Kaydı',
+                                subtitle: `${c.sector || 'Kurumsal İşveren'} • ${c.location || 'İstanbul'}`,
+                                badge: c.status || 'Onaylı',
+                                fields: [
+                                  { label: 'Firma ID', value: c.id },
+                                  { label: 'Sektör', value: c.sector || '—' },
+                                  { label: 'Konum / Adres', value: c.address || c.location || '—' },
+                                  { label: 'Yetkili / E-Posta', value: `${c.contactPerson || '—'} • ${c.email || '—'}` },
+                                  { label: 'Telefon / Web', value: `${c.phone || '—'} • ${c.website || '—'}` },
+                                  { label: 'Durum', value: c.status || 'Onaylı' }
+                                ],
+                                body: c.description || c.about || '',
+                                raw: c
+                              })}
+                              className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-indigo-700 dark:text-indigo-300 text-[11px] font-black flex items-center gap-1 cursor-pointer"
+                            >
+                              <Eye size={12} /> İncele
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleToggleCompanyStatus(c)}
+                              className={`px-2.5 py-1 rounded-xl text-[10px] font-black cursor-pointer ${
+                                c.status === 'Onaylı'
+                                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300'
+                                  : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
+                              }`}
+                            >
+                              {c.status || 'Onaylı'}
+                            </button>
                           </div>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => handleToggleCompanyStatus(c)}
-                          className={`px-2.5 py-1 rounded-xl text-[10px] font-black cursor-pointer shrink-0 ${
-                            c.status === 'Onaylı'
-                              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300'
-                              : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
-                          }`}
-                        >
-                          {c.status || 'Onaylı'}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* ALT SEKME 4C: İŞ & STAJ İLANLARI */}
+                  {companiesSubTab === 'jobs' && allowedSet.has('jobs_applications') && (
+                    <div className="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1">
+                      {jobs
+                        .filter(j => {
+                          const q = tableSearch.trim().toLocaleLowerCase('tr-TR');
+                          return !q || (j.title || '').toLocaleLowerCase('tr-TR').includes(q) || (j.company || j.companyName || '').toLocaleLowerCase('tr-TR').includes(q);
+                        })
+                        .map(j => (
+                          <div key={j.id} className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <p className="text-xs font-black text-slate-900 dark:text-white truncate">{j.title}</p>
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-black shrink-0 ${
+                                  j.status === 'Yayında' || j.status === 'Aktif' ? 'bg-emerald-100 text-emerald-800' : j.status === 'Reddedildi' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'
+                                }`}>{j.status || 'Yayında'}</span>
+                              </div>
+                              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{j.company || j.companyName} • {j.location || 'İstanbul'} • {j.type || 'İlan'}</p>
+                            </div>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => setDetailRecord({
+                                  kind: 'job',
+                                  title: j.title || 'İlan Detayı',
+                                  subtitle: `${j.company || j.companyName || 'Firma'} • ${j.location || 'İstanbul'}`,
+                                  badge: j.status || 'Yayında',
+                                  fields: [
+                                    { label: 'İlan ID', value: j.id },
+                                    { label: 'Firma', value: j.company || j.companyName || '—' },
+                                    { label: 'Çalışma Türü', value: `${j.type || '—'}${j.workMode ? ` (${j.workMode})` : ''}` },
+                                    { label: 'Konum', value: j.location || 'İstanbul' },
+                                    { label: 'Başvuru Sayısı', value: String(applications.filter(a => a.jobId === j.id).length) },
+                                    { label: 'Son Başvuru / Tarih', value: j.deadline || j.date || '—' }
+                                  ],
+                                  body: j.description || j.requirements || '',
+                                  raw: j
+                                })}
+                                className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-indigo-700 dark:text-indigo-300 text-[11px] font-black flex items-center gap-1 cursor-pointer"
+                              >
+                                <Eye size={12} /> Oku
+                              </button>
+                              {j.status !== 'Yayında' && (
+                                <button type="button" onClick={() => handleApproveJob(j.id)} className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black cursor-pointer">Yayınla</button>
+                              )}
+                              {j.status !== 'Reddedildi' && (
+                                <button type="button" onClick={() => handleRejectJob(j.id)} className="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-bold cursor-pointer">Kaldır</button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
 
                   {allowedSet.has('companies_protocols') && pendingFairApps.length > 0 && (
                     <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
@@ -1196,20 +1600,20 @@ export default function StaffPortal({
                 </div>
               )}
 
-              {/* ── MASA 5: İÇERİK & DUYURU MASASI ── */}
+              {/* ── MASA 5: İÇERİK & DUYURU MASASI (YÖNETİCİYE GİTMEDEN TAM YÖNETİM) ── */}
               {activeDesk === 'content' && allowedSet.has('content') && (
                 <div className="bg-white dark:bg-[#131c31] rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-xs space-y-5">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-2">
                     <div>
                       <h3 className="text-base font-black text-slate-900 dark:text-white">İçerik & Duyuru Masası</h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">Hızlı resmi duyuru yayınlayın ve yayındaki kayıtları yönetin.</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Resmî duyuru, haber ve etkinlik içeriklerini doğrudan buradan yayınlayın ve okuyun.</p>
                     </div>
                     <button
                       type="button"
-                      onClick={() => openCmsTab('cms_ann')}
-                      className="px-3 py-1.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-black cursor-pointer"
+                      onClick={() => exportToCSV(announcements, 'IESU_Duyurular.csv')}
+                      className="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-black flex items-center gap-1.5 cursor-pointer shrink-0"
                     >
-                      Tam İçerik CMS →
+                      <Download size={13} /> Excel
                     </button>
                   </div>
 
@@ -1252,49 +1656,70 @@ export default function StaffPortal({
                     </div>
                   </form>
 
-                  <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
-                    {announcements.slice(0, 12).map(a => (
+                  <div className="space-y-2 max-h-80 overflow-y-auto custom-scrollbar pr-1">
+                    {announcements.slice(0, 20).map(a => (
                       <div key={a.id} className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700 flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-xs font-black text-slate-900 dark:text-white truncate">{a.title}</p>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400">{a.date || 'Yayında'}</p>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400">{a.category || 'Duyuru'} • {a.date || 'Yayında'}</p>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteAnnouncement(a.id)}
-                          className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer shrink-0"
-                          title="Yayından Kaldır"
-                        >
-                          <Trash2 size={14} />
-                        </button>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => setDetailRecord({
+                              kind: 'announcement',
+                              title: a.title || 'Duyuru',
+                              subtitle: `${a.category || 'Resmî Duyuru'} • ${a.date || 'Yayında'}`,
+                              badge: a.status || 'Yayında',
+                              fields: [
+                                { label: 'Kategori', value: a.category || 'Duyuru' },
+                                { label: 'Yayın Tarihi', value: a.date || '—' },
+                                { label: 'Yayınlayan', value: a.author || 'Kariyer Geliştirme Koordinatörlüğü' }
+                              ],
+                              body: a.content || a.summary || '',
+                              raw: a
+                            })}
+                            className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-indigo-700 dark:text-indigo-300 text-[11px] font-black cursor-pointer"
+                          >
+                            Oku
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteAnnouncement(a.id)}
+                            className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
+                            title="Yayından Kaldır"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* ── MASA 6: GELEN TALEPLER & MESAJLAR ── */}
+              {/* ── MASA 6: GELEN TALEPLER & MESAJLAR (DETAYLI OKUMA & YANIT) ── */}
               {activeDesk === 'messages' && allowedSet.has('messages') && (
                 <div className="bg-white dark:bg-[#131c31] rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-2">
                     <div>
                       <h3 className="text-base font-black text-slate-900 dark:text-white">Gelen Talepler & Mesajlar</h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{pendingMessages.length} bekleyen talep</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{pendingMessages.length} bekleyen • {mergedContactMessages.length} toplam kayıt</p>
                     </div>
                     <button
                       type="button"
-                      onClick={() => openCmsTab('mesajlar')}
-                      className="px-3 py-1.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-black cursor-pointer"
+                      onClick={() => exportToCSV(mergedContactMessages, 'IESU_Gelen_Talepler.csv')}
+                      className="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-black flex items-center gap-1.5 cursor-pointer shrink-0"
                     >
-                      Mesaj Merkezi →
+                      <Download size={13} /> Excel
                     </button>
                   </div>
 
-                  <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                  <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-1">
                     {mergedContactMessages.length === 0 ? (
                       <p className="text-xs text-slate-500 text-center py-6">Henüz gelen talep bulunmuyor.</p>
                     ) : (
-                      mergedContactMessages.slice(0, 12).map(m => (
+                      mergedContactMessages.slice(0, 20).map(m => (
                         <button
                           key={m.id}
                           type="button"
@@ -1316,79 +1741,139 @@ export default function StaffPortal({
                     )}
                   </div>
 
-                  {selectedMsgId && (
-                    <form onSubmit={handleReplyMessage} className="pt-3 border-t border-slate-100 dark:border-slate-800 flex gap-2">
-                      <input
-                        type="text"
-                        value={msgReplyText}
-                        onChange={(e) => setMsgReplyText(e.target.value)}
-                        placeholder="Seçili talebe hızlı yanıt yazın..."
-                        className="flex-1 px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold"
-                      />
-                      <button
-                        type="submit"
-                        className="px-4 py-2 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-black cursor-pointer"
-                      >
-                        Yanıtla
-                      </button>
-                    </form>
-                  )}
+                  {selectedMsgId && (() => {
+                    const activeMsg = mergedContactMessages.find(m => m.id === selectedMsgId);
+                    if (!activeMsg) return null;
+                    return (
+                      <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-3">
+                        <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <div>
+                              <p className="text-xs font-black text-slate-900 dark:text-white">{activeMsg.sender}</p>
+                              <p className="text-[11px] text-slate-500 dark:text-slate-400">{activeMsg.email} • {activeMsg.date}</p>
+                            </div>
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-indigo-100 text-indigo-800">{activeMsg.status}</span>
+                          </div>
+                          <p className="text-xs font-black text-indigo-700 dark:text-indigo-300">{activeMsg.subject}</p>
+                          <p className="text-xs text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-line">{activeMsg.body || 'Mesaj içeriği bulunmuyor.'}</p>
+                        </div>
+                        <form onSubmit={handleReplyMessage} className="flex gap-2">
+                          <input
+                            type="text"
+                            value={msgReplyText}
+                            onChange={(e) => setMsgReplyText(e.target.value)}
+                            placeholder="Seçili talebe kurumsal yanıtınızı yazın..."
+                            className="flex-1 px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold"
+                          />
+                          <button
+                            type="submit"
+                            className="px-4 py-2 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-black cursor-pointer"
+                          >
+                            Yanıtla
+                          </button>
+                        </form>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
 
-              {/* ── MASA 7: RAPOR & EXCEL MERKEZİ ── */}
+              {/* ── MASA 7: RAPOR & EXCEL / PDF MERKEZİ (TAM YEREL İNDİRME) ── */}
               {activeDesk === 'reports_export' && allowedSet.has('reports_export') && (
                 <div className="bg-white dark:bg-[#131c31] rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-base font-black text-slate-900 dark:text-white">Rapor & Excel Merkezi</h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">Yalnızca yetkili olduğunuz havuzları KVKK maskeli Excel (.csv) olarak indirin.</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => openCmsTab('cms_datapool')}
-                      className="px-3 py-1.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-black cursor-pointer"
-                    >
-                      Tam Rapor CMS →
-                    </button>
+                  <div>
+                    <h3 className="text-base font-black text-slate-900 dark:text-white">Rapor, Excel & PDF Merkezi</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Yetkili olduğunuz tüm veri havuzlarını doğrudan buradan Excel (.csv) veya kurumsal PDF raporu olarak indirin.</p>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {allowedSet.has('students_staj') && (
-                      <button type="button" onClick={() => exportToCSV(students, 'IESU_Ogrenciler.csv')} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 hover:bg-indigo-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between cursor-pointer transition">
-                        <div className="text-left">
-                          <div className="text-xs font-black text-slate-900 dark:text-white">Öğrenci Havuzu</div>
-                          <div className="text-[11px] text-slate-500">{students.length} kayıt (.csv)</div>
+                      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-3">
+                        <div>
+                          <div className="text-xs font-black text-slate-900 dark:text-white">Öğrenci & Staj Havuzu</div>
+                          <div className="text-[11px] text-slate-500">{students.length} öğrenci • {voluntaryInternships.length} staj</div>
                         </div>
-                        <Download size={16} className="text-indigo-600" />
-                      </button>
+                        <div className="flex gap-2">
+                          <button type="button" onClick={() => exportToCSV(students, 'IESU_Ogrenciler.csv')} className="flex-1 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black cursor-pointer">Excel (.csv)</button>
+                          <button
+                            type="button"
+                            onClick={() => exportPrintableReportHtml({
+                              title: 'Öğrenci Havuzu Özeti',
+                              headers: ['Ad Soyad', 'Bölüm', 'E-Posta', 'Staj Durumu'],
+                              rows: students.map(s => [s.name || '—', s.department || '—', s.email || '—', s.internshipStatus || 'Aktif'])
+                            })}
+                            className="flex-1 py-1.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-[11px] font-black cursor-pointer"
+                          >
+                            PDF Rapor
+                          </button>
+                        </div>
+                      </div>
                     )}
                     {allowedSet.has('alumni') && (
-                      <button type="button" onClick={() => exportToCSV(alumni, 'IESU_Mezunlar.csv')} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 hover:bg-indigo-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between cursor-pointer transition">
-                        <div className="text-left">
+                      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-3">
+                        <div>
                           <div className="text-xs font-black text-slate-900 dark:text-white">Mezun Havuzu (MBS)</div>
-                          <div className="text-[11px] text-slate-500">{alumni.length} kayıt (.csv)</div>
+                          <div className="text-[11px] text-slate-500">{alumni.length} mezun kaydı</div>
                         </div>
-                        <Download size={16} className="text-emerald-600" />
-                      </button>
+                        <div className="flex gap-2">
+                          <button type="button" onClick={() => exportToCSV(alumni, 'IESU_Mezunlar.csv')} className="flex-1 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black cursor-pointer">Excel (.csv)</button>
+                          <button
+                            type="button"
+                            onClick={() => exportPrintableReportHtml({
+                              title: 'Mezun Bilgi Sistemi (MBS) Raporu',
+                              headers: ['Ad Soyad', 'Bölüm', 'Yıl', 'Kurum'],
+                              rows: alumni.map(a => [a.name || '—', a.department || '—', a.graduationYear || a.gradYear || '—', a.currentCompany || '—'])
+                            })}
+                            className="flex-1 py-1.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-[11px] font-black cursor-pointer"
+                          >
+                            PDF Rapor
+                          </button>
+                        </div>
+                      </div>
                     )}
                     {allowedSet.has('companies_protocols') && (
-                      <button type="button" onClick={() => exportToCSV(corporateProtocols, 'IESU_Protokoller.csv')} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 hover:bg-indigo-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between cursor-pointer transition">
-                        <div className="text-left">
-                          <div className="text-xs font-black text-slate-900 dark:text-white">Kurumsal Protokoller</div>
-                          <div className="text-[11px] text-slate-500">{corporateProtocols.length} kayıt (.csv)</div>
+                      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-3">
+                        <div>
+                          <div className="text-xs font-black text-slate-900 dark:text-white">Firmalar & Protokoller</div>
+                          <div className="text-[11px] text-slate-500">{companies.length} firma • {corporateProtocols.length} protokol</div>
                         </div>
-                        <Download size={16} className="text-blue-600" />
-                      </button>
+                        <div className="flex gap-2">
+                          <button type="button" onClick={() => exportToCSV(corporateProtocols, 'IESU_Protokoller.csv')} className="flex-1 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black cursor-pointer">Excel (.csv)</button>
+                          <button
+                            type="button"
+                            onClick={() => exportPrintableReportHtml({
+                              title: 'Kurumsal İş Birliği Protokolleri Raporu',
+                              headers: ['Kod', 'Firma', 'Kontenjan', 'Bitiş', 'Durum'],
+                              rows: corporateProtocols.map(p => [p.protocolCode || p.id, p.companyName || '—', p.committedQuota ?? 0, p.validUntil || p.endDate || '—', PROTOCOL_STATUS_LABELS[calculateProtocolStatus(p)] || p.status])
+                            })}
+                            className="flex-1 py-1.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-[11px] font-black cursor-pointer"
+                          >
+                            PDF Rapor
+                          </button>
+                        </div>
+                      </div>
                     )}
                     {allowedSet.has('jobs_applications') && (
-                      <button type="button" onClick={() => exportToCSV(applications, 'IESU_Basvurular.csv')} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 hover:bg-indigo-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between cursor-pointer transition">
-                        <div className="text-left">
-                          <div className="text-xs font-black text-slate-900 dark:text-white">Başvuru Havuzu</div>
-                          <div className="text-[11px] text-slate-500">{applications.length} kayıt (.csv)</div>
+                      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-3">
+                        <div>
+                          <div className="text-xs font-black text-slate-900 dark:text-white">İlan & Başvuru Havuzu</div>
+                          <div className="text-[11px] text-slate-500">{jobs.length} ilan • {applications.length} başvuru</div>
                         </div>
-                        <Download size={16} className="text-amber-600" />
-                      </button>
+                        <div className="flex gap-2">
+                          <button type="button" onClick={() => exportToCSV(applications, 'IESU_Basvurular.csv')} className="flex-1 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black cursor-pointer">Excel (.csv)</button>
+                          <button
+                            type="button"
+                            onClick={() => exportPrintableReportHtml({
+                              title: 'İlan & Başvuru Özeti',
+                              headers: ['İlan', 'Firma', 'Tür', 'Durum'],
+                              rows: jobs.map(j => [j.title || '—', j.company || j.companyName || '—', j.type || 'İlan', j.status || 'Yayında'])
+                            })}
+                            className="flex-1 py-1.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-[11px] font-black cursor-pointer"
+                          >
+                            PDF Rapor
+                          </button>
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -1482,6 +1967,8 @@ export default function StaffPortal({
                             <p className="text-xs text-slate-500 dark:text-slate-400">Kontenjan: {proto.internshipQuota || 0} Stajyer • Bitiş: {proto.endDate || '-'}</p>
                           </div>
                           <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                            <button type="button" onClick={() => setProtocolEditorState({ open: true, mode: 'protocol', protocol: proto })} className="px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 text-xs font-black cursor-pointer">Düzenle</button>
+                            <button type="button" onClick={() => exportBilateralProtocolWord(proto)} className="px-2.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 text-xs font-bold cursor-pointer">Word</button>
                             <button type="button" onClick={() => exportBilateralProtocolDraftPdf?.(proto)} className="px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-xs font-bold cursor-pointer">PDF</button>
                             <button type="button" onClick={() => handleProtocolDecision(proto.id, 'REVISION_REQUIRED')} className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold cursor-pointer">Revizyon</button>
                             <button type="button" onClick={() => handleProtocolDecision(proto.id, 'ACTIVE')} className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black cursor-pointer">Yürürlüğe Al</button>
@@ -1542,13 +2029,15 @@ export default function StaffPortal({
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
-                        <button
-                          type="button"
-                          onClick={() => openCmsTab(allowedGroups[0]?.primaryTab || 'overview')}
-                          className="px-4 py-2.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-black transition shadow-sm cursor-pointer flex items-center gap-1.5"
-                        >
-                          <Sliders size={14} /> Yetkili CMS Modülleri
-                        </button>
+                        {allowedSet.has('companies_protocols') && (
+                          <button
+                            type="button"
+                            onClick={() => setProtocolEditorState({ open: true, mode: 'template', protocol: null })}
+                            className="px-4 py-2.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-black transition shadow-sm cursor-pointer flex items-center gap-1.5"
+                          >
+                            <Settings2 size={14} /> Protokol Şablonu
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1587,10 +2076,14 @@ export default function StaffPortal({
                             {isAllowed && (
                               <button
                                 type="button"
-                                onClick={() => openCmsTab(group.primaryTab)}
+                                onClick={() => {
+                                  setActiveTab('feed');
+                                  setActiveDesk(resolveDeskForPermissionGroup(group.id));
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
                                 className="mt-2.5 text-[11px] font-black text-indigo-700 dark:text-indigo-300 hover:underline flex items-center gap-1 cursor-pointer"
                               >
-                                Modülü Aç <ArrowUpRight size={12} />
+                                Masayı Aç <ArrowUpRight size={12} />
                               </button>
                             )}
                           </div>
@@ -1604,8 +2097,8 @@ export default function StaffPortal({
           )}
         </main>
 
-        {/* SAĞ SÜTUN: İNDİGO BENTO ÖZET, GÜNLÜK TAKİP NOTLARI & KGM HABERLERİ */}
-        <aside className="hidden xl:block w-[300px] shrink-0 space-y-5 sticky top-24 self-start">
+        {/* SAĞ SÜTUN: İNDİGO BENTO ÖZET, GÜNLÜK TAKİP NOTLARI & KGM HABERLERİ (Bağımsız Kaydırılabilir) */}
+        <aside className="hidden xl:block w-[300px] shrink-0 space-y-5 sticky top-24 self-start max-h-[calc(100vh-6.5rem)] overflow-y-auto overscroll-contain custom-scrollbar pr-1.5 pb-24">
           {/* Dark Indigo Canlı Özet Kartı */}
           <div className="bg-gradient-to-br from-slate-950 via-[#1E1B4B] to-blue-950 text-white rounded-3xl p-5 shadow-xl border border-indigo-500/40 space-y-4">
             <div className="flex items-center justify-between">
@@ -1614,36 +2107,36 @@ export default function StaffPortal({
             </div>
             <div className="grid grid-cols-2 gap-2.5">
               {allowedSet.has('students_staj') && (
-                <div className="bg-white/10 rounded-2xl p-3">
+                <button type="button" onClick={() => { setActiveDesk('students_staj'); setStudentsSubTab('students'); }} className="bg-white/10 hover:bg-white/15 rounded-2xl p-3 text-left transition cursor-pointer">
                   <div className="text-lg font-black text-white">{students.length}</div>
                   <div className="text-[10px] font-bold text-indigo-200">Öğrenci</div>
-                </div>
+                </button>
               )}
               {allowedSet.has('alumni') && (
-                <div className="bg-white/10 rounded-2xl p-3">
+                <button type="button" onClick={() => setActiveDesk('alumni')} className="bg-white/10 hover:bg-white/15 rounded-2xl p-3 text-left transition cursor-pointer">
                   <div className="text-lg font-black text-white">{alumni.length}</div>
                   <div className="text-[10px] font-bold text-indigo-200">Mezun</div>
-                </div>
+                </button>
               )}
               {allowedSet.has('companies_protocols') && (
-                <div className="bg-white/10 rounded-2xl p-3">
+                <button type="button" onClick={() => { setActiveDesk('companies_jobs'); setCompaniesSubTab('companies'); }} className="bg-white/10 hover:bg-white/15 rounded-2xl p-3 text-left transition cursor-pointer">
                   <div className="text-lg font-black text-white">{companies.length}</div>
                   <div className="text-[10px] font-bold text-indigo-200">Firma</div>
-                </div>
+                </button>
               )}
               {allowedSet.has('jobs_applications') && (
-                <div className="bg-white/10 rounded-2xl p-3">
+                <button type="button" onClick={() => { setActiveDesk('companies_jobs'); setCompaniesSubTab('jobs'); }} className="bg-white/10 hover:bg-white/15 rounded-2xl p-3 text-left transition cursor-pointer">
                   <div className="text-lg font-black text-white">{jobs.length}</div>
                   <div className="text-[10px] font-bold text-indigo-200">İlan</div>
-                </div>
+                </button>
               )}
             </div>
             <button
               type="button"
-              onClick={() => openCmsTab(allowedGroups[0]?.primaryTab || 'overview')}
+              onClick={() => setActiveDesk('approvals')}
               className="w-full py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-black transition cursor-pointer shadow-md"
             >
-              Yetkili CMS Paneline Git
+              Onay & İşlem Kuyruğunu Aç ({totalPendingCount})
             </button>
           </div>
 
@@ -1765,6 +2258,80 @@ export default function StaffPortal({
         staffAvatar={effectiveUser?.avatar}
         staffName={staffName}
       />
+
+      {/* ── DETAYLI KAYIT OKUMA & İNDİRME MODALI (PERSONEL PORTALI İÇİ) ── */}
+      {detailRecord && (
+        <div
+          className="fixed inset-0 z-[9998] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
+          role="dialog"
+          aria-modal="true"
+          data-testid="staff-detail-modal"
+        >
+          <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-3xl w-full max-w-xl max-h-[88vh] flex flex-col overflow-hidden shadow-2xl">
+            <div className="bg-gradient-to-r from-slate-950 via-indigo-900 to-blue-900 text-white px-5 py-4 flex items-center justify-between gap-3 shrink-0">
+              <div className="min-w-0">
+                <span className="inline-block text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/15 text-sky-200 mb-1">
+                  {detailRecord.badge || 'Kayıt Detayı'}
+                </span>
+                <h3 className="text-base font-black truncate">{detailRecord.title}</h3>
+                <p className="text-[11px] text-indigo-200 truncate">{detailRecord.subtitle}</p>
+              </div>
+              <button type="button" onClick={() => setDetailRecord(null)} aria-label="Kapat" className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white cursor-pointer shrink-0">
+                <X size={17} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {(detailRecord.fields || []).map((f, idx) => (
+                  <div key={idx} className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700">
+                    <div className="text-[10px] font-black uppercase tracking-wider text-slate-400">{f.label}</div>
+                    <div className="text-xs font-bold text-slate-900 dark:text-white mt-0.5 break-words">{f.value || '—'}</div>
+                  </div>
+                ))}
+              </div>
+              {detailRecord.body && (
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700">
+                  <div className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Açıklama / Detay Metni</div>
+                  <p className="text-xs text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-line">{detailRecord.body}</p>
+                </div>
+              )}
+            </div>
+            <div className="px-5 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 flex items-center justify-between gap-2 shrink-0">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handlePrintDetailRecord(detailRecord)}
+                  className="px-3.5 py-2 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-black flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Printer size={13} /> PDF / Yazdır
+                </button>
+                <button
+                  type="button"
+                  onClick={() => exportToCSV([detailRecord.raw || detailRecord], `IESU_${detailRecord.kind || 'kayit'}.csv`)}
+                  className="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-black flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Download size={13} /> Excel (.csv)
+                </button>
+              </div>
+              <button type="button" onClick={() => setDetailRecord(null)} className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800 cursor-pointer">
+                Kapat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── ÖZELLEŞTİRİLEBİLİR PROTOKOL & KURUMSAL ŞABLON STÜDYOSU ── */}
+      {protocolEditorState.open && (
+        <ProtocolEditorModal
+          isOpen={protocolEditorState.open}
+          onClose={() => setProtocolEditorState({ open: false, mode: 'protocol', protocol: null })}
+          initialMode={protocolEditorState.mode}
+          protocol={protocolEditorState.protocol}
+          existingCount={corporateProtocols.length}
+          onSaveProtocol={handleSaveProtocol}
+        />
+      )}
 
       {activeModal && <FooterModals activeModal={activeModal} setActiveModal={setActiveModal} />}
     </div>

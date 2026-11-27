@@ -301,8 +301,8 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
       <div className="pt-24 max-w-6xl mx-auto px-4 flex justify-center gap-6 pb-28 sm:pb-20">
         
         {/* LEFT PANEL: Corporate Profile & Quick ATS Actions */}
-        <div className="hidden lg:block w-[300px] shrink-0">
-          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-lg sticky top-24 space-y-4 p-5">
+        <div className="hidden lg:block w-[300px] shrink-0 sticky top-24 self-start max-h-[calc(100vh-6.5rem)] overflow-y-auto overscroll-contain custom-scrollbar pr-1.5 pb-24 z-20">
+          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-lg space-y-4 p-5">
             {(userRole === 'admin' || effectiveCurrentUser?.role === 'admin') ? (
               <div className="text-center">
                 <div className="relative inline-block mb-2">
@@ -575,7 +575,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
         </div>
 
         {/* RIGHT PANEL: Kurumsal İletişim, Şube Gündemi & Aday Takip Havuzu */}
-        <div className="hidden xl:block w-[320px] shrink-0 space-y-5">
+        <div className="hidden xl:block w-[320px] shrink-0 space-y-5 sticky top-24 self-start max-h-[calc(100vh-6.5rem)] overflow-y-auto overscroll-contain custom-scrollbar pr-1.5 pb-24">
           {/* 1. FİRMA/KURUMSAL DAL ÖZEL İK & YETENEK BÜLTENİ */}
           <BranchNewsWidget branch="company" currentUser={effectiveCurrentUser} setView={setView} />
 

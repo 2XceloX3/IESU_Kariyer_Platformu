@@ -489,18 +489,18 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                         setIsOpen(false); 
                         const store = useAppStore.getState();
                         store.setActivePortalBranch?.('staff');
-                        setView?.('admin_cms');
+                        setView?.('notifications');
                       }} 
                       className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
-                        currentView === 'admin_cms'
+                        currentView === 'notifications'
                           ? 'bg-indigo-700 text-white font-black border-indigo-500 shadow-indigo-900/20' 
                           : 'bg-white dark:bg-slate-800/90 hover:bg-indigo-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700'
                       }`}
                     >
-                      <div className={`p-1 rounded-lg ${currentView === 'admin_cms' ? 'bg-white/20 text-white' : 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'}`}>
+                      <div className={`p-1 rounded-lg ${currentView === 'notifications' ? 'bg-white/20 text-white' : 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'}`}>
                         <LayoutDashboard size={16} />
                       </div>
-                      <span className="text-[11px] font-bold">Yetkili Modüller</span>
+                      <span className="text-[11px] font-bold">Bildirimler</span>
                     </button>
                   </div>
                 </div>

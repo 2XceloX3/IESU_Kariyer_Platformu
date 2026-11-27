@@ -233,7 +233,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
       </nav>
 
       <div className="pt-24 max-w-6xl mx-auto px-4 flex justify-center gap-6 pb-28 sm:pb-20">
-        <div className="hidden lg:block w-[300px] shrink-0">
+        <div className="hidden lg:block w-[300px] shrink-0 sticky top-24 self-start max-h-[calc(100vh-6.5rem)] overflow-y-auto overscroll-contain custom-scrollbar pr-1.5 pb-24 z-20">
           <div className="bg-white rounded-2xl border border-gray-100 p-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden text-center">
             <div className="h-24 bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-900 relative">
               <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
@@ -608,7 +608,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
         </div>
 
-        <div className="hidden xl:block w-[300px] shrink-0 space-y-6">
+        <div className="hidden xl:block w-[300px] shrink-0 space-y-6 sticky top-24 self-start max-h-[calc(100vh-6.5rem)] overflow-y-auto overscroll-contain custom-scrollbar pr-1.5 pb-24">
           {/* 1. MEZUN DALI ÖZEL GÜNDEM & HABERLER WIDGET'I */}
           <BranchNewsWidget branch="alumni" currentUser={effectiveCurrentUser} setView={setView} />
 

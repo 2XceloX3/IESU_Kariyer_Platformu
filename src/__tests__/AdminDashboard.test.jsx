@@ -261,7 +261,8 @@ describe('AdminDashboard Component', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: /Profil Menüsünü Aç\/Kapat/i }));
     expect(screen.getByText(/Çalışma Masam/i)).toBeInTheDocument();
-    expect(screen.getByText(/Yetkili Modüller/i)).toBeInTheDocument();
+    expect(screen.getByText(/Bildirimler/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Yetkili Modüller/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Mezun Portalı/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Firma Portalı/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Öğrenci & Staj Portalı/i)).not.toBeInTheDocument();
@@ -308,6 +309,33 @@ describe('AdminDashboard Component', () => {
     // Clicking Ana Sayfa returns cleanly to Staff stream — never navigates to Super Admin
     fireEvent.click(screen.getByTitle('Personel Ana Akışı'));
     expect(spySetView).not.toHaveBeenCalledWith('admin');
+    expect(spySetView).not.toHaveBeenCalledWith('admin_cms');
+  });
+
+  it('keeps StaffPortal 100% self-contained with custom Protocol Studio and scrollable sidebars (no CMS redirects)', () => {
+    const spySetView = vi.fn();
+    render(
+      <StaffPortal
+        currentUser={{ id: 'STAFF-100', name: 'Protokol Uzmanı', role: 'staff', allowedModules: ['companies_protocols', 'jobs_applications', 'students_staj'] }}
+        userRole="staff"
+        academicRole="staff"
+        setView={spySetView}
+        setSelectedUserId={mockSetSelectedUserId}
+      />
+    );
+
+    // No Admin CMS redirect buttons exist inside StaffPortal
+    expect(screen.queryByText(/Yetkili CMS Modülleri/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Yetkili CMS Paneline Git/i)).not.toBeInTheDocument();
+
+    // Open Firma, İlan & Protokol desk -> open Protocol Template Editor inside StaffPortal
+    fireEvent.click(screen.getByRole('button', { name: /İlan & Firma/i }));
+    expect(screen.getByText(/Firma, İlan & Protokol Stüdyosu/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Şablonu Düzenle/i }));
+    expect(screen.getByTestId('protocol-editor-modal')).toBeInTheDocument();
+    expect(screen.getByText(/Üniversite Özel Protokol Şablonu Yönetimi/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Word \(\.doc\) İndir/i })).toBeInTheDocument();
     expect(spySetView).not.toHaveBeenCalledWith('admin_cms');
   });
 });

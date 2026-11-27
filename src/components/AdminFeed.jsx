@@ -211,7 +211,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
       <div className="pt-24 max-w-[1320px] mx-auto px-4 flex items-start justify-center gap-6 pb-28 sm:pb-20">
         
         {/* ─── LEFT PANEL: SUPER ADMIN EXECUTIVE PROFILE (270px) ─── */}
-        <div className="hidden lg:flex w-[270px] shrink-0 flex-col gap-4.5 sticky top-24 self-start h-fit max-h-[calc(100vh-7rem)] overflow-y-auto no-scrollbar z-20 pb-6">
+        <div className="hidden lg:flex w-[270px] shrink-0 flex-col gap-4.5 sticky top-24 self-start max-h-[calc(100vh-6.5rem)] overflow-y-auto overscroll-contain custom-scrollbar pr-1.5 z-20 pb-24">
           <div className="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs shrink-0">
             <div className="h-24 bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 relative">
               <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
@@ -692,7 +692,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
         </div>
 
         {/* ─── RIGHT PANEL: EXECUTIVE QUICK MANAGEMENT (320px) ─── */}
-        <div className="hidden xl:block w-[320px] shrink-0 space-y-5">
+        <div className="hidden xl:block w-[320px] shrink-0 space-y-5 sticky top-24 self-start max-h-[calc(100vh-6.5rem)] overflow-y-auto overscroll-contain custom-scrollbar pr-1.5 pb-24">
           
           {/* Ultra-Modern Royal Slate & Executive Gold Bento Management Card */}
           <div className="bg-gradient-to-br from-slate-950 via-[#0A2342] to-slate-900 text-white rounded-3xl p-5 shadow-xl border border-amber-500/40 space-y-4 relative overflow-hidden">

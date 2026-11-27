@@ -208,59 +208,258 @@ export function calculateProtocolStatus(protocol, referenceDate = new Date()) {
   return PROTOCOL_STATUS.ACTIVE;
 }
 
-/**
- * İkili Resmî Taslak Protokol Yazdırma / PDF Çıktısı (İESÜ ↔ Kurumsal İşletme)
- */
-export function exportBilateralProtocolDraftPdf(protocol = {}) {
-  if (typeof window === 'undefined') return;
+export const CUSTOM_PROTOCOL_TEMPLATE_STORAGE_KEY = 'iesu_custom_protocol_template_v1';
+
+export const PROTOCOL_PLACEHOLDERS = [
+  { token: '{{FIRMA_ADI}}', label: 'Firma Adı' },
+  { token: '{{SEKTOR}}', label: 'Sektör' },
+  { token: '{{PROTOKOL_TURU}}', label: 'Protokol Türü' },
+  { token: '{{PROTOKOL_KODU}}', label: 'Protokol Kodu' },
+  { token: '{{VERGI_NO}}', label: 'Vergi No' },
+  { token: '{{MERSIS_NO}}', label: 'MERSİS No' },
+  { token: '{{ADRES}}', label: 'Firma Adresi' },
+  { token: '{{YETKILI}}', label: 'İmza Yetkilisi' },
+  { token: '{{UNVAN}}', label: 'Yetkili Unvanı' },
+  { token: '{{EPOSTA}}', label: 'E-Posta' },
+  { token: '{{TELEFON}}', label: 'Telefon' },
+  { token: '{{FAKULTE}}', label: 'Fakülte / Birim' },
+  { token: '{{KONTENJAN}}', label: 'Yıllık Kontenjan' },
+  { token: '{{BASLANGIC}}', label: 'Başlangıç Tarihi' },
+  { token: '{{BITIS}}', label: 'Bitiş Tarihi' },
+  { token: '{{KARAR_NO}}', label: 'Karar No' },
+  { token: '{{KAPSAM}}', label: 'İş Birliği Kapsamı' }
+];
+
+export const DEFAULT_PROTOCOL_TEMPLATE = {
+  headerTitle: 'T.C. İSTANBUL ESENYURT ÜNİVERSİTESİ REKTÖRLÜĞÜ',
+  headerSubtitle: 'KARİYER GELİŞTİRME KOORDİNATÖRLÜĞÜ • ÜNİVERSİTE–SANAYİ İŞ BİRLİĞİ PROTOKOLÜ',
+  institutionParty: 'İstanbul Esenyurt Üniversitesi Rektörlüğü — Kariyer Geliştirme Koordinatörlüğü',
+  institutionAddress: 'Zafer Mah. Adile Naşit Bulvarı No: 1, Esenyurt / İstanbul',
+  signerLeftTitle: 'İstanbul Esenyurt Üniversitesi Adına',
+  signerLeftRole: 'Rektörlük / Kariyer Geliştirme Koordinatörlüğü',
+  signerRightTitle: '{{FIRMA_ADI}} Adına',
+  signerRightRole: '{{YETKILI}} — {{UNVAN}}',
+  uploadedTemplateFile: null,
+  articles: [
+    {
+      id: 'm1',
+      title: 'Madde 1 — Amaç ve Kapsam',
+      body: 'Bu protokolün amacı; İstanbul Esenyurt Üniversitesi (İESÜ) ile {{FIRMA_ADI}} arasında {{PROTOKOL_TURU}} kapsamında {{FAKULTE}} öğrenci ve mezunlarına yönelik staj, uygulamalı eğitim, kariyer günleri ve istihdam iş birliğinin esaslarını düzenlemektir. İş birliği kapsamı: {{KAPSAM}}'
+    },
+    {
+      id: 'm2',
+      title: 'Madde 2 — Tarafların Yükümlülükleri ve Kontenjan',
+      body: '{{FIRMA_ADI}}, yıllık {{KONTENJAN}} öğrenci/mezun kontenjanı dâhilinde uygulamalı eğitim ve staj imkânı sunmayı; İESÜ Kariyer Geliştirme Koordinatörlüğü ise uygun adayların yönlendirilmesi ve süreç koordinasyonunu sağlamayı kabul eder.'
+    },
+    {
+      id: 'm3',
+      title: 'Madde 3 — Yasal Dayanak, SGK ve KVKK',
+      body: 'Taraflar, 2547 Sayılı Yükseköğretim Kanunu, 3308 Sayılı Mesleki Eğitim Kanunu, 5510 Sayılı Kanun 5/b iş kazası ve meslek hastalığı sigortası hükümleri ile 6698 Sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kurallarına eksiksiz uymayı taahhüt eder.'
+    },
+    {
+      id: 'm4',
+      title: 'Madde 4 — Süre, Yenileme ve Fesih',
+      body: 'İşbu protokol {{BASLANGIC}} tarihinde yürürlüğe girer ve {{BITIS}} tarihine kadar geçerlidir. Taraflardan biri bitiş tarihinden en az 30 gün önce yazılı bildirimde bulunmadığı takdirde protokol karşılıklı mutabakatla yenilenebilir.'
+    }
+  ]
+};
+
+export function loadCustomProtocolTemplate() {
+  if (typeof window === 'undefined') return DEFAULT_PROTOCOL_TEMPLATE;
+  try {
+    const raw = localStorage.getItem(CUSTOM_PROTOCOL_TEMPLATE_STORAGE_KEY);
+    if (!raw) return DEFAULT_PROTOCOL_TEMPLATE;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return DEFAULT_PROTOCOL_TEMPLATE;
+    return {
+      ...DEFAULT_PROTOCOL_TEMPLATE,
+      ...parsed,
+      articles: Array.isArray(parsed.articles) && parsed.articles.length > 0
+        ? parsed.articles
+        : DEFAULT_PROTOCOL_TEMPLATE.articles
+    };
+  } catch {
+    return DEFAULT_PROTOCOL_TEMPLATE;
+  }
+}
+
+export function saveCustomProtocolTemplate(template) {
+  const merged = {
+    ...DEFAULT_PROTOCOL_TEMPLATE,
+    ...(template || {}),
+    updatedAt: new Date().toISOString()
+  };
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(CUSTOM_PROTOCOL_TEMPLATE_STORAGE_KEY, JSON.stringify(merged));
+    } catch { /* intentional */ }
+  }
+  return merged;
+}
+
+export function resetCustomProtocolTemplate() {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem(CUSTOM_PROTOCOL_TEMPLATE_STORAGE_KEY);
+    } catch { /* intentional */ }
+  }
+  return DEFAULT_PROTOCOL_TEMPLATE;
+}
+
+export function interpolateProtocolText(text, protocol = {}) {
+  const replacements = {
+    '{{FIRMA_ADI}}': protocol.companyName || 'Kurumsal İşletme',
+    '{{SEKTOR}}': protocol.sector || 'Sektör Belirtilmedi',
+    '{{PROTOKOL_TURU}}': protocol.protocolType || PROTOCOL_TYPES.COOPERATION,
+    '{{PROTOKOL_KODU}}': protocol.protocolCode || protocol.id || 'IESU-PRT-TASLAK',
+    '{{VERGI_NO}}': protocol.taxNo || '—',
+    '{{MERSIS_NO}}': protocol.mersisNo || '—',
+    '{{ADRES}}': protocol.companyAddress || '—',
+    '{{YETKILI}}': protocol.contactPerson || 'Kurum Yetkilisi',
+    '{{UNVAN}}': protocol.contactTitle || 'Yetkili',
+    '{{EPOSTA}}': protocol.contactEmail || '—',
+    '{{TELEFON}}': protocol.contactPhone || '—',
+    '{{FAKULTE}}': protocol.assignedFaculty || 'Tüm Fakülte ve MYO Programları',
+    '{{KONTENJAN}}': String(protocol.committedQuota ?? protocol.internshipQuota ?? 0),
+    '{{BASLANGIC}}': protocol.signedDate || protocol.startDate || new Date().toISOString().split('T')[0],
+    '{{BITIS}}': protocol.validUntil || protocol.endDate || '—',
+    '{{KARAR_NO}}': protocol.senateDecisionNo || 'KGM / Senato Onayı Bekleniyor',
+    '{{KAPSAM}}': protocol.scope || 'Staj, uygulamalı eğitim, kariyer etkinlikleri ve mezun istihdamı iş birliği.'
+  };
+  let output = String(text ?? '');
+  Object.entries(replacements).forEach(([token, val]) => {
+    output = output.split(token).join(val);
+  });
+  return output;
+}
+
+export function renderProtocolDocumentHtml(protocol = {}, templateOverride = null) {
+  const tpl = templateOverride || loadCustomProtocolTemplate();
   const esc = (v) => String(v ?? '—').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const statusLabel = PROTOCOL_STATUS_LABELS[calculateProtocolStatus(protocol)] || protocol.status || 'Taslak';
-  const html = `<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>${esc(protocol.protocolCode || 'IESU-Protokol')}</title>
+  const effectiveArticles = Array.isArray(protocol.customArticles) && protocol.customArticles.length > 0
+    ? protocol.customArticles
+    : (Array.isArray(tpl.articles) && tpl.articles.length > 0 ? tpl.articles : DEFAULT_PROTOCOL_TEMPLATE.articles);
+
+  const articlesHtml = effectiveArticles.map((art) => {
+    const title = interpolateProtocolText(art.title || 'Madde', protocol);
+    const body = interpolateProtocolText(art.body || '', protocol).replace(/\n/g, '<br/>');
+    return `<div class="article"><h3>${esc(title)}</h3><p>${body}</p></div>`;
+  }).join('');
+
+  const leftTitle = interpolateProtocolText(tpl.signerLeftTitle || DEFAULT_PROTOCOL_TEMPLATE.signerLeftTitle, protocol);
+  const leftRole = interpolateProtocolText(tpl.signerLeftRole || DEFAULT_PROTOCOL_TEMPLATE.signerLeftRole, protocol);
+  const rightTitle = interpolateProtocolText(tpl.signerRightTitle || DEFAULT_PROTOCOL_TEMPLATE.signerRightTitle, protocol);
+  const rightRole = interpolateProtocolText(tpl.signerRightRole || DEFAULT_PROTOCOL_TEMPLATE.signerRightRole, protocol);
+
+  return `<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>${esc(protocol.protocolCode || protocol.companyName || 'IESU-Protokol')}</title>
   <style>
-    body{font-family:Segoe UI,Arial,sans-serif;color:#0f172a;padding:36px 44px;line-height:1.6;font-size:12.5px}
-    .hdr{border-bottom:3px solid #990000;padding-bottom:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end}
-    .hdr h1{font-size:17px;margin:0;color:#0a2342}
-    .hdr p{margin:3px 0 0;color:#64748b;font-size:11px;font-weight:700}
-    .badge{background:#f1f5f9;border:1px solid #cbd5e1;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700}
-    h2{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#990000;margin:20px 0 8px;border-bottom:1px solid #e2e8f0;padding-bottom:4px}
+    body{font-family:Segoe UI,Calibri,Arial,sans-serif;color:#0f172a;padding:36px 44px;line-height:1.65;font-size:12.5px}
+    .hdr{border-bottom:3px solid #990000;padding-bottom:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+    .hdr h1{font-size:16.5px;margin:0;color:#0a2342}
+    .hdr p{margin:4px 0 0;color:#475569;font-size:11px;font-weight:700}
+    .badge{background:#f1f5f9;border:1px solid #cbd5e1;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
+    h2{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:#990000;margin:20px 0 8px;border-bottom:1px solid #e2e8f0;padding-bottom:4px}
+    h3{font-size:12.5px;color:#0a2342;margin:14px 0 4px}
+    .article p{margin:0 0 8px;text-align:justify}
     table{width:100%;border-collapse:collapse;margin-bottom:14px}
     td{padding:7px 10px;border:1px solid #e2e8f0;vertical-align:top}
     td.k{width:34%;font-weight:700;background:#f8fafc;color:#334155}
-    .sign{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:36px}
+    .sign{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:36px;page-break-inside:avoid}
     .sign-box{border:1px dashed #94a3b8;padding:16px;border-radius:10px;min-height:110px}
     @media print{body{padding:16px}}
   </style></head><body>
     <div class="hdr">
       <div>
-        <h1>İSTANBUL ESENYURT ÜNİVERSİTESİ (İESÜ)</h1>
-        <p>KARİYER GELİŞTİRME KOORDİNATÖRLÜĞÜ • ÜNİVERSİTE–SANAYİ İŞ BİRLİĞİ PROTOKOLÜ</p>
+        <h1>${esc(interpolateProtocolText(tpl.headerTitle, protocol))}</h1>
+        <p>${esc(interpolateProtocolText(tpl.headerSubtitle, protocol))}</p>
       </div>
-      <div class="badge">${esc(protocol.protocolCode || protocol.id)} • ${esc(statusLabel)}</div>
+      <div class="badge">${esc(protocol.protocolCode || protocol.id || 'TASLAK')} • ${esc(statusLabel)}</div>
     </div>
-    <h2>1. Taraflar & Kurumsal Bilgiler</h2>
+    <h2>Taraflar & Kurumsal Bilgiler</h2>
     <table>
-      <tr><td class="k">Üniversite Tarafı</td><td>İstanbul Esenyurt Üniversitesi Rektörlüğü — Kariyer Geliştirme Koordinatörlüğü</td></tr>
+      <tr><td class="k">Üniversite Tarafı</td><td>${esc(tpl.institutionParty)}<br/><small>${esc(tpl.institutionAddress)}</small></td></tr>
       <tr><td class="k">İşletme / Kurum Ünvanı</td><td>${esc(protocol.companyName)}</td></tr>
-      <tr><td class="k">Sektör / Protokol Türü</td><td>${esc(protocol.sector)} — ${esc(protocol.protocolType)}</td></tr>
+      <tr><td class="k">Sektör / Protokol Türü</td><td>${esc(protocol.sector)} — ${esc(protocol.protocolType || PROTOCOL_TYPES.COOPERATION)}</td></tr>
       <tr><td class="k">Vergi No / MERSİS</td><td>${esc(protocol.taxNo)} / ${esc(protocol.mersisNo)}</td></tr>
       <tr><td class="k">Resmî Adres</td><td>${esc(protocol.companyAddress)}</td></tr>
       <tr><td class="k">İmza Yetkilisi & İletişim</td><td>${esc(protocol.contactPerson)} (${esc(protocol.contactTitle)}) • ${esc(protocol.contactEmail)} • ${esc(protocol.contactPhone)}</td></tr>
+      <tr><td class="k">Kontenjan & Geçerlilik</td><td>${esc(protocol.committedQuota ?? protocol.internshipQuota ?? 0)} Aday / Yıl • ${esc(protocol.signedDate || protocol.startDate || 'Onay Tarihi')} — ${esc(protocol.validUntil || protocol.endDate || '—')}</td></tr>
     </table>
-    <h2>2. Kapsam, Kontenjan ve Yasal Taahhütler</h2>
-    <table>
-      <tr><td class="k">Hedef Fakülte / Birim</td><td>${esc(protocol.assignedFaculty || 'Tüm Fakülte ve MYO Programları')}</td></tr>
-      <tr><td class="k">Yıllık Staj & İstihdam Kontenjanı</td><td>${esc(protocol.committedQuota || 0)} Aday / Yıl</td></tr>
-      <tr><td class="k">Geçerlilik Süresi</td><td>${esc(protocol.signedDate || 'Onay Tarihi')} — ${esc(protocol.validUntil || '—')}</td></tr>
-      <tr><td class="k">Senato / KGM Karar No</td><td>${esc(protocol.senateDecisionNo || 'KGM / Senato Onayı Bekleniyor')}</td></tr>
-      <tr><td class="k">İş Birliği Kapsamı</td><td>${esc(protocol.scope || '3308 Sayılı Mesleki Eğitim Kanunu ve 5510 Sayılı Kanun 5/b maddesi kapsamında staj, uygulamalı eğitim ve mezun istihdamı iş birliği.')}</td></tr>
-    </table>
-    <p><strong>Yasal Taahhüt:</strong> Taraflar, 6698 Sayılı KVKK, 3308 Sayılı Mesleki Eğitim Kanunu ücret/devlet katkısı esasları ve 5510 Sayılı Kanun 5/b iş kazası-meslek hastalığı sigorta yükümlülüklerine tam uyum sağlamayı kabul eder.</p>
+    <h2>Protokol Maddeleri</h2>
+    ${articlesHtml}
     <div class="sign">
-      <div class="sign-box"><strong>İstanbul Esenyurt Üniversitesi Adına</strong><br/>Kariyer Geliştirme Koordinatörlüğü / Rektörlük<br/><br/>İmza / Kaşe: _______________________</div>
-      <div class="sign-box"><strong>${esc(protocol.companyName)} Adına</strong><br/>${esc(protocol.contactPerson)} — ${esc(protocol.contactTitle)}<br/><br/>İmza / Kaşe: _______________________</div>
+      <div class="sign-box"><strong>${esc(leftTitle)}</strong><br/>${esc(leftRole)}<br/><br/>İmza / Kaşe: _______________________</div>
+      <div class="sign-box"><strong>${esc(rightTitle)}</strong><br/>${esc(rightRole)}<br/><br/>İmza / Kaşe: _______________________</div>
     </div>
   </body></html>`;
-  const w = window.open('', '_blank', 'width=900,height=780');
+}
+
+/**
+ * İkili Resmî Protokol Yazdırma / PDF Çıktısı (Üniversitenin Kendi Düzenlediği Şablon/Maddelerle)
+ */
+export function exportBilateralProtocolDraftPdf(protocol = {}, templateOverride = null) {
+  if (typeof window === 'undefined') return;
+  const html = renderProtocolDocumentHtml(protocol, templateOverride);
+  const w = window.open('', '_blank', 'width=920,height=800');
+  if (w) {
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+    setTimeout(() => { try { w.print(); } catch (_) {} }, 350);
+  }
+}
+
+/**
+ * İkili Resmî Protokolü Microsoft Word (.doc) Olarak İndirme
+ */
+export function exportBilateralProtocolWord(protocol = {}, templateOverride = null) {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  const html = renderProtocolDocumentHtml(protocol, templateOverride);
+  const blob = new Blob(['\ufeff', html], { type: 'application/msword;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const safeName = String(protocol.protocolCode || protocol.companyName || 'IESU_Protokol')
+    .replace(/[^a-zA-Z0-9ğüşöçıİĞÜŞÖÇ_-]+/g, '_');
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${safeName}.doc`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/**
+ * Personel & Koordinatörlük İçin Yazdırılabilir Kurumsal PDF Tablo/Detay Raporu
+ */
+export function exportPrintableReportHtml({ title = 'İESÜ Kurumsal Rapor', subtitle = '', headers = [], rows = [] }) {
+  if (typeof window === 'undefined') return;
+  const esc = (v) => String(v ?? '—').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const nowStr = new Date().toLocaleString('tr-TR');
+  const headHtml = headers.map((h) => `<th>${esc(h)}</th>`).join('');
+  const bodyHtml = rows.map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join('')}</tr>`).join('');
+  const html = `<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>${esc(title)}</title>
+  <style>
+    body{font-family:Segoe UI,Arial,sans-serif;color:#0f172a;padding:28px 34px;font-size:12px}
+    .hdr{border-bottom:3px solid #312e81;padding-bottom:12px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:flex-end}
+    h1{margin:0;font-size:17px;color:#1e1b4b}
+    p{margin:4px 0 0;color:#64748b;font-size:11px;font-weight:700}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th{background:#eef2ff;color:#1e1b4b;text-align:left;padding:8px 10px;border:1px solid #cbd5e1;font-size:11px}
+    td{padding:7px 10px;border:1px solid #e2e8f0;vertical-align:top}
+    tr:nth-child(even) td{background:#f8fafc}
+    @media print{body{padding:12px}}
+  </style></head><body>
+    <div class="hdr">
+      <div>
+        <h1>İstanbul Esenyurt Üniversitesi — ${esc(title)}</h1>
+        <p>${esc(subtitle || 'Kariyer Geliştirme Koordinatörlüğü • Personel Portalı Rapor Çıktısı')}</p>
+      </div>
+      <div style="font-size:11px;color:#475569;font-weight:700">${esc(nowStr)} • ${rows.length} Kayıt</div>
+    </div>
+    <table><thead><tr>${headHtml}</tr></thead><tbody>${bodyHtml}</tbody></table>
+  </body></html>`;
+  const w = window.open('', '_blank', 'width=960,height=780');
   if (w) {
     w.document.open();
     w.document.write(html);

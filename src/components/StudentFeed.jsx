@@ -255,7 +255,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
       <div className="pt-24 max-w-[1320px] mx-auto px-4 flex items-start justify-center gap-6 pb-28 sm:pb-20">
         
         {/* LEFT PANEL: Profile & KGB Kariyer Karnesi */}
-        <div className="hidden lg:block w-[280px] shrink-0 sticky top-24 space-y-3 self-start h-fit max-h-[calc(100vh-7rem)] overflow-y-auto no-scrollbar z-20">
+        <div className="hidden lg:block w-[280px] shrink-0 sticky top-24 space-y-3 self-start max-h-[calc(100vh-6.5rem)] overflow-y-auto overscroll-contain custom-scrollbar pr-1.5 pb-24 z-20">
           <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
             <div className="h-20 bg-gradient-to-r from-[#8F0808] to-[#990000] relative">
               <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
@@ -776,7 +776,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
         </div>
 
         {/* RIGHT PANEL: Dynamic Data */}
-        <div className="hidden xl:block w-[300px] shrink-0 space-y-7">
+        <div className="hidden xl:block w-[300px] shrink-0 space-y-7 sticky top-24 self-start max-h-[calc(100vh-6.5rem)] overflow-y-auto overscroll-contain custom-scrollbar pr-1.5 pb-24">
           {/* 0. KİŞİSELLEŞTİRİLMİŞ KARİYER HAZIRLIK SKORU & AKILLI TAVSİYE MOTORU */}
           <CareerReadinessWidget
             currentUser={effectiveCurrentUser}
