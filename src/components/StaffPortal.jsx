@@ -95,6 +95,20 @@ export default function StaffPortal({
     try { sessionStorage.removeItem('iesu_staff_cms_context'); } catch { /* intentional */ }
   }, [setActivePortalBranch]);
 
+  // Sağ alttaki Personel Mesaj Alanından tam ekrana geçiş dinleyicisi
+  useEffect(() => {
+    const onOpenDesk = (ev) => {
+      const target = ev?.detail?.desk;
+      if (target) {
+        setActiveTab('feed');
+        setActiveDesk(target);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+    window.addEventListener('iesu_open_staff_desk', onOpenDesk);
+    return () => window.removeEventListener('iesu_open_staff_desk', onOpenDesk);
+  }, []);
+
   // Yetki çözümleme (Süper Admin görüntülerken tüm 8 modül aktif; personel için yalnızca atanan yetkiler)
   const effectivePermIds = useMemo(() => {
     if (isSuperAdminViewing) return STAFF_PERMISSION_GROUPS.map(g => g.id);
@@ -683,57 +697,33 @@ export default function StaffPortal({
                 <ShieldCheck size={12} /> {allowedGroups.length} / {STAFF_PERMISSION_GROUPS.length} Yetkili Modül
               </div>
 
-              {/* 3'lü Canlı Gösterge */}
+              {/* 3'lü Canlı Gösterge (Tıklanabilir Hızlı Özet) */}
               <div className="grid grid-cols-3 gap-1 border-y border-slate-100 dark:border-slate-800 py-3 my-4 text-center">
-                <div>
+                <button type="button" onClick={() => setActiveDesk('approvals')} className="hover:bg-indigo-50/60 dark:hover:bg-slate-800 rounded-xl py-1 transition cursor-pointer">
                   <div className="text-base font-black text-slate-900 dark:text-white">{totalPendingCount}</div>
                   <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400">Onay</div>
-                </div>
-                <div className="border-x border-slate-100 dark:border-slate-800">
+                </button>
+                <button type="button" onClick={() => setActiveDesk('staff_profile')} className="border-x border-slate-100 dark:border-slate-800 hover:bg-indigo-50/60 dark:hover:bg-slate-800 py-1 transition cursor-pointer">
                   <div className="text-base font-black text-indigo-700 dark:text-indigo-400">{allowedGroups.length}</div>
                   <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400">Yetki</div>
-                </div>
-                <div>
+                </button>
+                <button type="button" onClick={() => setActiveDesk('stream')} className="hover:bg-indigo-50/60 dark:hover:bg-slate-800 rounded-xl py-1 transition cursor-pointer">
                   <div className="text-base font-black text-emerald-600 dark:text-emerald-400">{openTasksCount}</div>
                   <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400">Görev</div>
-                </div>
+                </button>
               </div>
 
-              {/* Yetkili Çalışma Masaları */}
-              <div className="space-y-1 text-left">
-                {deskNavItems.map(item => {
-                  const Icon = item.icon;
-                  const isActive = activeTab === 'feed' && activeDesk === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => {
-                        setActiveTab('feed');
-                        setActiveDesk(item.id);
-                        setTableSearch('');
-                      }}
-                      className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
-                        isActive
-                          ? 'bg-gradient-to-r from-indigo-700 to-blue-700 text-white shadow-sm'
-                          : 'text-slate-600 dark:text-slate-300 hover:bg-indigo-50/70 dark:hover:bg-slate-800'
-                      }`}
-                    >
-                      <span className="flex items-center gap-2 min-w-0">
-                        <Icon size={14} className="shrink-0" />
-                        <span className="truncate">{item.label}</span>
-                      </span>
-                      {item.badge > 0 && (
-                        <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-black shrink-0 ${
-                          isActive ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300'
-                        }`}>
-                          {item.badge}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('feed');
+                  setActiveDesk('staff_profile');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-indigo-700 to-blue-700 hover:from-indigo-800 hover:to-blue-800 text-white text-xs font-black transition shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <ShieldCheck size={14} /> Profilim & Yetki Kartım
+              </button>
             </div>
           </div>
         </aside>
@@ -2216,7 +2206,7 @@ export default function StaffPortal({
         </aside>
       </div>
 
-      {/* ── SADECE PERSONELE ÖZEL İNDİGO YÜZEN ALT PANEL ── */}
+      {/* ── SADECE PERSONELE ÖZEL 4'LÜ İNDİGO YÜZEN ALT PANEL (Mesajlar sağ alttaki Personel Mesaj Alanında) ── */}
       <StaffBottomDock
         activeTab={activeTab}
         activeDesk={activeDesk}
@@ -2226,7 +2216,6 @@ export default function StaffPortal({
           setTableSearch('');
         }}
         pendingCount={totalPendingCount}
-        unreadMessagesCount={pendingMessages.length}
         primaryOpsDesk={
           (allowedSet.has('companies_protocols') || allowedSet.has('jobs_applications'))
             ? 'companies_jobs'
@@ -2253,8 +2242,6 @@ export default function StaffPortal({
                     ? 'İçerikler'
                     : 'Masam'
         }
-        commDesk={allowedSet.has('messages') ? 'messages' : allowedSet.has('content') ? 'content' : 'approvals'}
-        commLabel={allowedSet.has('messages') ? 'Mesajlar' : allowedSet.has('content') ? 'Duyurular' : 'Onaylar'}
         staffAvatar={effectiveUser?.avatar}
         staffName={staffName}
       />

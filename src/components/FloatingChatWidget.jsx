@@ -275,19 +275,20 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
   const isCompany = branchContext === 'company' || branchContext === 'employer';
   const isAcademic = false;
   const isAlumni = branchContext === 'alumni';
-  const isAdmin = branchContext === 'admin' || branchContext === 'staff' || (isSuperAdmin && !['student', 'alumni', 'company'].includes(branchContext));
-  const isStudent = (branchContext === 'student' || (!isCompany && !isAlumni && !isAdmin)) && !isAdmin && !isSuperAdmin && currentUser?.role !== 'admin' && currentUser?.role !== 'staff';
-  const effectiveRole = isAdmin ? 'admin' : branchContext;
+  const isStaff = branchContext === 'staff' || propsCurrentView === 'staff' || propsCurrentView === 'personel' || propsCurrentView === 'personel_portali';
+  const isAdmin = !isStaff && (branchContext === 'admin' || (isSuperAdmin && !['student', 'alumni', 'company', 'staff'].includes(branchContext)));
+  const isStudent = (branchContext === 'student' || (!isCompany && !isAlumni && !isAdmin && !isStaff)) && !isAdmin && !isStaff && !isSuperAdmin && currentUser?.role !== 'admin' && currentUser?.role !== 'staff';
+  const effectiveRole = isStaff ? 'staff' : (isAdmin ? 'admin' : branchContext);
 
   // Mode:
   // - Super Admin: 'admin_eval' (Değerlendirme Havuzu - Kök Masası), 'admin_company', 'admin_academic', 'admin_ats'
-  // Modes:
-  // - Super Admin: 'admin_eval', 'admin_company', 'admin_academic', 'admin_ats'
+  // - Staff: 'staff_requests' (Kurumsal Talepler), 'staff_direct' (Doğrudan Mesajlar)
   // - Company: 'candidate'
   // - Academic: 'counseling'
   // - Alumni: 'alumni_network' (Mezun & Mentörlük Ağı), 'alumni_company' (Kurumsal & Sektörel)
   // - Student: 'student_peer' (Akran & Mezun Sohbetleri), 'student_company' (Firma & Staj), 'student_counseling' (Akademik Danışmanlık)
   const [activeMode, setActiveMode] = useState(() => {
+    if (isStaff) return 'staff_requests';
     if (isAdmin) return 'admin_eval';
     if (isCompany) return 'candidate';
     if (isAcademic) return 'counseling';
@@ -296,16 +297,82 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
   });
 
   useEffect(() => {
-    if (isAdmin) setActiveMode('admin_eval');
+    if (isStaff) setActiveMode('staff_requests');
+    else if (isAdmin) setActiveMode('admin_eval');
     else if (isCompany) setActiveMode('candidate');
     else if (isAcademic) setActiveMode('counseling');
     else if (isAlumni) setActiveMode('alumni_network');
     else if (isStudent) setActiveMode('student_peer');
-  }, [isAdmin, isCompany, isAcademic, isStudent, isAlumni]);
+  }, [isStaff, isAdmin, isCompany, isAcademic, isStudent, isAlumni]);
 
-  // Store admin messages
+  // Store admin & direct messages
   const adminMessages = useAppStore(state => state.adminMessages) || [];
   const setAdminMessages = useAppStore(state => state.setAdminMessages);
+  const storeDirectMessages = useAppStore(state => state.messages) || [];
+  const setStoreDirectMessages = useAppStore(state => state.setMessages);
+
+  // Staff Messaging Drawer States
+  const [selectedStaffMsg, setSelectedStaffMsg] = useState(null);
+  const [staffReplyText, setStaffReplyText] = useState('');
+
+  const staffRequestMessages = useMemo(() => {
+    let localForms = [];
+    try {
+      const saved = JSON.parse(localStorage.getItem('iesu_admin_messages_v1') || '[]');
+      if (Array.isArray(saved)) localForms = saved;
+    } catch { /* intentional */ }
+    return [
+      ...adminMessages.map(m => ({
+        id: m.id,
+        source: 'admin_msg',
+        sender: m.companyName || m.senderName || 'Kurumsal Firma',
+        email: m.email || '—',
+        subject: m.subject || 'Kurumsal Talep',
+        body: m.message || m.content || '',
+        reply: m.reply || '',
+        date: m.date || 'Yeni',
+        status: m.status || 'Beklemede'
+      })),
+      ...localForms
+        .filter(lf => !adminMessages.some(am => am.id === lf.id))
+        .map((m, idx) => ({
+          id: m.id || `LOCAL-STAFF-${idx}`,
+          source: 'contact_form',
+          sender: m.senderName || m.name || 'İletişim Formu',
+          email: m.email || '—',
+          subject: m.subject || 'Web Talebi',
+          body: m.message || m.content || '',
+          reply: m.reply || '',
+          date: m.date || 'Yeni',
+          status: m.status || 'Beklemede'
+        }))
+    ];
+  }, [adminMessages]);
+
+  const handleStaffSendReply = (e) => {
+    e.preventDefault();
+    if (!selectedStaffMsg || !staffReplyText.trim()) return;
+    const replyVal = staffReplyText.trim();
+    if (selectedStaffMsg.source === 'admin_msg') {
+      setAdminMessages?.(prev => (prev || []).map(m => m.id === selectedStaffMsg.id ? { ...m, status: 'Yanıtlandı', reply: replyVal } : m));
+    } else if (selectedStaffMsg.source === 'dm') {
+      setStoreDirectMessages?.(prev => [
+        ...(prev || []).map(m => m.id === selectedStaffMsg.id ? { ...m, read: true } : m),
+        {
+          id: `STAFF-DM-${Date.now()}`,
+          senderId: currentUser?.id || 'staff',
+          senderName: currentUser?.name || 'Kariyer Geliştirme Merkezi',
+          receiverName: selectedStaffMsg.sender,
+          content: replyVal,
+          timestamp: Date.now(),
+          read: true
+        }
+      ]);
+    }
+    setSelectedStaffMsg(prev => prev ? { ...prev, status: 'Yanıtlandı', reply: replyVal } : null);
+    setStaffReplyText('');
+    window.toast?.success?.(`${selectedStaffMsg.sender} alıcısına yanıt iletildi.`);
+  };
 
   // Super Admin Evaluation Pool states
   const [evalFilterTab, setEvalFilterTab] = useState('all'); // 'all', 'pending', 'reviewing', 'approved', 'rejected'
@@ -949,7 +1016,10 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
   };
 
   const handleOpenBulkPanel = () => {
-    if (isAdmin) {
+    if (isStaff) {
+      window.dispatchEvent(new CustomEvent('iesu_open_staff_desk', { detail: { desk: 'messages' } }));
+      if (setView) setView('staff');
+    } else if (isAdmin) {
       if (activeMode === 'admin_ats') {
         if (setView) setView('company_ats');
       } else {
@@ -1017,8 +1087,12 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
     ? (alumniNetworkUnread + alumniCompanyUnread) 
     : (studentPeerUnread + studentCompanyUnread);
   const pendingAdminMsgs = (adminMessages || []).filter(m => m.status === 'Beklemede').length;
+  const unreadStaffDirectCount = (storeDirectMessages || []).filter(m => !m?.read).length;
+  const pendingStaffCount = staffRequestMessages.filter(m => m.status === 'Beklemede').length + unreadStaffDirectCount;
 
-  const totalBadge = isAdmin
+  const totalBadge = isStaff
+    ? pendingStaffCount
+    : isAdmin
     ? (pendingAdminMsgs + pendingCounselingCount + pendingCandidateCount)
     : isCompany 
     ? pendingCandidateCount 
@@ -1032,6 +1106,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
 
   // Theme Gradients & Accents per Role (The Tree Leaves & The Central Root)
   const getHeaderGradient = () => {
+    if (isStaff) return 'bg-gradient-to-r from-slate-950 via-indigo-800 to-blue-900 border-b border-indigo-500/40 text-white shadow-lg';
     if (isAdmin) return 'bg-gradient-to-r from-amber-600 via-orange-500 to-amber-600 border-b-2 border-yellow-300/60 text-white shadow-lg';
     if (isCompany) return 'bg-gradient-to-r from-slate-950 via-[#0A2342] to-indigo-950 border-b border-blue-800/40';
     if (isAcademic) return 'bg-gradient-to-r from-purple-950 via-[#4C1D95] to-indigo-900 border-b border-purple-800/40';
@@ -1041,6 +1116,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
   };
 
   const getLauncherGradient = () => {
+    if (isStaff) return 'bg-gradient-to-tr from-slate-900 via-indigo-700 to-blue-600 shadow-2xl shadow-indigo-700/45 border-2 border-indigo-300/70 ring-4 ring-indigo-500/25 hover:shadow-indigo-500/60';
     if (isAdmin) return 'bg-gradient-to-tr from-amber-400 via-orange-500 to-amber-600 shadow-2xl shadow-amber-500/60 border-2 border-yellow-200 ring-4 ring-amber-400/40 hover:shadow-amber-400/80';
     if (isCompany) return 'bg-gradient-to-tr from-slate-950 via-[#0A2342] to-blue-600 shadow-blue-900/30 border-blue-400/40';
     if (isAcademic) return 'bg-gradient-to-tr from-indigo-900 via-[#4C1D95] to-purple-600 shadow-purple-900/30 border-purple-400/40';
@@ -1061,7 +1137,8 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
          ═══════════════════════════════════════════════════════════════════ */}
       {isOpen && (
         <div 
-          className={`bg-white w-[calc(100vw-1.5rem)] max-w-[430px] rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-all animate-slide-up ${
+          className={`bg-white dark:bg-[#0f172a] w-[calc(100vw-1.5rem)] max-w-[430px] rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-all animate-slide-up ${
+            isStaff ? 'border-2 border-indigo-400/70 shadow-[0_20px_60px_-15px_rgba(67,56,202,0.4)]' :
             isAdmin ? 'border-2 border-amber-400/90 shadow-[0_20px_60px_-15px_rgba(245,158,11,0.45)]' : 'border border-slate-200'
           }`} 
           style={{ height: '590px', maxHeight: 'calc(100vh - 120px)' }}
@@ -1069,7 +1146,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
           {/* Top Header */}
           <div className={`text-white px-5 py-3.5 flex items-center justify-between shrink-0 shadow-sm transition-colors ${getHeaderGradient()}`}>
             <div className="flex items-center gap-2.5 min-w-0">
-              {(activeReq || selectedCandidateChat || selectedEvalItem || selectedAdminCompanyMsg || selectedAdminAcademicMsg) && (
+              {(activeReq || selectedCandidateChat || selectedEvalItem || selectedAdminCompanyMsg || selectedAdminAcademicMsg || selectedStaffMsg) && (
                 <button 
                   onClick={() => { 
                     setActiveReq(null); 
@@ -1077,6 +1154,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                     setSelectedEvalItem(null);
                     setSelectedAdminCompanyMsg(null);
                     setSelectedAdminAcademicMsg(null);
+                    setSelectedStaffMsg(null);
                   }} 
                   className="p-1.5 hover:bg-white/20 rounded-xl transition cursor-pointer shrink-0"
                   title="Listeye Dön"
@@ -1087,7 +1165,9 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <h3 className="font-black text-sm text-white truncate">
-                    {isAdmin ? (
+                    {isStaff ? (
+                      selectedStaffMsg ? selectedStaffMsg.sender : 'Personel Mesaj Alanı'
+                    ) : isAdmin ? (
                       selectedEvalItem 
                         ? `Karar: ${selectedEvalItem.senderName}` 
                         : selectedAdminCompanyMsg
@@ -1132,7 +1212,9 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                   )}
                 </div>
                 <p className="text-[10px] text-slate-300 truncate font-medium">
-                  {isAdmin ? (
+                  {isStaff ? (
+                    selectedStaffMsg ? `${selectedStaffMsg.subject} • ${selectedStaffMsg.date}` : 'Kariyer Geliştirme Merkezi • Gelen Talepler & Mesajlar'
+                  ) : isAdmin ? (
                     selectedEvalItem
                       ? `${selectedEvalItem.sourceLabel} • ${selectedEvalItem.subject}`
                       : selectedAdminCompanyMsg
@@ -1168,6 +1250,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                 onClick={handleOpenBulkPanel} 
                 className="p-2 hover:bg-white/20 rounded-xl transition cursor-pointer text-slate-300 hover:text-white"
                 title={
+                  isStaff ? "Personel Mesaj Masasını Tam Ekranda Aç" :
                   isAdmin ? "KGM Yönetim Paneline Git" :
                   isCompany ? "ATS Aday Havuzunu Aç" :
                   isAcademic ? "Tüm Randevuları Akademik Portalda Aç" :
@@ -1289,6 +1372,125 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                   <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
                 )}
               </button>
+            </div>
+          )}
+
+          {/* B0. Kurumsal Personel Mesaj Alanı (Safir / İndigo — Süper Admin'e Asla Yönlendirmez) */}
+          {isStaff && (
+            <div className="flex-1 flex flex-col overflow-hidden bg-slate-50/60 dark:bg-[#0f172a]" data-testid="staff-floating-chat-panel">
+              <div className="flex border-b border-indigo-200/80 dark:border-slate-800 bg-white dark:bg-[#131c31] p-1.5 gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => { setActiveMode('staff_requests'); setSelectedStaffMsg(null); }}
+                  className={`flex-1 py-2 px-3 rounded-xl text-[11px] font-black transition cursor-pointer flex items-center justify-center gap-1.5 ${
+                    activeMode === 'staff_requests'
+                      ? 'bg-gradient-to-r from-indigo-700 to-blue-700 text-white shadow-sm'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  <Inbox size={13} /> Kurumsal Talepler ({staffRequestMessages.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setActiveMode('staff_direct'); setSelectedStaffMsg(null); }}
+                  className={`flex-1 py-2 px-3 rounded-xl text-[11px] font-black transition cursor-pointer flex items-center justify-center gap-1.5 ${
+                    activeMode === 'staff_direct'
+                      ? 'bg-gradient-to-r from-indigo-700 to-blue-700 text-white shadow-sm'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  <MessageSquare size={13} /> Doğrudan ({storeDirectMessages.length})
+                </button>
+              </div>
+
+              {!selectedStaffMsg ? (
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
+                  {(activeMode === 'staff_requests' ? staffRequestMessages : storeDirectMessages.map(m => ({
+                    id: m.id,
+                    source: 'dm',
+                    sender: m.senderName || m.from || 'Kullanıcı',
+                    email: '—',
+                    subject: m.subject || 'Doğrudan Mesaj',
+                    body: m.content || '',
+                    reply: '',
+                    date: m.timestamp ? new Date(m.timestamp).toLocaleDateString('tr-TR') : (m.date || 'Yeni'),
+                    status: m.read ? 'Okundu' : 'Beklemede'
+                  }))).length === 0 ? (
+                    <div className="py-12 text-center text-slate-500 dark:text-slate-400">
+                      <MessageSquare size={32} className="mx-auto text-indigo-300 mb-2" />
+                      <p className="text-xs font-bold">Bu klasörde henüz mesaj bulunmuyor.</p>
+                    </div>
+                  ) : (
+                    (activeMode === 'staff_requests' ? staffRequestMessages : storeDirectMessages.map(m => ({
+                      id: m.id,
+                      source: 'dm',
+                      sender: m.senderName || m.from || 'Kullanıcı',
+                      email: '—',
+                      subject: m.subject || 'Doğrudan Mesaj',
+                      body: m.content || '',
+                      reply: '',
+                      date: m.timestamp ? new Date(m.timestamp).toLocaleDateString('tr-TR') : (m.date || 'Yeni'),
+                      status: m.read ? 'Okundu' : 'Beklemede'
+                    }))).map(item => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setSelectedStaffMsg(item)}
+                        className="w-full text-left p-3.5 rounded-2xl bg-white dark:bg-[#131c31] border border-slate-200/80 dark:border-slate-800 hover:border-indigo-400 transition shadow-2xs cursor-pointer space-y-1"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-xs font-black text-slate-900 dark:text-white truncate">{item.sender}</span>
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-black shrink-0 ${
+                            item.status === 'Yanıtlandı' || item.status === 'Okundu'
+                              ? 'bg-emerald-100 text-emerald-700'
+                              : 'bg-indigo-100 text-indigo-700'
+                          }`}>
+                            {item.status}
+                          </span>
+                        </div>
+                        <p className="text-[11px] font-bold text-indigo-700 dark:text-indigo-300 truncate">{item.subject}</p>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">{item.body}</p>
+                        <p className="text-[10px] text-slate-400 font-semibold">{item.date}</p>
+                      </button>
+                    ))
+                  )}
+                </div>
+              ) : (
+                <div className="flex-1 flex flex-col overflow-hidden">
+                  <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3">
+                    <div className="p-3.5 rounded-2xl bg-white dark:bg-[#131c31] border border-slate-200 dark:border-slate-800 space-y-1.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-black text-slate-900 dark:text-white">{selectedStaffMsg.sender}</span>
+                        <span className="text-[10px] font-bold text-slate-400">{selectedStaffMsg.date}</span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">{selectedStaffMsg.email}</p>
+                      <p className="text-xs font-black text-indigo-700 dark:text-indigo-300 pt-1">{selectedStaffMsg.subject}</p>
+                      <p className="text-xs text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-line">{selectedStaffMsg.body}</p>
+                    </div>
+                    {selectedStaffMsg.reply && (
+                      <div className="p-3.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-700/50 space-y-1">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-indigo-700 dark:text-indigo-300">Kurumsal Yanıtınız</span>
+                        <p className="text-xs text-slate-800 dark:text-slate-100 leading-relaxed">{selectedStaffMsg.reply}</p>
+                      </div>
+                    )}
+                  </div>
+                  <form onSubmit={handleStaffSendReply} className="p-3 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#131c31] flex gap-2 shrink-0">
+                    <input
+                      type="text"
+                      value={staffReplyText}
+                      onChange={(e) => setStaffReplyText(e.target.value)}
+                      placeholder="Personel yanıtınızı yazın..."
+                      className="flex-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white"
+                    />
+                    <button
+                      type="submit"
+                      className="px-3.5 py-2 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-black flex items-center gap-1 cursor-pointer shrink-0"
+                    >
+                      <Send size={13} /> Gönder
+                    </button>
+                  </form>
+                </div>
+              )}
             </div>
           )}
 
@@ -3589,8 +3791,10 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
       {!isOpen && (
         <button 
           onClick={() => setIsOpen(true)}
+          data-testid={isStaff ? 'staff-floating-chat-btn' : 'floating-chat-btn'}
           className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full text-white shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 relative group cursor-pointer border-2 border-white/40 ${getLauncherGradient()}`}
           title={
+            isStaff ? "Personel Mesaj & Talep Merkezi" :
             isAdmin ? "Kariyer Geliştirme İletişim Merkezi" :
             isCompany ? "Aday Mesajları & İşe Alım" :
             isAcademic ? "Resmî Danışmanlık & Randevu Talepleri" :
@@ -3599,7 +3803,9 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
             "Mesajlar"
           }
         >
-          {isAdmin ? (
+          {isStaff ? (
+            <MessageSquare size={26} className="text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)] group-hover:-rotate-12 transition-transform duration-300" />
+          ) : isAdmin ? (
             <Crown size={30} className="text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)] group-hover:rotate-12 transition-transform duration-300" />
           ) : isCompany ? (
             <Briefcase size={26} className="group-hover:-rotate-12 transition-transform duration-300" />

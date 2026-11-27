@@ -301,6 +301,19 @@ describe('App Component', () => {
     }, { timeout: 10000 });
 
     const dock = screen.getByTestId('staff-bottom-dock');
+    // 4-icon symmetrical dock without duplicate message button (messages moved to bottom-right staff chat widget)
+    expect(within(dock).getAllByRole('button')).toHaveLength(4);
+    expect(within(dock).queryByRole('button', { name: /Mesajlar/i })).not.toBeInTheDocument();
+
+    // Bottom-right floating widget renders Indigo Staff Messaging Area (not Super Admin Crown)
+    const staffChatBtn = screen.getByTestId('staff-floating-chat-btn');
+    expect(staffChatBtn).toHaveAttribute('title', 'Personel Mesaj & Talep Merkezi');
+    fireEvent.click(staffChatBtn);
+    await waitFor(() => {
+      expect(screen.getByTestId('staff-floating-chat-panel')).toBeInTheDocument();
+      expect(screen.getByText(/Personel Mesaj Alanı/i)).toBeInTheDocument();
+    });
+
     fireEvent.click(within(dock).getByRole('button', { name: /Onaylar/i }));
     await waitFor(() => {
       expect(screen.getAllByText(/Onay & İşlem Kuyruğu/i).length).toBeGreaterThan(0);
